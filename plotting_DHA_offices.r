@@ -407,10 +407,6 @@ district_indicator_table <- off_pop_shape %>%
         office_per_pop = office_per_pop # from offic_per_pop_dist if present in join
     )
 
-readr::write_csv(district_indicator_table,
-    file = file.path(out_dir, "district_me_indicators.csv")
-)
-
 
 
 
@@ -917,6 +913,12 @@ left_join(
 )%>%
 rbind(., 
 dha_access_10km_totals_combined) %>%
+mutate( 
+    across( 
+        where(is.numeric), 
+        ~ round(.,0)
+    )
+)%>%
 flextable::flextable() %>%
 flextable::set_header_labels( 
     district_standard = "District", 
@@ -1086,7 +1088,7 @@ ggplot() +
     p_with_buffers
 
 plotly::ggplotly(p_with_buffers, tooltip = "text") 
-    plotly::layout(hoverlabel = list(align = "left"))-> p_with_grid
+    #plotly::layout(hoverlabel = list(align = "left"))-> p_with_grid
 
 offices_sf <- dha %>%
     sf::st_as_sf(coords = c("office_longitude", "office_latitude"), crs = 4326, remove = FALSE) %>%
@@ -1125,6 +1127,11 @@ coverage_by_district <- grid %>%
 coverage_by_district
 
 out_dir <- "outputs/dha_me_indicators"
+
+readr::write_csv(district_indicator_table,
+    file = file.path(out_dir, "district_me_indicators.csv")
+)
+
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 save( 
@@ -1151,4 +1158,4 @@ save(
 
 print( paste0(out_dir, "/dha_me_indicator_objects.RData") )
 
-p
+

@@ -113,13 +113,20 @@ modelled_population_map
 #| label: tbl-dha_access_summary_table
 
 dha_access_summary_table %>%
-  flextable::bold(
-    i = ~ grepl("Total", ignore.case = TRUE, district_standard)
-  ) %>%
-  flextable::bg(
-    j = c(4, 6),
-    bg = "#D3D3D3"
-  )
+    flextable::bold(
+        i = ~ grepl("Total", ignore.case = TRUE, district_standard)
+    ) %>%
+    flextable::bg(
+        j = c(4, 6),
+        bg = "#D3D3D3"
+    )
+
+
+dha_access_summary_table$body$data[53,]["pct_within_10km"]-> pct_10km
+dha_access_summary_table$body$data[53,]["pct_within_20km"]-> pct_20km
+
+
+
 ```
 
 ## Interactive Map
@@ -136,8 +143,8 @@ plotly::ggplotly(p_with_buffers, tooltip = "text")
 
 ::: {.callout-important}
 ## Summary Statistics
-- **XX%** of the population lives within 10km of a DHA office
-- **XX%** of the population lives within 20km of a DHA office
+- **`r pct_10km`%** of the population lives within 10km of a DHA office
+- **`r pct_20km`%** of the population lives within 20km of a DHA office
 - Rural districts show significantly lower coverage
 :::
 
