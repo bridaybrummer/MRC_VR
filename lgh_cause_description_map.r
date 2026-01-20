@@ -1,0 +1,33 @@
+icd_lookup <- tibble::tribble(
+    ~LGH_Cause,               ~description,
+    NA_character_,            "Missing / Unknown",
+    "A00-B99",                "Certain infectious and parasitic diseases",
+    "B24",                    "Human immunodeficiency virus [HIV] disease",
+    "B33",                    "Other viral diseases, not elsewhere classified",
+    "C00-D48",                "Neoplasms (malignant, in situ, benign, and uncertain/unknown behaviour)",
+    "D50-D99",                "Diseases of the blood and blood-forming organs and certain immune disorders (ICD-10 is D50–D89; D90–D99 not used in ICD-10)",
+    "E00-E99*",               "Endocrine, nutritional and metabolic diseases (overall grouping)",
+    "G00-G99",                "Diseases of the nervous system",
+    "I00-I99*",               "Diseases of the circulatory system (overall grouping)",
+    "I49-I51",                "Cardiac arrhythmias and other forms of heart disease",
+    "I60-I69",                "Cerebrovascular diseases (stroke, etc.)",
+    "J09-J18",                "Influenza and pneumonia",
+    "J20-J22",                "Other acute lower respiratory infections (e.g., acute bronchitis/bronchiolitis)",
+    "J96-J98",                "Respiratory failure and other specified respiratory disorders",
+    "P00-P99",                "Certain conditions originating in the perinatal period",
+    "R00-R99+I46",            "Symptoms, signs and abnormal clinical/lab findings (R00–R99) plus cardiac arrest (I46)",
+    "ZZOthers (F/H/K-M/O/Q)", "Other chapters: mental/behavioural (F), eye/adnexa & ear/mastoid (H), digestive (K), musculoskeletal (M), pregnancy/childbirth (O), congenital malformations (Q)",
+    "E10-E14",                "Diabetes mellitus",
+    "I10-I15",                "Hypertensive diseases",
+    "I20-I25",                "Ischaemic heart diseases",
+    "I26-I28",                "Pulmonary heart disease and diseases of pulmonary circulation",
+    "I42",                    "Cardiomyopathy",
+    "J00-J99*",               "Diseases of the respiratory system (overall grouping)",
+    "J45",                    "Asthma",
+    "N00-N99*",               "Diseases of the genitourinary system (overall grouping)",
+    "N17-N19",                "Acute and chronic renal failure (N17–N19)",
+    "J80",                    "Acute respiratory distress syndrome (ARDS)",
+    "U07",                    "COVID-19 (e.g., U07.1 virus identified; U07.2 virus not identified)"
+)
+
+save(icd_lookup, file = "LGH_ICD10_Cause_Lookup.rda")

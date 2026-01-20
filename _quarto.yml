@@ -1,0 +1,65 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "projects/**/*.qmd"
+    - "!projects/**/_*.qmd"
+    - "!dashboard/**/*.qmd"
+
+website:
+  title: "MRC Vital Registration Analysis"
+  description: "Analysis of South African vital registration data quality and monitoring"
+  
+  navbar:
+    background: primary
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Projects"
+        menu:
+          - text: "---"
+          - text: "Monitoring & Evaluation"
+            href: projects/mortality_estimates/index.qmd
+          - text: "National Excess Mortality"
+            href: projects/national_overview/index.qmd
+          - text: "Cause Code Analysis"
+            href: projects/cause_codes/index.qmd
+          - text: "---"
+          - text: "DHA Access"
+            href: projects/dha_access/index.qmd
+          - text: "ICC for eMCCD"
+            href: projects/icc_analysis/index.qmd
+          - text: "J-Code Modelling"
+            href: projects/j_code_modelling/index.qmd
+          - text: "---"
+          - text: "CI Modelling Methods"
+            href: projects/ci_modelling/index.qmd
+      - text: "About"
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/bridaybrummer/MRC_VR
+        aria-label: GitHub
+  
+  sidebar:
+    style: floating
+    search: true
+  
+  page-footer:
+    center: "© 2026 MRC Vital Registration Analysis"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    highlight-style: github
+
+execute:
+  warning: false
+  message: false
+  freeze: auto

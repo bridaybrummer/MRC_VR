@@ -1,0 +1,296 @@
+---
+title: "MRC VR National Overview"
+description: "National observed vs expected deaths analysis with provincial breakdowns"
+date: "2026-01-20"
+categories: [excess-mortality, national, provincial, modelling]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+page-navigation: true
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# library(NMCleaner)
+library(arrow)
+library(knitr)
+pacman::p_load(
+    ggplot2, plotly, gtsummary, tidyverse, magrittr, conflicted,
+    htmlwidgets, knitr, webshot, rmapshaper, ggpubr, scales, here, tibble, glue,
+    data.table
+)
+
+knitr::opts_knit$set(root.dir = here::here())
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE, cache.compress = TRUE)
+# If you rely on these, load once here (keeps later chunks lean)
+conflicted::conflicts_prefer(
+    dplyr::filter,
+    dplyr::select,
+    flextable::compose
+)
+
+source(here::here("dashboard_functions.r"))
+# source("dashboard_functions.R")
+# Data load goes here (kept commented if you load upstream)
+# dt_analysis <- read_feather("../LGH_AnalysisData_2022.feather") %>% as.data.table()
+
+# Expect icd_lookup and dt_analysis to exist; fail friendly:
+stopifnot(exists("icd_lookup"), exists("dt_analysis"))
+```
+
+```{css}
+/* Gentle spacing for headings inside tabsets */
+.panel-tabset h3, .panel-tabset h4 { margin-top: .6rem; }
+/* Make the pill tabs a touch bolder and tighter */
+.nav-pills > li > a, .nav-pills .nav-link { font-weight: 600; }
+/* Compact the inner tab-strip a bit */
+.panel-tabset > .nav-tabs { margin-bottom: .5rem; }
+/* Slightly narrower body for readability on wide screens */
+.quarto-dashboard .content { max-width: 1600px; margin-left: auto; margin-right: auto; }
+/* Tables: keep them from stretching edge-to-edge */
+.table, .gt_table, .gts_table { margin: .25rem auto .75rem auto; }
+/* Small card-ish feel for content blocks */
+.section > :where(h2,h3,h4) + * { background: rgba(0,0,0,.015); padding: .35rem .5rem; border-radius: .4rem; }
+```
+
+
+```{r}
+load("../figures/model_comparison_prov_nat_plots.rda")
+#load("figures/model_comparison_prov_nat_plots.rda")
+```
+
+# National Picture
+Use the nav bar at the top of the page to navigate to cause-specific tabs below.
+
+```{r}
+#| label: fig-national_model_plot_SA
+#| fig-cap:  National observed vs expected deaths, 2015-2022 (TM's National Negative Binomial Model converted from stats to R code)
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+national_model_plot_SA
+
+```
+
+```{r}
+#| label: fig-national_model_icd_O_vs_E_plot_SA
+#| fig-cap:  National observed vs expected deaths difference 2019-2022 by ICD code
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+national_model_icd_O_vs_E_plot_SA
+
+```
+
+```{r}
+#| label: fig-national_model_icd_difference_plot_SA
+#| fig-cap:  National observed vs expected deaths difference 2019-2022 by ICD code
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+national_model_icd_difference_plot_SA
+```
+
+
+
+```{r}
+#| label: fig-national_model_cause_heatmap_SA
+#| fig-cap:  National observed vs expected deaths difference heatmap 2019-2022 by ICD code and year
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+national_model_cause_heatmap_SA
+
+```
+
+
+
+# Modelling provincial level 
+
+TH's NB model with interaction terms takes a relatively longer time and similar results can be achieved with no interaction terms but adding provinicial terms.  The models appear to do well at the national level compared to Toms model.  I did not find this provincial level model to perform any better when adding interaction terms, population offsets, or fourier terms. 
+
+```{r}
+#| label: fig-national_vs_provincial_model_diff_plot_SA
+#| fig-cap:  Difference between provincial simple model and national model
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+national_vs_provincial_model_diff_plot_SA
+
+```
+
+```{r}
+#| label: fig-provincial_model_prov_O_vs_E_plot_SA
+#| fig-cap:  Provincial observed vs expected deaths 2015-2022 (Provincial Negative Binomial Model without interaction terms)
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+provincial_model_prov_O_vs_E_plot_SA
+
+```
+The provincial model doesn't appear to do well with ICD groupings at the provincial level; this can be viewed when inspecting the provincial model ICD observed vs expected plots below in the tab.
+
+[Go to Cause codes](#cause-codes){.btn .btn-primary}
+
+# Cause codes {.tabset .tabset-pills}
+```{r}
+#| results: asis
+
+# --- helpers ---
+get_desc <- function(code) {
+    d <- icd_lookup$description[match(code, icd_lookup$LGH_Cause)]
+    ifelse(is.na(d) || identical(d, ""), "Missing / Unknown", d)
+}
+
+# Pull codes as a clean vector and drop obvious empties once
+icd_codes <- unique(icd_lookup$LGH_Cause)
+icd_codes <- icd_codes[!is.na(icd_codes) & icd_codes != ""]
+
+# --- open the outer containers ONCE ---
+cat("::: {.nav-pills}\n")
+cat("::: {.panel-tabset}\n")
+
+# provice explanation of navigation
+cat("Use the tabs to navigate between cause-specific analyses. Each cause has sub-tabs for Summary, By Age Group, By Province, and Multiple Cause Codes which may be at the bottom of the page if your screen is small.\n\n")
+
+for (icd_code in icd_codes) {
+    desc <- get_desc(icd_code)
+    code_label <- ifelse(is.na(icd_code) || identical(icd_code, ""), "NA", icd_code)
+    tabs <- make_sequence_tables(dt, icd_code = icd_code)
+
+
+    title <- glue("{code_label} — {desc}")
+
+    # H2 tab for this ICD code
+    cat(glue("## {title}\n\n"))
+
+    # inner tabset for Summary / Observed vs Expected / Multiple cause codes
+    cat("::: {.panel-tabset}\n")
+
+    # --- Summary ---
+    cat("### Summary Table\n\n")
+    # Expect your function returns a flextable; convert for Rmd
+    cat(flextable_to_rmd(tabulate_excess_factor(dt_analysis, icd_codes = icd_code)))
+
+    cat("\n\n")
+    # By Age group
+    cat("### By Age Group\n\n")
+
+    cat("::: {.columns}\n")
+
+    # Actual
+
+    cat("::: {.column width=\"100%\"}\n")
+    cat("#### Actual\n\n")
+    print(
+        icd_code_by_agegroup(
+            dt_analysis,
+            icd_code = icd_code,
+            actual_vs_difference = "actual"
+        )
+    )
+    cat("\n:::\n")
+
+    # Difference
+
+    cat("::: {.column width=\"100%\"}\n")
+    cat("#### Difference\n\n")
+    print(
+        icd_code_by_agegroup(
+            dt_analysis,
+            icd_code = icd_code,
+            actual_vs_difference = "difference"
+        )
+    )
+    cat("\n:::\n")
+
+    cat(":::\n\n") # close columns
+
+    # BY province
+    cat("### By Province\n\n")
+    cat("::: {.columns}\n")
+    cat("::: {.column width=\"100%\"}\n")
+    cat("#### Actual\n\n")
+    print(
+        icd_code_by_province(
+            dt_collapse_prov,
+            icd_code = icd_code,
+            actual_vs_difference = "actual"
+        )
+    )
+    cat("\n:::\n")
+    # difference
+    cat("::: {.column width=\"100%\"}\n")
+    cat("#### Difference\n\n")
+    print(
+        icd_code_by_province(
+            dt_collapse_prov,
+            icd_code = icd_code,
+            actual_vs_difference = "difference"
+        )
+    )
+    cat("\n:::\n")
+
+    cat(":::\n\n") # close columns
+
+    # --- Multiple cause codes ---
+
+    cat("### Multiple cause codes\n\n")
+    cat("::: {.panel-tabset}\n")
+
+    cat("\n\n")
+    cat("#### Cause A Singlets  \n\n") # replace with your table output when ready
+    cat(flextable_to_rmd(tabs$ft1))
+
+    cat("\n\n")
+    cat("#### Cause A \u2192 B doubles  \n\n") # replace with your table output when ready
+    cat(flextable_to_rmd(tabs$ft2_global))
+
+    cat("\n\n")
+    cat("#### Cause A \u2192 B (B within As)  \n\n") # replace with your table output when ready
+    cat(flextable_to_rmd(tabs$ft2_withinA))
+
+    cat("\n\n")
+    cat("#### Cause A \u2192 B \u2192 C triplets \n\n") # replace with your table output when ready
+    cat(flextable_to_rmd(tabs$ft3_global))
+
+    cat("\n\n")
+    cat("#### Cause A \u2192 B \u2192 C \u2192 quadruplets \n\n") # replace with your table output when ready
+    cat(flextable_to_rmd(tabs$ft4_global))
+
+    cat("\n\n")
+    cat(":::\n\n") # close Multiple cause codes .panel-tabset
+
+
+
+
+    cat(":::\n\n") # close inner .panel-tabset
+}
+
+# --- close the outer containers ---
+cat(":::\n") # close outer .panel-tabset
+cat(":::\n") # close .nav-pills
+```
+

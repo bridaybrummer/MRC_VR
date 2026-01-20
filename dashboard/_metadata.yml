@@ -1,0 +1,9 @@
+# Dashboard folder shared settings
+# These apply to all .qmd files in the dashboard folder
+
+toc: true
+toc-depth: 3
+code-fold: true
+echo: false
+warning: false
+message: false

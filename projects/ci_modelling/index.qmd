@@ -1,0 +1,540 @@
+---
+title: "Confidence Interval Modelling Methods"
+description: "Methods for constructing confidence and prediction intervals for mortality rate estimates"
+date: "2026-01-20"
+categories: [methods, statistics, negative-binomial, Monte-Carlo]
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| echo: false
+
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(lubridate)
+library(ggplot2)
+library(MASS)
+
+# Resolve conflicts
+if (requireNamespace("conflicted", quietly = TRUE)) {
+    conflicted::conflicts_prefer(lubridate::isoweek)
+    conflicted::conflicts_prefer(dplyr::select)
+    conflicted::conflicts_prefer(dplyr::filter)
+}
+
+set.seed(123)
+
+# Set ggplot theme
+theme_set(theme_minimal(base_size = 12))
+```
+
+## Overview
+
+This document describes how we estimated expected weekly deaths and mortality rates using a negative-binomial generalized linear model, and how we constructed confidence or prediction intervals using: (i) a simple Poisson approximation, (ii) rate-based intervals on the log scale, and (iii) a Monte Carlo simulation based on the fitted negative-binomial model.
+
+Throughout, let:
+
+- $t$ index epidemiological weeks,
+- $Y_t$ denote the observed number of deaths in week $t$,
+- $\mu_t = \mathbb{E}[Y_t]$ denote the expected number of deaths in week $t$,
+- $\theta$ denote the negative-binomial dispersion parameter,
+- $\text{pop}_t$ denote the population at risk in week $t$.
+
+We separate the data into:
+
+- **Baseline period:** 2015–2019, used for model fitting.
+- **Projection period:** 2020–2021, for which we generate counterfactual predictions under a "no COVID-19" scenario.
+
+## Baseline model: negative-binomial GLM
+
+We model weekly counts using a negative-binomial GLM with log link:
+
+$$
+Y_t \mid \mu_t, \theta \sim \text{NegBin}(\mu_t, \theta),
+$$
+
+where $\mu_t$ is linked to covariates via
+
+$$
+\log(\mu_t) = \beta_0 + f_{\text{week}}(\text{week}_t) + \beta_{\text{time}} \, t + \log(\text{pop}_t).
+$$
+
+Here:
+
+- $f_{\text{week}}(\cdot)$ is a seasonal effect modelled using a factor for ISO week ($\text{week}_t$ taking values 1 to 52),
+- $t$ is a linear time index, capturing gradual trend,
+- $\log(\text{pop}_t)$ enters the model as an **offset**, so $\mu_t$ scales with the population at risk.
+
+In practice we fit:
+
+$$
+\log(\mu_t) = \beta_0 + \sum_{k=2}^{K} \beta_k^{\text{week}} \, \mathbb{I}(\text{week}_t = k) + \beta_{\text{time}} \, t + \log(\text{pop}_t),
+$$
+
+with $K$ week categories (week 1 as reference). Model parameters $\beta$ and $\theta$ are estimated on the **baseline** period (2015–2019) using maximum likelihood via `glm.nb`.
+
+For the **projection** period (2020–2021), we plug observed covariates ($\text{week}_t, t, \text{pop}_t$) into the fitted model to obtain:
+
+- Linear predictor: $\hat{\eta}_t = \hat{\beta}_0 + \hat{f}_{\text{week}}(\text{week}_t) + \hat{\beta}_{\text{time}} \, t + \log(\text{pop}_t)$,
+- Expected counts: $\hat{\mu}_t = \exp(\hat{\eta}_t)$.
+
+These $\hat{\mu}_t$ represent **counterfactual expected deaths** in the absence of the pandemic.
+
+## Basic Poisson confidence intervals for predicted counts
+
+As a simple baseline, we approximate the predictive distribution of counts using a Poisson variance:
+
+$$
+\text{Var}(Y_t) \approx \mu_t.
+$$
+
+Replacing $\mu_t$ with $\hat{\mu}_t$, the standard deviation is:
+
+$$
+\widehat{\text{SD}}(Y_t) \approx \sqrt{\hat{\mu}_t}.
+$$
+
+A **Wald-type** 95% interval for the expected count at week $t$ is then:
+
+$$
+\hat{\mu}_t \pm 1.96 \, \sqrt{\hat{\mu}_t}.
+$$
+
+These intervals:
+
+- Are simple to compute,
+- Treat the variance as if the process were Poisson,
+- Do **not** explicitly account for over-dispersion or parameter uncertainty, but provide a useful "first approximation" for visualisation and comparison.
+
+## Mortality rates and log-scale confidence intervals
+
+To interpret results on a population-standardised scale, we define the weekly **mortality rate** as:
+
+$$
+r_t = \frac{\mu_t}{\text{pop}_t} \quad \text{(deaths per person per week)}.
+$$
+
+Using the Poisson approximation again, we have:
+
+$$
+\text{Var}(\log r_t) \approx \text{Var}(\log \mu_t - \log \text{pop}_t) \approx \text{Var}(\log \mu_t) \approx \frac{1}{\mu_t}.
+$$
+
+Thus, an approximate standard error for the log-rate is:
+
+$$
+\text{SE}(\log \hat{r}_t) \approx \sqrt{\frac{1}{\hat{\mu}_t}}.
+$$
+
+We then construct a 95% interval on the **log-rate** scale:
+
+$$
+\log \hat{r}_t \pm 1.96 \, \text{SE}(\log \hat{r}_t),
+$$
+
+and exponentiate to obtain a 95% confidence interval for $r_t$:
+
+$$
+\bigl[
+\hat{r}_t^{\text{lo}},\, \hat{r}_t^{\text{hi}}
+\bigr]= \left[
+\exp\bigl(\log \hat{r}_t - 1.96 \, \text{SE}(\log \hat{r}_t)\bigr),
+\;
+\exp\bigl(\log \hat{r}_t + 1.96 \, \text{SE}(\log \hat{r}_t)\bigr)
+\right].
+$$
+
+For reporting, we often scale to **deaths per 100 000 population**:
+
+$$
+r_{t,\,100k} = r_t \times 100\,000,
+$$
+
+and apply the same multiplicative factor to the confidence bounds.
+
+This approach:
+
+- Naturally constrains rates to be positive,
+- Provides interpretable intervals on a rate scale,
+- Still relies on a Poisson-based variance approximation, but now for rates rather than counts.
+
+## Monte Carlo simulation from the negative-binomial model
+
+To more fully account for **over-dispersion** and **parameter uncertainty**, we perform a Monte Carlo simulation based on the fitted negative-binomial model.
+
+### Step 1: Parameter uncertainty in $\beta$
+
+Let $\hat{\beta}$ denote the vector of estimated regression coefficients and $\widehat{\Sigma}$ their estimated variance–covariance matrix from the fitted `glm.nb` model. We approximate
+
+$$
+\beta \mid \text{data} \approx \mathcal{N}(\hat{\beta}, \widehat{\Sigma}).
+$$
+
+We draw $S$ Monte Carlo samples:
+
+$$
+\beta^{(s)} \sim \mathcal{N}(\hat{\beta}, \widehat{\Sigma}), \quad s = 1,\dots,S.
+$$
+
+### Step 2: Compute linear predictors and means
+
+For each draw $s$ and each week $t$ in the projection period, we compute the linear predictor:
+
+$$
+\eta_t^{(s)} = x_t^\top \beta^{(s)} + \log(\text{pop}_t),
+$$
+
+where $x_t$ is the vector of covariates (intercept, week indicators, time). We then transform to the mean scale via the log link:
+
+$$
+\mu_t^{(s)} = \exp(\eta_t^{(s)}).
+$$
+
+### Step 3: Predictive counts under the negative-binomial model
+
+Using the fitted dispersion $\hat{\theta}$ from the baseline model, we generate predictive counts for each draw:
+
+$$
+Y_t^{(s)} \sim \text{NegBin}(\mu_t^{(s)}, \hat{\theta}).
+$$
+
+This step captures:
+
+- The uncertainty in the expected value $\mu_t$ due to uncertainty in $\beta$,
+- The **extra-Poisson** variability implied by the negative-binomial distribution.
+
+### Step 4: Construct prediction intervals
+
+For each week $t$, we now have a Monte Carlo sample $\{Y_t^{(1)}, \dots, Y_t^{(S)}\}$. We define pointwise 95% prediction intervals as the 2.5th and 97.5th percentiles:
+
+$$
+\bigl[ \tilde{y}_t^{\text{lo}},\; \tilde{y}_t^{\text{hi}} \bigr]= \left[
+\text{quantile}\bigl(\{Y_t^{(s)}\}_{s=1}^S, 0.025\bigr),
+\;
+\text{quantile}\bigl(\{Y_t^{(s)}\}_{s=1}^S, 0.975\bigr)
+\right],
+$$
+
+with a central summary such as the median:
+
+$$
+\tilde{y}_t^{\text{med}} = \text{quantile}\bigl(\{Y_t^{(s)}\}_{s=1}^S, 0.5\bigr).
+$$
+
+Analogously, we obtain Monte Carlo intervals for **mortality rates** by transforming:
+
+$$
+r_t^{(s)} = \frac{\mu_t^{(s)}}{\text{pop}_t} \quad\text{or}\quad r_t^{(s)} = \frac{Y_t^{(s)}}{\text{pop}_t},
+$$
+
+and summarising the empirical distribution of $\{r_t^{(s)}\}$ using the same percentile-based intervals.
+
+### Interpretation
+
+This Monte Carlo approach:
+
+- Propagates uncertainty in the regression parameters $\beta$,
+- Incorporates over-dispersion through $\hat{\theta}$,
+- Produces **prediction intervals** for future counts (or rates), rather than merely confidence intervals for the mean.
+
+Compared with the simpler Poisson- or rate-based intervals, these prediction intervals are typically wider and better reflect the variability observed in real-world mortality data.
+
+## Summary of the CI "ladder"
+
+We therefore obtain a progression from simple to more advanced uncertainty quantification:
+
+1. **Poisson Wald intervals for counts**
+   $$
+   \hat{\mu}_t \pm 1.96 \sqrt{\hat{\mu}_t},
+   $$
+   assuming Poisson variance and ignoring parameter uncertainty.
+
+2. **Log-scale intervals for mortality rates**
+   $$
+   \log \hat{r}_t \pm 1.96 \sqrt{1 / \hat{\mu}_t},
+   $$
+   exponentiated to give positive rate intervals (e.g., per 100 000).
+
+3. **Monte Carlo prediction intervals from the negative-binomial GLM**
+
+   - $\beta^{(s)} \sim \mathcal{N}(\hat{\beta}, \widehat{\Sigma})$,
+   - $Y_t^{(s)} \sim \text{NegBin}(\mu_t^{(s)}, \hat{\theta})$,
+   - Quantile-based intervals from the empirical distributions.
+
+This "CI ladder" allows us to start with fast, interpretable approximations and move towards a more realistic prediction framework that accounts for both model and process uncertainty.
+
+## Demo: Simulated Data with Confidence Bands
+
+To illustrate these methods, we simulate South Africa-like weekly mortality data from 2015–2021, fit a negative binomial model on the baseline period (2015–2019), and generate counterfactual predictions with confidence/prediction intervals for 2020–2021.
+
+### Step 1: Simulate Weekly Deaths
+
+```{r}
+#| label: simulate-data
+#| code-fold: true
+#| code-summary: "Show simulation code"
+
+# Simulate South Africa-like weekly deaths 2015-2021
+weeks <- tibble(
+    date = seq(as.Date("2015-01-05"), as.Date("2021-12-27"), by = "week")
+) |>
+    mutate(
+        year = isoyear(date),
+        week = isoweek(date),
+        t    = row_number()
+    )
+
+# Population with slow growth
+weeks <- weeks |>
+    mutate(pop = 55e6 + (year - 2015) * 0.7e6)
+
+# Simple seasonal function (peak winter ~week 27)
+season_fun <- function(wk) {
+    0.12 * sin(2 * pi * (wk - 27) / 52) + 0.08 * cos(2 * pi * (wk - 27) / 52)
+}
+
+# Linear trend (slight decline)
+trend_fun <- function(t) -0.00015 * (t - min(t))
+
+weeks <- weeks |>
+    mutate(
+        seas        = season_fun(week),
+        trend       = trend_fun(t),
+        log_mu_base = -10.2 + seas + trend + log(pop)
+    )
+
+# Provinces with random effects, then aggregate to national
+provs <- tibble(
+    province = c("EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"),
+    re       = rnorm(9, 0, 0.10)
+)
+
+df <- expand_grid(weeks, provs) |>
+    mutate(
+        # Add COVID bump starting March 2020
+        covid      = ifelse(date >= as.Date("2020-03-30"), 1, 0),
+        covid_bump = 0.10 * covid * (1 + 0.5 * sin(2 * pi * (week - 20) / 52)),
+        log_mu     = log_mu_base + re + covid_bump,
+        mu         = exp(log_mu),
+        theta      = 20,
+        y          = rnbinom(n(), size = theta, mu = mu)
+    ) |>
+    group_by(date, year, week, t) |>
+    summarise(pop = sum(pop), y = sum(y), .groups = "drop")
+
+# Split into training (baseline) and test (pandemic) periods
+train <- df |> 
+    filter(year <= 2019) |>
+    mutate(week_f = factor(week))
+
+test <- df |> 
+    filter(year >= 2020) |>
+    mutate(week_f = factor(week, levels = levels(train$week_f)))
+```
+
+### Step 2: Fit Negative Binomial GLM on Baseline
+
+```{r}
+#| label: fit-model
+#| code-fold: true
+#| code-summary: "Show model fitting code"
+
+# Fit negative binomial GLM on baseline period (2015-2019)
+m_nb <- glm.nb(
+    y ~ week_f + t + offset(log(pop)),
+    data = train,
+    link = log
+)
+
+theta_hat <- m_nb$theta
+cat("Estimated dispersion (theta):", round(theta_hat, 2), "\n")
+```
+
+### Step 3: Generate Predictions with Confidence Intervals
+
+```{r}
+#| label: predictions
+#| code-fold: true
+#| code-summary: "Show prediction code"
+
+newdat <- test
+
+# Predict on link scale
+pred_link <- predict(m_nb, newdata = newdat, type = "link", se.fit = TRUE)
+eta_hat <- pred_link$fit
+mu_hat <- exp(eta_hat)
+
+# Method 1: Poisson CI (simple)
+sd_pois <- sqrt(mu_hat)
+newdat <- newdat |>
+    mutate(
+        mu_hat     = mu_hat,
+        ci_pois_lo = pmax(mu_hat - 1.96 * sd_pois, 0),
+        ci_pois_hi = mu_hat + 1.96 * sd_pois
+    )
+
+# Method 2: Log-scale rate CI
+rate_hat <- mu_hat / newdat$pop
+se_log_rate <- sqrt(1 / mu_hat)
+log_rate_hat <- log(rate_hat)
+
+newdat <- newdat |>
+    mutate(
+        rate_hat      = rate_hat,
+        rate_ci_lo    = exp(log_rate_hat - 1.96 * se_log_rate),
+        rate_ci_hi    = exp(log_rate_hat + 1.96 * se_log_rate),
+        rate_per_100k = rate_hat * 1e5,
+        rate_lo_100k  = rate_ci_lo * 1e5,
+        rate_hi_100k  = rate_ci_hi * 1e5
+    )
+
+# Method 3: Monte Carlo prediction intervals
+X_new <- model.matrix(delete.response(terms(m_nb)), newdat)
+beta_hat <- coef(m_nb)
+Vb <- vcov(m_nb)
+
+S <- 2000  # Monte Carlo draws
+betas <- MASS::mvrnorm(S, mu = beta_hat, Sigma = Vb)
+
+mu_draws <- matrix(NA_real_, nrow = S, ncol = nrow(newdat))
+y_draws <- matrix(NA_real_, nrow = S, ncol = nrow(newdat))
+
+for (s in 1:S) {
+    eta_s <- X_new %*% betas[s, ] + log(newdat$pop)
+    mu_s <- exp(eta_s)
+    mu_draws[s, ] <- mu_s
+    y_draws[s, ] <- rnbinom(n = ncol(mu_draws), size = theta_hat, mu = mu_s)
+}
+
+# Predictive intervals for counts
+pred_q <- apply(y_draws, 2, quantile, probs = c(0.025, 0.5, 0.975))
+newdat <- newdat |>
+    mutate(
+        mc_cf_lo  = pred_q[1, ],
+        mc_cf_med = pred_q[2, ],
+        mc_cf_hi  = pred_q[3, ]
+    )
+
+# Predictive intervals for rates
+rate_draws <- sweep(mu_draws, 2, newdat$pop, "/")
+rate_q <- apply(rate_draws, 2, quantile, probs = c(0.025, 0.5, 0.975))
+
+newdat <- newdat |>
+    mutate(
+        mc_rate_lo     = rate_q[1, ],
+        mc_rate_med    = rate_q[2, ],
+        mc_rate_hi     = rate_q[3, ],
+        mc_rate_lo_100k  = mc_rate_lo * 1e5,
+        mc_rate_med_100k = mc_rate_med * 1e5,
+        mc_rate_hi_100k  = mc_rate_hi * 1e5
+    )
+```
+
+### Visualization: Comparing CI Methods
+
+#### Weekly Death Counts with Monte Carlo Prediction Intervals
+
+```{r}
+#| label: fig-counts
+#| fig-cap: "Observed weekly deaths (solid black) vs counterfactual expected deaths (dashed) with 95% Monte Carlo prediction interval (shaded). The model was trained on 2015–2019 data; 2020–2021 shows excess mortality during the pandemic period."
+#| fig-height: 5
+
+ggplot(newdat, aes(date)) +
+    geom_ribbon(aes(ymin = mc_cf_lo, ymax = mc_cf_hi, fill = "95% Prediction Interval"), 
+                alpha = 0.3) +
+    geom_line(aes(y = mc_cf_med, color = "Expected (counterfactual)"), 
+              linetype = "dashed", linewidth = 0.8) +
+    geom_line(aes(y = y, color = "Observed"), linewidth = 0.6) +
+    scale_fill_manual(values = c("95% Prediction Interval" = "steelblue")) +
+    scale_color_manual(values = c("Observed" = "black", "Expected (counterfactual)" = "red")) +
+    labs(
+        title = "Weekly Deaths: Observed vs Counterfactual (2020–2021)",
+        subtitle = "Monte Carlo negative binomial prediction intervals",
+        y = "Weekly deaths",
+        x = NULL,
+        fill = NULL,
+        color = NULL
+    ) +
+    theme(legend.position = "bottom")
+```
+
+#### Mortality Rates per 100,000 Population
+
+```{r}
+#| label: fig-rates
+#| fig-cap: "Weekly mortality rate per 100,000 population with 95% Monte Carlo prediction interval. The observed rate (solid) exceeds the counterfactual expectation (dashed) during COVID-19 waves."
+#| fig-height: 5
+
+ggplot(newdat, aes(date)) +
+    geom_ribbon(aes(ymin = mc_rate_lo_100k, ymax = mc_rate_hi_100k, 
+                    fill = "95% Prediction Interval"), alpha = 0.3) +
+    geom_line(aes(y = mc_rate_med_100k, color = "Expected (counterfactual)"), 
+              linetype = "dashed", linewidth = 0.8) +
+    geom_line(aes(y = y / pop * 1e5, color = "Observed"), linewidth = 0.6) +
+    scale_fill_manual(values = c("95% Prediction Interval" = "steelblue")) +
+    scale_color_manual(values = c("Observed" = "black", "Expected (counterfactual)" = "red")) +
+    labs(
+        title = "Weekly Mortality Rate per 100,000 (2020–2021)",
+        subtitle = "Monte Carlo prediction intervals from negative binomial GLM",
+        y = "Deaths per 100,000",
+        x = NULL,
+        fill = NULL,
+        color = NULL
+    ) +
+    theme(legend.position = "bottom")
+```
+
+#### Comparing CI Methods: Poisson vs Monte Carlo
+
+```{r}
+#| label: fig-compare-ci
+#| fig-cap: "Comparison of confidence interval methods. The simple Poisson approximation (blue) produces narrower intervals than the Monte Carlo negative binomial method (red), which properly accounts for overdispersion and parameter uncertainty."
+#| fig-height: 6
+
+ggplot(newdat, aes(date)) +
+    # Monte Carlo intervals (wider)
+    geom_ribbon(aes(ymin = mc_cf_lo, ymax = mc_cf_hi, fill = "Monte Carlo NB"), 
+                alpha = 0.2) +
+    # Poisson intervals (narrower)
+    geom_ribbon(aes(ymin = ci_pois_lo, ymax = ci_pois_hi, fill = "Poisson approx"), 
+                alpha = 0.3) +
+    # Expected and observed
+    geom_line(aes(y = mu_hat, color = "Expected"), linetype = "dashed", linewidth = 0.7) +
+    geom_line(aes(y = y, color = "Observed"), linewidth = 0.5) +
+    scale_fill_manual(values = c("Monte Carlo NB" = "firebrick", "Poisson approx" = "steelblue")) +
+    scale_color_manual(values = c("Observed" = "black", "Expected" = "darkgray")) +
+    labs(
+        title = "Comparing CI Methods: Poisson vs Monte Carlo",
+        subtitle = "Monte Carlo intervals are wider, reflecting overdispersion and parameter uncertainty",
+        y = "Weekly deaths",
+        x = NULL,
+        fill = "Interval type",
+        color = NULL
+    ) +
+    theme(legend.position = "bottom")
+```
+
+### Excess Mortality Summary
+
+```{r}
+#| label: excess-summary
+
+excess_summary <- newdat |>
+    summarise(
+        observed_total = sum(y),
+        expected_total = sum(mc_cf_med),
+        excess_deaths  = observed_total - expected_total,
+        excess_pct     = round(100 * excess_deaths / expected_total, 1)
+    )
+
+cat("Excess mortality summary (2020-2021):\n")
+cat("  Observed deaths:", format(excess_summary$observed_total, big.mark = ","), "\n")
+cat("  Expected deaths:", format(round(excess_summary$expected_total), big.mark = ","), "\n")
+cat("  Excess deaths:  ", format(round(excess_summary$excess_deaths), big.mark = ","), 
+    paste0("(", excess_summary$excess_pct, "% above expected)\n"))
+```

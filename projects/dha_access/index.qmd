@@ -1,0 +1,148 @@
+---
+title: "DHA Service Access and Coverage"
+description: "Analysis of population coverage and accessibility of Department of Home Affairs offices across South Africa"
+date: "2026-01-20"
+categories: [access, spatial, DHA, registration]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(plotly)
+library(glue)
+library(scales)
+library(tidyr)
+library(flextable)
+
+# Load saved objects from the wrangling script
+output_file <- "../../outputs/dha_me_indicators/dha_me_indicator_objects.RData"
+
+if (!file.exists(output_file)) {
+  message("Running DHA wrangling script...")
+  source("../../plotting_DHA_offices.r", local = new.env())
+}
+
+load(output_file)
+```
+
+## Overview
+
+Birth and death registration may be incomplete due to the inaccessibility of Home Affairs offices where registration occurs. A potential barrier to registration may be the distance needed to travel. We aim to determine the proportion of the population within reasonable distances of Home Affairs offices.
+
+## Methodology {.methodology}
+
+### Data Sources
+
+- **Shape files**: District boundaries from Stats SA, standardised using the `{NMCleaner}` package
+- **Population estimates**: Stats SA mid-year population estimates (2025), at district level
+- **Office locations**: DHA office coordinates from existing dataset (excludes hospital satellite offices)
+
+### Analytical Approach
+
+We explored three approaches to estimate population coverage:
+
+1. **Office-to-office distance**: Measured median half-distance between nearest office pairs. This underestimated coverage in rural areas.
+
+2. **Uniform grid distribution**: Created 1km grid and distributed population uniformly within districts. Ignored population clustering.
+
+3. **Inverse power model** (selected): Assumed population clusters around offices with distance decay.
+
+### Population Density Models
+
+**Inverse Power Model:**
+$$
+w_i = \frac{1}{(d_i + 1)^{\alpha}}
+$$
+
+where $d_i$ is the distance (km) from grid point $i$ to the nearest office, and $\alpha = 1.5$ is the decay parameter.
+
+**Population Allocation:**
+
+Weights are normalised within each district:
+$$
+\hat{w}_i = \frac{w_i}{\sum_{j \in d} w_j}
+$$
+
+The population at each grid point is:
+$$
+P_i = P_d \cdot \hat{w}_i
+$$
+
+where $P_d$ is the total population of district $d$.
+
+### Limitations
+
+- Population is modelled, not observed at sub-district level
+- Distances are straight-line, not road-network or travel-time
+- Office capacity and service quality are not accounted for
+- Satellite offices (e.g., in hospitals) are not included
+
+## National Overview Maps
+
+### Population Distribution by District
+
+```{r}
+#| label: SA_pop
+
+SA_pop
+```
+
+### Number of DHA Offices by District
+
+```{r}
+#| label: SA_N_off
+
+SA_N_off
+```
+
+### Modelled Population Distribution
+
+```{r}
+#| label: modelled_population_map
+
+modelled_population_map
+```
+
+## Coverage Summary
+
+```{r}
+#| label: tbl-dha_access_summary_table
+
+dha_access_summary_table %>%
+  flextable::bold(
+    i = ~ grepl("Total", ignore.case = TRUE, district_standard)
+  ) %>%
+  flextable::bg(
+    j = c(4, 6),
+    bg = "#D3D3D3"
+  )
+```
+
+## Interactive Map
+
+Explore DHA office locations with coverage buffers (10km, 20km, 50km).
+
+```{r}
+#| label: interactive_dha_map
+
+plotly::ggplotly(p_with_buffers, tooltip = "text")
+```
+
+## Key Findings
+
+::: {.callout-important}
+## Summary Statistics
+- **XX%** of the population lives within 10km of a DHA office
+- **XX%** of the population lives within 20km of a DHA office
+- Rural districts show significantly lower coverage
+:::
+
+## Recommendations
+
+1. **Request enumeration area data**: Census data at smaller geographic units would improve population distribution estimates
+2. **Include satellite offices**: Hospital-based registration points should be mapped
+3. **Road network analysis**: Travel time may be more relevant than straight-line distance

@@ -1,0 +1,156 @@
+---
+title: "Monitoring and Evaluation Dashboard"
+description: "Comparing vital registration data with Tembisa model and NCODV-corrected estimates for HIV/AIDS and TB mortality"
+date: "2026-01-20"
+categories: [mortality, HIV, TB, data-quality, timeliness]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+library(plotly)
+library(htmlwidgets)
+
+# Source the wrangling script if outputs are missing or stale
+output_file <- "../../outputs/me_plots.RData"
+wrangling_script <- "../../ME_wrangling.r"
+
+# Check if we need to re-run wrangling
+if (!file.exists(output_file)) {
+  message("Running wrangling script...")
+  source(wrangling_script, local = new.env())
+}
+
+# Load the pre-built plots
+load(output_file)
+```
+
+## Overview
+
+This dashboard compares vital registration (VR) data with alternative mortality data sources for monitoring and evaluation purposes:
+
+- **Tembisa Model**: Demographic projections for HIV/AIDS and TB mortality
+- **NCODV Study**: Verbal autopsy-corrected estimates (2017-2018)
+- **NMC Database**: Notifiable Medical Conditions surveillance data
+
+## HIV/AIDS Deaths {#hiv}
+
+### HIV/AIDS Mortality: VR vs Models
+
+```{r}
+#| label: hiv-plot
+
+ggplotly(p_hiv, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Key Findings
+- VR data substantially underestimates HIV/AIDS mortality compared to the Tembisa model
+- The NCODV study suggests ~23% of deaths may be HIV-related (2017-2018)
+- The gap has narrowed over time but remains significant
+:::
+
+## TB Deaths {#tb}
+
+### TB Mortality: VR vs Models
+
+```{r}
+#| label: tb-plot
+
+ggplotly(p_tb, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+## Data Quality: Garbage Codes {#garbage-codes}
+
+Garbage codes are ICD-10 codes that provide insufficient information about the underlying cause of death. Monitoring the proportion of non-garbage codes is essential for assessing data quality.
+
+### Overview of Death Distribution
+
+::: {.panel-tabset}
+
+#### By Province
+```{r}
+#| label: overview-province-plot
+
+ggplotly(p_overview_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### By Institution
+```{r}
+#| label: overview-instance-plot
+
+ggplotly(p_overview_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+### Garbage Code Trends
+
+::: {.panel-tabset}
+
+#### By Province
+```{r}
+#| label: garbage-province-plot
+
+ggplotly(p_garbage_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### By Institution Type
+```{r}
+#| label: garbage-instance-plot
+
+ggplotly(p_garbage_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+::: {.callout-tip}
+## Interpreting the Plots
+Hover over any point to see:
+- The proportion of non-garbage codes
+- Total deaths (N) in that province/institution
+- Percentage contribution to national deaths
+
+The dashed red line at 80% represents a typical quality threshold.
+:::
+
+## Report Timeliness {#timeliness}
+
+Stats SA releases mortality reports with a delay of several years. This section tracks the timeliness of releases.
+
+**Click on any point to open the corresponding Stats SA PDF report.**
+
+```{r}
+#| label: timeliness-plot
+
+p_timeliness_interactive
+```
+
+## Data Sources
+
+| Source | Description | Coverage |
+|--------|-------------|----------|
+| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
+| Thembisa Model v4.8 | HIV/AIDS demographic projections | 1997-2025 |
+| NCODV Study | Verbal autopsy validation | 2017-2018 |
+| NMC Database | TB surveillance notifications | 2017-2024 |
+
+## Methods
+
+### Garbage Code Classification
+
+Deaths are classified using the WHO garbage code framework. A death is considered "not garbage" if the underlying cause code provides meaningful epidemiological information.
+
+### Data Sources
+
+- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather`
+- **Tembisa**: Age-specific mortality outputs from version 4.8
+- **NMC**: Notifiable conditions from the surveillance database

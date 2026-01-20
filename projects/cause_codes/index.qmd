@@ -1,0 +1,335 @@
+---
+title: "Cause Code Analysis"
+description: "Detailed ICD code-specific analyses by age group, province, and multiple cause sequences"
+date: "2026-01-20"
+categories: [ICD-codes, cause-of-death, multiple-causes, age-group, provincial]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| cache: false
+
+library(arrow)
+library(knitr)
+library(flextable)
+pacman::p_load(
+    ggplot2, plotly, gtsummary, tidyverse, magrittr, conflicted,
+    htmlwidgets, knitr, webshot, rmapshaper, ggpubr, scales, here, tibble, glue,
+    data.table
+)
+
+conflicted::conflicts_prefer(
+    dplyr::filter,
+    dplyr::select,
+    flextable::compose
+)
+
+# Determine project root - try multiple methods
+project_root <- tryCatch({
+  here::here()
+}, error = function(e) {
+  # Fallback: go up two levels from current file location
+  normalizePath(file.path(getwd(), "../.."))
+})
+
+# Helper function to find file with fallback paths
+find_data_file <- function(filename) {
+  # Try here::here() first
+  path1 <- here::here(filename)
+  if (file.exists(path1)) return(path1)
+  
+  # Try relative path from projects/cause_codes/
+  path2 <- file.path("../..", filename)
+  if (file.exists(path2)) return(path2)
+  
+  # Try absolute path
+  path3 <- file.path("/Users/briday/Desktop/study_stats/MRC_VR", filename)
+  if (file.exists(path3)) return(path3)
+  
+  return(NULL)
+}
+
+# Source CLEAN helper functions (no data loading inside)
+helper_path <- find_data_file("dashboard/dashboard_helpers.r")
+if (!is.null(helper_path)) {
+  source(helper_path)
+}
+
+# Load all required data with correct paths from project root
+# 1. Analysis dataset (aggregated for excess mortality calculations)
+analysis_path <- find_data_file("LGH_AnalysisData_2022.feather")
+if (!is.null(analysis_path)) {
+  dt_analysis <- read_feather(analysis_path) %>% as.data.table()
+  # Set age group factors
+  dt_analysis[, 
+    agegroup := factor( 
+        agegroup , 
+        levels = c("0-4", "5-39", "40-59", "60-69", "70-79", "80+")
+    )] -> dt_analysis
+}
+
+# 2. ICD code lookup table - already loaded from dashboard_helpers.r
+# If not available, try loading from file
+if (!exists("icd_lookup")) {
+  lookup_path <- find_data_file("LGH_ICD10_Cause_Lookup.rda")
+  if (!is.null(lookup_path)) {
+    load(lookup_path)  # loads icd_lookup
+  }
+}
+
+# 3. Provincial collapsed data (for provincial breakdowns)
+prov_path <- find_data_file("LGH_BaselinePredictions_ProvinceLevel_TempPop.feather")
+if (!is.null(prov_path)) {
+  dt_collapse_prov <- read_feather(prov_path) %>% as.data.table()
+}
+
+# 4. Pre-collapsed master file (for multiple cause sequence analysis)
+master_path <- find_data_file("LGH_MasterFile_preCollapsed2022.feather")
+if (!is.null(master_path)) {
+  dt <- read_feather(master_path) %>% as.data.table()
+}
+
+# 5. Pre-computed model plots
+plots_path <- find_data_file("figures/model_comparison_prov_nat_plots.rda")
+if (!is.null(plots_path)) {
+  load(plots_path)
+}
+
+# Verify required objects exist
+data_status <- list(
+  icd_lookup = exists("icd_lookup"),
+  dt_analysis = exists("dt_analysis"),
+  dt = exists("dt"),
+  dt_collapse_prov = exists("dt_collapse_prov")
+)
+```
+
+```{css}
+/* Gentle spacing for headings inside tabsets */
+.panel-tabset h3, .panel-tabset h4 { margin-top: .6rem; }
+/* Make the pill tabs a touch bolder and tighter */
+.nav-pills > li > a, .nav-pills .nav-link { font-weight: 600; }
+/* Compact the inner tab-strip a bit */
+.panel-tabset > .nav-tabs { margin-bottom: .5rem; }
+/* Tables: keep them from stretching edge-to-edge */
+.table, .gt_table, .gts_table { margin: .25rem auto .75rem auto; }
+/* Small card-ish feel for content blocks */
+.section > :where(h2,h3,h4) + * { background: rgba(0,0,0,.015); padding: .35rem .5rem; border-radius: .4rem; }
+```
+
+## Overview
+
+This project provides detailed cause-specific mortality analysis, examining each ICD code group with:
+
+- **Summary tables**: Excess mortality by cause
+- **Age group breakdowns**: Actual deaths and differences by age
+- **Provincial patterns**: Geographic variation in cause-specific mortality
+- **Multiple cause sequences**: Analysis of causal chains (A→B→C patterns)
+
+## Methods
+
+### ICD Code Classification
+
+Deaths are classified using the LGH (Leading Group of Causes) framework, which groups ICD-10 codes into major cause categories:
+
+| Code | Description |
+|------|-------------|
+| A | Certain infectious and parasitic diseases |
+| B | HIV/AIDS-related conditions |
+| C | Neoplasms (cancers) |
+| D | Blood and immune disorders |
+| E | Endocrine, nutritional and metabolic diseases |
+| I | Diseases of the circulatory system |
+| J | Diseases of the respiratory system |
+| K | Diseases of the digestive system |
+| N | Diseases of the genitourinary system |
+| O | Pregnancy, childbirth and puerperium |
+| P | Perinatal conditions |
+| R | Ill-defined causes (garbage codes) |
+| V-Y | External causes (injuries, accidents) |
+| U07 | COVID-19 |
+
+### Multiple Cause Analysis
+
+We examine cause-of-death sequences to understand comorbidity patterns:
+
+- **Singlets**: Deaths with only one cause listed
+- **Doubles (A→B)**: Two-cause sequences
+- **Triplets (A→B→C)**: Three-cause sequences  
+- **Quadruplets (A→B→C→D)**: Four-cause sequences
+
+This reveals how conditions co-occur and which causes appear as underlying vs contributing factors.
+
+## Cause-Specific Analyses {.tabset .tabset-pills}
+
+```{r}
+#| label: cause-code-tabs
+#| results: asis
+
+# Check if required objects exist
+if (all(unlist(data_status))) {
+  
+  # --- helpers ---
+  get_desc <- function(code) {
+      d <- icd_lookup$description[match(code, icd_lookup$LGH_Cause)]
+      ifelse(is.na(d) || identical(d, ""), "Missing / Unknown", d)
+  }
+
+  # Pull codes as a clean vector and drop obvious empties once
+  icd_codes <- unique(icd_lookup$LGH_Cause)
+  icd_codes <- icd_codes[!is.na(icd_codes) & icd_codes != ""]
+
+  # --- open the outer containers ONCE ---
+  cat("::: {.nav-pills}\n")
+  cat("::: {.panel-tabset}\n")
+  
+  # Provide explanation of navigation
+  cat("Use the tabs to navigate between cause-specific analyses. Each cause has sub-tabs for Summary, By Age Group, By Province, and Multiple Cause Codes which may be at the bottom of the page if your screen is small.\n\n")
+
+  for (icd_code in icd_codes) {
+      desc <- get_desc(icd_code)
+      code_label <- ifelse(is.na(icd_code) || identical(icd_code, ""), "NA", icd_code)
+      tabs <- make_sequence_tables(dt, icd_code = icd_code)
+
+      title <- glue("{code_label} — {desc}")
+
+      # H2 tab for this ICD code
+      cat(glue("## {title}\n\n"))
+
+      # inner tabset for Summary / Observed vs Expected / Multiple cause codes
+      cat("::: {.panel-tabset}\n")
+
+      # --- Summary ---
+      cat("### Summary Table\n\n")
+      cat(flextable_to_rmd(tabulate_excess_factor(dt_analysis, icd_codes = icd_code)))
+
+      cat("\n\n")
+      # By Age group
+      cat("### By Age Group\n\n")
+
+      cat("::: {.columns}\n")
+
+      # Actual
+      cat("::: {.column width=\"100%\"}\n")
+      cat("#### Actual\n\n")
+      print(
+          icd_code_by_agegroup(
+              dt_analysis,
+              icd_code = icd_code,
+              actual_vs_difference = "actual"
+          )
+      )
+      cat("\n:::\n")
+
+      # Difference
+      cat("::: {.column width=\"100%\"}\n")
+      cat("#### Difference\n\n")
+      print(
+          icd_code_by_agegroup(
+              dt_analysis,
+              icd_code = icd_code,
+              actual_vs_difference = "difference"
+          )
+      )
+      cat("\n:::\n")
+
+      cat(":::\n\n") # close columns
+
+      # BY province
+      cat("### By Province\n\n")
+      cat("::: {.columns}\n")
+      cat("::: {.column width=\"100%\"}\n")
+      cat("#### Actual\n\n")
+      print(
+          icd_code_by_province(
+              dt_collapse_prov,
+              icd_code = icd_code,
+              actual_vs_difference = "actual"
+          )
+      )
+      cat("\n:::\n")
+      # difference
+      cat("::: {.column width=\"100%\"}\n")
+      cat("#### Difference\n\n")
+      print(
+          icd_code_by_province(
+              dt_collapse_prov,
+              icd_code = icd_code,
+              actual_vs_difference = "difference"
+          )
+      )
+      cat("\n:::\n")
+
+      cat(":::\n\n") # close columns
+
+      # --- Multiple cause codes ---
+      cat("### Multiple cause codes\n\n")
+      cat("::: {.panel-tabset}\n")
+
+      cat("\n\n")
+      cat("#### Cause A Singlets  \n\n")
+      cat(flextable_to_rmd(tabs$ft1))
+
+      cat("\n\n")
+      cat("#### Cause A → B doubles  \n\n")
+      cat(flextable_to_rmd(tabs$ft2_global))
+
+      cat("\n\n")
+      cat("#### Cause A → B (B within As)  \n\n")
+      cat(flextable_to_rmd(tabs$ft2_withinA))
+
+      cat("\n\n")
+      cat("#### Cause A → B → C triplets \n\n")
+      cat(flextable_to_rmd(tabs$ft3_global))
+
+      cat("\n\n")
+      cat("#### Cause A → B → C → D quadruplets \n\n")
+      cat(flextable_to_rmd(tabs$ft4_global))
+
+      cat("\n\n")
+      cat(":::\n\n") # close Multiple cause codes .panel-tabset
+
+      cat(":::\n\n") # close inner .panel-tabset
+  }
+
+  # --- close the outer containers ---
+  cat(":::\n") # close outer .panel-tabset
+  cat(":::\n") # close .nav-pills
+
+} else {
+  cat("::: {.callout-warning}\n")
+  cat("## Data Not Available\n\n")
+  cat("The cause code analysis requires data files which are not currently available.\n\n")
+  cat("**Data loading status:**\n\n")
+  cat(paste0("- `icd_lookup` (LGH_ICD10_Cause_Lookup.rda): ", ifelse(data_status$icd_lookup, "✓ Loaded", "✗ Missing"), "\n"))
+  cat(paste0("- `dt_analysis` (LGH_AnalysisData_2022.feather): ", ifelse(data_status$dt_analysis, "✓ Loaded", "✗ Missing"), "\n"))
+  cat(paste0("- `dt` (LGH_MasterFile_preCollapsed2022.feather): ", ifelse(data_status$dt, "✓ Loaded", "✗ Missing"), "\n"))
+  cat(paste0("- `dt_collapse_prov` (LGH_BaselinePredictions_ProvinceLevel_TempPop.feather): ", ifelse(data_status$dt_collapse_prov, "✓ Loaded", "✗ Missing"), "\n\n"))
+  cat("Ensure the required `.feather` and `.rda` files are in the workspace root directory.\n")
+  cat(":::\n")
+}
+```
+
+## Key Findings
+
+::: {.callout-important}
+## Summary
+
+- **J-codes (Respiratory)**: Largest excess during COVID-19 pandemic waves
+- **R-codes (Ill-defined)**: Increased during pandemic, suggesting certification challenges
+- **B-codes (HIV/AIDS)**: Complex patterns with potential misclassification
+- **Multiple causes**: COVID-19 frequently appears as contributing cause alongside respiratory conditions
+:::
+
+## Related Projects
+
+- [National Overview](../national_overview/index.qmd) - National and provincial excess mortality summary
+- [J-Code Modelling](../j_code_modelling/index.qmd) - In-depth respiratory mortality analysis
+- [Monitoring & Evaluation](../mortality_estimates/index.qmd) - Comparison with Tembisa model estimates
