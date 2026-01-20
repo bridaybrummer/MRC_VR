@@ -25,7 +25,8 @@ index-listing.json
 _freeze/
 .quarto/
 *_files/
-site_libs/
+/site_libs/
+!docs/site_libs/
 
 # IDE and system
 .DS_Store
