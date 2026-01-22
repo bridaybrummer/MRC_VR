@@ -92,6 +92,7 @@ $$
 
 :::
 
+
 ## Results
 
 ```{r}
@@ -108,6 +109,9 @@ if (file.exists("../../j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda")) {
 }
 
 ```
+
+
+
 
 ```{r}
 #| label: fig-excess-deaths

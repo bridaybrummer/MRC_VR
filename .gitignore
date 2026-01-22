@@ -6,6 +6,7 @@
 *.dta
 *.feather
 *.rda
+!j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda
 *.rds
 *.RData
 *.xlsx
