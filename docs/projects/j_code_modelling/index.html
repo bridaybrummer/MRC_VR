@@ -72,7 +72,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -287,17 +287,17 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>While SARS-CoV-2 still spread because of its higher transmissibility, the same interventions were highly effective at suppressing influenza, which has a lower basic reproduction number (<span class="math inline">\(R_0\)</span>). As a result, influenza circulation was dramatically reduced even during major COVID-19 waves.</p>
+<p>While SARS-CoV-2 still spread because of its higher transmissibility, the Non-pharamceutical interventions (NPIs) were highly effective at suppressing influenza, which has a lower basic reproduction number (<span class="math inline">\(R_0\)</span>). As a result, influenza circulation was dramatically reduced even during major COVID-19 waves.</p>
 </div>
 </div>
 <p>Surveillance limitations led to an undercount of true COVID-19 deaths, especially in low- and middle-income countries where testing capacity was constrained. Many countries therefore implemented excess-death calculations to estimate pandemic mortality, acknowledging that some residual deaths could reflect collateral health-system effects.</p>
-<p>For J-coded deaths specifically, the standard approach assumes that influenza and other non-COVID respiratory deaths remained at pre-pandemic levels and were unaffected by NPIs or other pandemic disruptions; in practice, J-codes likely became a default for many COVID-19 deaths who were not laboratory diagnosed.</p>
+<p>For J-coded deaths specifically, the standard approach (described above) assumes that influenza and other non-COVID respiratory deaths remained at pre-pandemic levels and were unaffected by NPIs or other pandemic disruptions; in practice, J-codes likely became a default for many COVID-19 deaths who were not laboratory diagnosed.</p>
 </section>
 <section id="methods" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="methods"><span class="header-section-number">2</span> Methods</h2>
 <section id="data-sources" class="level3" data-number="2.1">
 <h3 data-number="2.1" class="anchored" data-anchor-id="data-sources"><span class="header-section-number">2.1</span> Data Sources</h3>
-<p>Vital registration data from 2015–2019 were used to model the expected number of J-coded deaths during the COVID-19 period (April 2020 onwards).</p>
+<p>Vital registration data from 2015–2019 were used to model the expected number of J-coded deaths during the COVID-19 period (April 2020 onwards). Respiratory disease detection data is still needed for “Scenario 4” modelling.</p>
 </section>
 <section id="statistical-model" class="level3" data-number="2.2">
 <h3 data-number="2.2" class="anchored" data-anchor-id="statistical-model"><span class="header-section-number">2.2</span> Statistical Model</h3>
@@ -332,7 +332,7 @@ Y^{(i)} = \text{trend}^{(i)} + \text{seasonal}^{(i)} + \text{random}^{(i)}
 \]</span></p>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
-<p>Fit a pre-pandemic negative binomial regression that includes influenza and ILI surveillance as predictors:</p>
+<p>Fit a pre-pandemic negative binomial regression that includes influenza and ILI surveillance as predictors on J-coded deaths:</p>
 <p><span class="math display">\[
 \log(E(Y)) = \beta_0 + \beta_1 \cdot \text{epiweek} + \beta_5 \cdot \text{influenzaSurveillance} + \beta_6 \cdot \text{ILIrate} + \text{interactions}
 \]</span></p>
@@ -346,13 +346,27 @@ Y^{(i)} = \text{trend}^{(i)} + \text{seasonal}^{(i)} + \text{random}^{(i)}
 <h2 data-number="3" class="anchored" data-anchor-id="results"><span class="header-section-number">3</span> Results</h2>
 <div class="cell">
 <div class="cell-output-display">
+<div id="fig-expected-deaths" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-expected-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-expected-deaths-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-expected-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Expected death estimates for J-coded deaths under different scenarios, South Africa 2020-2022
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
 <div id="fig-excess-deaths" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="index_files/figure-html/fig-excess-deaths-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Excess death estimates for J-coded deaths under different scenarios, South Africa 2020-2022
+Figure&nbsp;2: Excess death estimates for J-coded deaths under different scenarios, South Africa 2020-2022
 </figcaption>
 </figure>
 </div>
@@ -397,6 +411,11 @@ Figure&nbsp;1: Excess death estimates for J-coded deaths under different scenari
 <td>Scaled by COVID trends</td>
 <td>Influenza suppressed by NPIs</td>
 </tr>
+<tr class="even">
+<td>4 (Detection-adjusted)</td>
+<td>Modelled using pre-pandemic influenza detection</td>
+<td>Detection rates dropped during COVID-19 pandemic</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -426,7 +445,7 @@ Figure&nbsp;1: Excess death estimates for J-coded deaths under different scenari
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Respecting the collapse of influenza circulation does not alter the overall excess-death totals but can substantially change <strong>cause-specific attribution</strong> within respiratory categories.</p>
+<p>Respecting the collapse of influenza circulation may not alter the overall excess-death totals but can substantially change <strong>cause-specific attribution</strong> within respiratory categories.</p>
 </div>
 </div>
 <p>Many other causes (e.g., diabetes, cardiovascular disease, tuberculosis, garbage codes) may also have served as bins for unidentified COVID-19 deaths, yet the assumption that they remained at pre-pandemic levels is weaker because there is less clinical overlap and outcomes were likely affected by health-system disruptions and behavioural shifts.</p>

@@ -613,11 +613,32 @@ national_j_codes_scenario_1[, sum(excess[epi_year >= 2020 & excess > 0], na.rm =
 national_j_codes_scenario_2 <- copy(national_j_codes)[
     ,
     `:=`(
-        excess   = fifelse(week_start > as.Date("2020-04-01"), observed, observed - expected),
+        #excess   = fifelse(week_start > as.Date("2020-04-01"), observed, observed - expected),
+        expected = fifelse( week_start >as.Date("2020-04-01"), 0, expected), 
         scenario = "Scenario 2"
     )
-]
+][, 
+ excess := observed- expected]
+
 # - Assumes no J coded deaths occurred during COVID-19 period
+national_j_codes_scenario_2 %>%
+    ggplot() +
+    geom_line(
+        aes(
+            x = week_start,
+            y = expected
+        ), 
+        color = "blue"
+    ) +
+        geom_line(
+        aes(
+            x = week_start,
+            y = observed
+        ), 
+        color = "red"
+    ) +
+    theme_minimal()
+
 national_j_codes_scenario_2%>%
     ggplot() +
     geom_line(
@@ -627,6 +648,8 @@ national_j_codes_scenario_2%>%
         )
     ) +
     theme_minimal()
+
+
 
 national_j_codes_scenario_2[, sum(excess[epi_year >= 2020 & excess > 0], na.rm = TRUE)]
 
@@ -670,7 +693,6 @@ plot(ts_covid_decomp_v2)
 
 # Create the seasonality and trend as a proportion of itself 
 covid_trend <- ts_covid_decomp$time.series[, c("seasonal", "trend")] %>% rowSums()
-covid_trend <- ts_covid_decomp$time.series[, c("seasonal")] %>% rowSums()
 
 covid_trend
 data.table( 
@@ -779,12 +801,12 @@ national_j_codes$covid_trend <- observed_inverse_covid_trend_full
 national_j_codes_scenario_3 <- copy(national_j_codes)[
     ,
     `:=`(
-        inverse_covid_expected = expected * covid_trend
+        expected = expected * covid_trend
     )
 ][
     ,
     `:=`(
-            excess = observed - inverse_covid_expected,
+            excess = observed - expected,
         scenario = "Scenario 3"
         )]
         # - Assumes J coded deaths were competitive with COVID-19 deaths"
@@ -802,7 +824,7 @@ national_j_codes_scenario_3%>%
     geom_line( 
         aes( 
             x = week_start, 
-            y = inverse_covid_expected, 
+            y = expected, 
             color = "red"
         )
     )+ theme_minimal()
@@ -837,9 +859,69 @@ data.table(
         ), 0)
 )-> total_excess_deaths_summary
 
+national_j_codes_scenario_1%>%glimpse()
+
+
+# N number of J code deaths after April 
+data.table( 
+    scenario = c("Scenario 1", "Scenario 2", "Scenario 3"),
+    total_excess_deaths = c(
+        national_j_codes_scenario_1[, sum(expected[epi_year >= 2020 & excess > 0], na.rm = TRUE)],
+        national_j_codes_scenario_2[,  sum(expected[epi_year >= 2020 & excess > 0], na.rm = TRUE)],
+        national_j_codes_scenario_3[, sum(expected[epi_year >= 2020 & excess > 0], na.rm = TRUE)]
+    )
+)-> total_expected_deaths_summary
+
+
+# plot the number of j-coded deaths based on the assumptions. 
+rbind(
+    national_j_codes_scenario_1[, .(week_start, expected, scenario)],
+    national_j_codes_scenario_2[, .(week_start, expected, scenario)],
+    national_j_codes_scenario_3[, .(week_start, expected, scenario)]
+) %>%
+    ggplot(aes(x = week_start, y = expected, color = scenario)) +
+    geom_line(size = 1) +
+    ggtext::geom_richtext(
+        data = total_expected_deaths_summary,
+        aes(
+            x = as.Date("2023-01-01"),
+            y = 500,
+            label = paste0("Expected J-coded <br> deaths: <br> **N**=", gtsummary::style_number(total_expected_deaths_summary$total_excess_deaths))
+        ),
+        inherit.aes = FALSE,
+        hjust = 0,
+        size = 3.5,
+        color = "gray20"
+    ) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
+    scale_color_brewer(palette = "Set2") +
+    scale_x_date(
+        limits = c(as.Date("2018-01-01"), as.Date("2023-01-01")),
+        date_breaks = "1 year",
+        date_labels = "%Y",
+        expand = c(0, 0, 0.25, 0)
+    ) +
+    facet_wrap(~scenario, ncol = 1, scales = "free_y") +
+    labs(
+        #  title = "Excess deaths in J-coded causes under alternative scenarios",
+        x = "Week start",
+        y = "Excess deaths within J-coded causes",
+        color = "Scenario"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        legend.position = "bottom",
+        strip.text = element_text(face = "bold"),
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(face = "bold", hjust = 0.5)
+    ) -> fig_0
+
+fig_0
+
 
 
 total_excess_deaths_summary
+
 rbind( 
     national_j_codes_scenario_1[, .(week_start, excess, scenario)],
     national_j_codes_scenario_2[, .(week_start, excess, scenario)],
@@ -848,12 +930,12 @@ rbind(
     ggplot(aes(x = week_start, y = excess, color = scenario)) +
     geom_line(size = 1) +
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
-    geom_text(
+    ggtext::geom_richtext(
         data = total_excess_deaths_summary,
         aes(
             x = as.Date("2023-01-01"),
             y = 500,
-            label = paste0("\"Covid deaths\" in \nJ coded deaths: \n", total_excess_deaths)
+            label = paste0("\"Excess deaths\" in <br>J coded deaths: <br>**N**=", gtsummary::style_number(total_excess_deaths))
         ),
         inherit.aes = FALSE,
         hjust = 0,
@@ -883,12 +965,23 @@ rbind(
         plot.title = element_text(face = "bold", hjust = 0.5)
     )-> fig_1
 
-save( fig_1,total_excess_deaths_summary,  file = "j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda")
-ggsave("figures/LGH_ExcessDeaths_JCodes_Scenarios.png", fig_1, width = 8, height = 6)
+    fig_1
 
+save( 
+    fig_1,
+    fig_0, 
+    total_expected_deaths_summary,
+    total_excess_deaths_summary,  
+    file = "j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda"
+    )
 
+ggsave(
+    "figures/LGH_ExcessDeaths_JCodes_Scenarios.png", fig_1, width = 8, height = 6)
 
-
+ggsave(
+    "figures/LGH_ExpectedDeaths_JCodes_Scenarios.png", fig_0,
+    width = 8, height = 6
+)
 
 
 
@@ -932,15 +1025,15 @@ predict_glm.nb_with_ci <- function(model, newdata, type = "link", level = 0.95) 
 
 # use function to predict on province level data
 # model_simple
-predict_glm.nb_with_ci(model_simple, newdata = dt_for_model_unfiltered_no_epi53) -> simple_model_preds
+#predict_glm.nb_with_ci(model_simple, newdata = dt_for_model_unfiltered_no_epi53) -> simple_model_preds
 
-simple_model_preds
+#simple_model_preds
     
-dt_for_model_unfiltered_no_epi53$.row_id <- 1:nrow(dt_for_model_unfiltered_no_epi53)
+#dt_for_model_unfiltered_no_epi53$.row_id <- 1:nrow(dt_for_model_unfiltered_no_epi53)
 
-dt_for_model_unfiltered_no_epi53[simple_model_preds, on = .(.row_id)] -> dt_for_model_unfiltered_no_epi53
+#dt_for_model_unfiltered_no_epi53[simple_model_preds, on = .(.row_id)] -> dt_for_model_unfiltered_no_epi53
 
-dt_for_model_unfiltered_no_epi53
+#dt_for_model_unfiltered_no_epi53
 
 
 

@@ -25,18 +25,18 @@ During the COVID-19 pandemic, influenza circulation virtually disappeared—a pa
 
 ::: {.callout-note}
 ## Key Insight
-While SARS-CoV-2 still spread because of its higher transmissibility, the same interventions were highly effective at suppressing influenza, which has a lower basic reproduction number ($R_0$). As a result, influenza circulation was dramatically reduced even during major COVID-19 waves.
+While SARS-CoV-2 still spread because of its higher transmissibility, the Non-pharamceutical interventions (NPIs) were highly effective at suppressing influenza, which has a lower basic reproduction number ($R_0$). As a result, influenza circulation was dramatically reduced even during major COVID-19 waves.
 :::
 
 Surveillance limitations led to an undercount of true COVID-19 deaths, especially in low- and middle-income countries where testing capacity was constrained. Many countries therefore implemented excess-death calculations to estimate pandemic mortality, acknowledging that some residual deaths could reflect collateral health-system effects.
 
-For J-coded deaths specifically, the standard approach assumes that influenza and other non-COVID respiratory deaths remained at pre-pandemic levels and were unaffected by NPIs or other pandemic disruptions; in practice, J-codes likely became a default for many COVID-19 deaths who were not laboratory diagnosed.
+For J-coded deaths specifically, the standard approach (described above) assumes that influenza and other non-COVID respiratory deaths remained at pre-pandemic levels and were unaffected by NPIs or other pandemic disruptions; in practice, J-codes likely became a default for many COVID-19 deaths who were not laboratory diagnosed.
 
 ## Methods
 
 ### Data Sources
 
-Vital registration data from 2015–2019 were used to model the expected number of J-coded deaths during the COVID-19 period (April 2020 onwards).
+Vital registration data from 2015–2019 were used to model the expected number of J-coded deaths during the COVID-19 period (April 2020 onwards). Respiratory disease detection data is still needed for "Scenario 4" modelling. 
 
 ### Statistical Model
 
@@ -82,7 +82,7 @@ $$
 
 #### Scenario 4 (Planned)
 
-Fit a pre-pandemic negative binomial regression that includes influenza and ILI surveillance as predictors:
+Fit a pre-pandemic negative binomial regression that includes influenza and ILI surveillance as predictors on J-coded deaths:
 
 $$
 \log(E(Y)) = \beta_0 + \beta_1 \cdot \text{epiweek} + \beta_5 \cdot \text{influenzaSurveillance} + \beta_6 \cdot \text{ILIrate} + \text{interactions}
@@ -93,6 +93,21 @@ $$
 :::
 
 ## Results
+
+```{r}
+#| label: fig-expected-deaths
+#| fig-cap: "Expected death estimates for J-coded deaths under different scenarios, South Africa 2020-2022"
+#| eval: true
+
+# Load results if available
+if (file.exists("../../j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda")) {
+    load("../../j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda")
+   fig_0
+} else {
+    message("Figure not available - run J_code_modelling.r to generate")
+}
+
+```
 
 ```{r}
 #| label: fig-excess-deaths
@@ -116,6 +131,7 @@ if (file.exists("../../j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda")) {
 | 1 (Baseline) | Standard excess deaths | Influenza at pre-pandemic levels |
 | 2 (Upper bound) | All J-codes are COVID-19 | No respiratory deaths occurred |
 | 3 (NPI-adjusted) | Scaled by COVID trends | Influenza suppressed by NPIs |
+| 4 (Detection-adjusted) | Modelled using pre-pandemic influenza detection | Detection rates dropped during COVID-19 pandemic|
 
 :::
 
@@ -135,7 +151,7 @@ Estimating the number of mis-coded COVID-19 deaths may be biased if we assume in
 
 ::: {.callout-tip}
 ## Key Finding
-Respecting the collapse of influenza circulation does not alter the overall excess-death totals but can substantially change **cause-specific attribution** within respiratory categories.
+Respecting the collapse of influenza circulation may not alter the overall excess-death totals but can substantially change **cause-specific attribution** within respiratory categories.
 :::
 
 Many other causes (e.g., diabetes, cardiovascular disease, tuberculosis, garbage codes) may also have served as bins for unidentified COVID-19 deaths, yet the assumption that they remained at pre-pandemic levels is weaker because there is less clinical overlap and outcomes were likely affected by health-system disruptions and behavioural shifts.

@@ -712,12 +712,35 @@ tabulate_excess_factor <- function(dt, icd_codes = NA) {
     cols_order <- c("LGH_Cause", "stat", intersect(desired_periods, names(dt_wide_vals)))
     setcolorder(dt_wide_vals, cols_order)
 
-    # prepare wide colour table
-    dt_wide_cols <- dcast(
+    # prepare wide colour table (only for Factor Difference rows)
+    dt_wide_cols_fd <- dcast(
         dt_analysis_ordered_final[LGH_Cause %in% selected_codes, .(LGH_Cause, period, color_severity)],
         LGH_Cause ~ period,
         value.var = "color_severity"
     )[, stat := "Factor Difference"]
+
+    # Create NA color rows for Count and Baseline stats
+    dt_wide_cols_count <- copy(dt_wide_cols_fd)
+    dt_wide_cols_count[, stat := "Count"]
+    for (pc in setdiff(names(dt_wide_cols_count), c("LGH_Cause", "stat"))) {
+        dt_wide_cols_count[, (pc) := NA_character_]
+    }
+    
+    dt_wide_cols_baseline <- copy(dt_wide_cols_fd)
+    dt_wide_cols_baseline[, stat := "Baseline"]
+    for (pc in setdiff(names(dt_wide_cols_baseline), c("LGH_Cause", "stat"))) {
+        dt_wide_cols_baseline[, (pc) := NA_character_]
+    }
+
+    # Combine to match the structure of dt_wide_vals
+    dt_wide_cols <- rbind(
+        dt_wide_cols_fd,
+        dt_wide_cols_baseline,
+        dt_wide_cols_count
+    )[, `:=`(
+        LGH_Cause = factor(LGH_Cause, levels = LGH_descending_label),
+        stat = factor(stat, levels = c("Count", "Baseline", "Factor Difference"))
+    )]
 
     # align column order of colours to the values table (if needed)
     # add missing columns with NA if necessary to ensure identical names
@@ -727,19 +750,25 @@ tabulate_excess_factor <- function(dt, icd_codes = NA) {
         dt_wide_cols[, (mc) := NA_character_]
     }
     # order columns
-    setcolorder(dt_wide_cols, names(dt_wide_vals))
+    cols_order_colors <- c("LGH_Cause", "stat", intersect(desired_periods, names(dt_wide_cols)))
+    setcolorder(dt_wide_cols, cols_order_colors)
+    
+    # Sort both tables to ensure row alignment
+    setorder(dt_wide_vals, LGH_Cause, stat)
+    setorder(dt_wide_cols, LGH_Cause, stat)
 
     stopifnot(identical(names(dt_wide_vals), names(dt_wide_cols)))
+    stopifnot(nrow(dt_wide_vals) == nrow(dt_wide_cols))
 
     # Build flextable from values
     ft <- regulartable(as.data.frame(dt_wide_vals))
 
-    # Apply background colours cell-by-cell from dt_wide_cols
+    # Apply background colours cell-by-cell from dt_wide_cols (only Factor Difference rows get colors)
     value_cols <- setdiff(names(dt_wide_vals), c("LGH_Cause", "stat"))
     rows <- seq_len(nrow(dt_wide_vals))
 
     for (col in value_cols) {
-        # NA bg values are ignored by flextable
+        # NA bg values are ignored by flextable (so Count/Baseline rows stay uncolored)
         ft <- bg(ft, i = rows, j = col, bg = dt_wide_cols[[col]])
     }
 
