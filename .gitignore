@@ -26,6 +26,7 @@ index-listing.json
 _freeze/
 .quarto/
 *_files/
+!docs/**/*_files/
 /site_libs/
 !docs/site_libs/
 
