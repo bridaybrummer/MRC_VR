@@ -108,6 +108,8 @@ ggplotly(p_garbage_province, tooltip = "text") %>%
 
 ggplotly(p_garbage_instance, tooltip = "text") %>%
   layout(hovermode = "closest")
+
+  # Look at the proportion of locations by province s
 ```
 
 :::
