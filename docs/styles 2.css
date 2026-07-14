@@ -1,0 +1,82 @@
+/* Custom styles for MRC VR website */
+
+/* Navigation */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Cards in project listing */
+.quarto-grid-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.quarto-grid-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Tables */
+table {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Code blocks */
+pre.sourceCode {
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: #2c3e50;
+}
+
+/* Links */
+a {
+  color: #2E86AB;
+}
+
+a:hover {
+  color: #1a5276;
+}
+
+/* Callout boxes */
+.callout {
+  border-radius: 6px;
+}
+
+/* Footer */
+.page-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quarto-grid-item {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Dashboard-specific styles */
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Plot containers */
+.plotly {
+  margin: 1rem 0;
+}
+
+/* Methodology sections */
+.methodology {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
