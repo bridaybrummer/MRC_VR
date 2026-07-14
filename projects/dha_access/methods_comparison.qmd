@@ -1,6 +1,6 @@
 ---
 title: "Methods Comparison"
-description: "Three approaches to estimating DHA office population coverage, side by side"
+description: "Four approaches to estimating DHA office population coverage, side by side"
 date: "2026-01-20"
 categories: [access, spatial, DHA, methods]
 ---
@@ -18,7 +18,7 @@ load("../../outputs/ward_level_dha_access.RData")
 
 # Background
 
-We evaluated **three progressively refined approaches** for estimating the share of the South African population within reach of a DHA office. The headline reporting on [death registration](death_registration.qmd) and [birth registration](birth_registration.qmd) uses **Method 3**. This page documents the trade-offs.
+We evaluated **four progressively refined approaches** for estimating the share of the South African population within reach of a DHA office. The headline reporting on [death registration](death_registration.qmd) and [birth registration](birth_registration.qmd) uses **Method 3**. This page documents the trade-offs.
 
 # Shared data
 
@@ -145,6 +145,57 @@ Coverage: **`r m3_pct_5km`%** within 5 km, **`r m3_pct_10km`%** within 10 km, **
 
 ------------------------------------------------------------------------
 
+# Method 4 — WorldPop Grid + OSM Road Network (Western Cape) {#method4}
+
+100m-resolution **observed** (satellite-derived) population from [WorldPop](https://www.worldpop.org/) is routed to the nearest DHA office over the actual **OpenStreetMap road network**, giving road-distance and driving-time coverage rather than straight-line distance. Implemented for the Western Cape only, in the companion [redistribute_facility_deaths](https://github.com/bridaybrummer/redistribute_facility_deaths) pipeline.
+
+## Results (Western Cape, death registration only)
+
+```{r}
+#| label: method4-results
+
+# Pre-computed from redistribute_facility_deaths pipeline (2026-06-09)
+m4_results <- tibble::tribble(
+  ~Measure, ~`< 5 km`, ~`< 10 km`, ~`< 20 km`,
+  "Straight-line distance", "48.6%", "74.5%", "86.5%",
+  "Road-network distance", "36.0%", "71.1%", "83.3%"
+)
+
+m4_time <- tibble::tribble(
+  ~Measure, ~`< 10 min`, ~`< 30 min`, ~`< 60 min`,
+  "Driving time", "71.9%", "91.1%", "97.6%"
+)
+
+flextable(m4_results) |>
+  bold(part = "header") |>
+  bg(i = 2, bg = "#FFF3E0") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Method 4 — Population within distance of nearest DHA office (Western Cape)")
+
+```
+
+```{r}
+#| label: method4-time-results
+
+flextable(m4_time) |>
+  bold(part = "header") |>
+  bg(i = 1, bg = "#FFF3E0") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Method 4 — Population within driving time of nearest DHA office (Western Cape)")
+```
+
+::: callout-important
+Road distance: **36.0%** within 5 km, **71.1%** within 10 km, **83.3%** within 20 km. Driving time: **91.1%** within 30 minutes, **97.6%** within 60 minutes (death registration, DHA offices only, Western Cape).
+:::
+
+::: callout-warning
+**Weakness** — Western Cape only; not yet run nationally. Assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method.
+:::
+
+------------------------------------------------------------------------
+
 # Side-by-side comparison
 
 ```{r}
@@ -163,5 +214,5 @@ comparison_results_ft
 - **District-level dashboards**: Method 1 — simple and conservative.
 - **Sub-district modelled estimates**: Method 2 — but be aware the population distribution is itself modelled.
 - **National policy reporting**: **Method 3** — uses observed ward populations and provides the finest available spatial resolution.
-- **Maximum accuracy**: enumeration-area census population + road-network distances. Not currently available.
+- **Maximum physical accuracy (Western Cape)**: **Method 4** — road-network routing with observed satellite-derived population; currently limited to one province.
 :::
