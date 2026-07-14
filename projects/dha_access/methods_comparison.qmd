@@ -198,15 +198,57 @@ Road distance: **36.0%** within 5 km, **71.1%** within 10 km, **83.3%** within 2
 
 # Side-by-side comparison
 
-```{r}
-#| label: comparison-table
-comparison_ft
-```
+## Qualitative comparison
 
 ```{r}
-#| label: comparison-results-table
-comparison_results_ft
+#| label: comparison-table-qualitative
+
+comparison_qual <- tibble::tribble(
+  ~Feature, ~`Method 1`, ~`Method 2`, ~`Method 3`, ~`Method 4`,
+  "Geographic unit", "District", "1 km grid within district", "Ward (~4,400 units)", "100 m population cell",
+  "Population data", "District totals", "District totals (modelled to grid)", "Ward-level counts (observed)", "WorldPop satellite grid (observed)",
+  "Population distribution", "Assumed uniform across district", "Modelled (inverse power decay near offices)", "Assigned to ward centroid", "Observed satellite-derived raster",
+  "Distance measure", "Half-median inter-office distance", "Grid point to nearest office", "Ward centroid to nearest office", "Road-network distance & driving time",
+  "Birth vs death split", "No", "No", "Yes (hospital satellites added)", "No",
+  "Geographic coverage", "National", "National", "National", "Western Cape only",
+  "Key strength", "Simple; no spatial computation", "Models within-district variation", "Uses actual sub-district population data", "Real road distances & travel times",
+  "Key weakness", "Single estimate per district; ignores clustering", "Population model may not reflect reality", "Centroid may not represent large rural wards", "Not yet run nationally",
+  "Computational cost", "Low", "High (1 km grid across SA)", "Moderate", "Very high (OSM routing)"
+)
+
+flextable(comparison_qual) |>
+  bold(part = "header") |>
+  bg(j = "Method 3", bg = "#E8F5E9") |>
+  bg(j = "Method 4", bg = "#FFF3E0") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Qualitative comparison of the four DHA access methodologies")
 ```
+
+## Coverage results comparison
+
+```{r}
+#| label: comparison-results-table-all
+
+comparison_res <- tibble::tribble(
+  ~Metric, ~`Method 1`, ~`Method 2`, ~`Method 3`, ~`Method 4 (road)`,
+  "% within 5 km",  paste0(m1_national$pct_5km, "%"),  paste0(m2_pct_5km, "%"),  paste0(m3_pct_5km, "%"),  "36.0%",
+  "% within 10 km", paste0(m1_national$pct_10km, "%"), paste0(m2_pct_10km, "%"), paste0(m3_pct_10km, "%"), "71.1%",
+  "% within 20 km", paste0(m1_national$pct_20km, "%"), paste0(m2_pct_20km, "%"), paste0(m3_pct_20km, "%"), "83.3%"
+)
+
+flextable(comparison_res) |>
+  bold(part = "header") |>
+  bg(j = "Method 3", bg = "#E8F5E9") |>
+  bg(j = "Method 4 (road)", bg = "#FFF3E0") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Population completeness (% within distance threshold) — Methods 1–3 are national, Method 4 is Western Cape only")
+```
+
+::: callout-note
+Methods 1–3 use **straight-line** distance and cover **all of South Africa**. Method 4 uses **road-network** distance and covers **Western Cape only** — the figures are not directly comparable. Road distances are consistently higher than straight-line at the same threshold.
+:::
 
 ::: callout-tip
 ## Which method should I use?

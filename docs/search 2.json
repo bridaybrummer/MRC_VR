@@ -455,13 +455,6 @@
     "text": "6.3 Cumulative coverage\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\n\nCoverage: 27.3% within 5 km, 53% within 10 km, 80% within 20 km.\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — ward centroids are still a proxy. The sensitivity check tests how plausible the implied population distribution near DHA nodes is."
   },
   {
-    "objectID": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
-    "href": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
-    "title": "Methods Comparison",
-    "section": "7.1 Results (Western Cape, death registration only)",
-    "text": "7.1 Results (Western Cape, death registration only)\n\n\nMeasure&lt; 5 km&lt; 10 km&lt; 20 kmStraight-line distance48.6%74.5%86.5%Road-network distance36.0%71.1%83.3%\n\n\n\n\nMeasure&lt; 10 min&lt; 30 min&lt; 60 minDriving time71.9%91.1%97.6%\n\n\n\n\n\n\n\n\nImportant\n\n\n\nRoad distance: 36.0% within 5 km, 71.1% within 10 km, 83.3% within 20 km. Driving time: 91.1% within 30 minutes, 97.6% within 60 minutes (death registration, DHA offices only, Western Cape).\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — Western Cape only; not yet run nationally. Assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method."
-  },
-  {
     "objectID": "projects/dha_access/index.html",
     "href": "projects/dha_access/index.html",
     "title": "DHA Service Access and Coverage",
@@ -1722,17 +1715,10 @@
     "text": "References"
   },
   {
-    "objectID": "projects/dha_access/methods_comparison.html#qualitative-comparison",
-    "href": "projects/dha_access/methods_comparison.html#qualitative-comparison",
+    "objectID": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
+    "href": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
     "title": "Methods Comparison",
-    "section": "8.1 Qualitative comparison",
-    "text": "8.1 Qualitative comparison\n\n\nFeatureMethod 1Method 2Method 3Method 4Geographic unitDistrict1 km grid within districtWard (~4,400 units)100 m population cellPopulation dataDistrict totalsDistrict totals (modelled to grid)Ward-level counts (observed)WorldPop satellite grid (observed)Population distributionAssumed uniform across districtModelled (inverse power decay near offices)Assigned to ward centroidObserved satellite-derived rasterDistance measureHalf-median inter-office distanceGrid point to nearest officeWard centroid to nearest officeRoad-network distance & driving timeBirth vs death splitNoNoYes (hospital satellites added)NoGeographic coverageNationalNationalNationalWestern Cape onlyKey strengthSimple; no spatial computationModels within-district variationUses actual sub-district population dataReal road distances & travel timesKey weaknessSingle estimate per district; ignores clusteringPopulation model may not reflect realityCentroid may not represent large rural wardsNot yet run nationallyComputational costLowHigh (1 km grid across SA)ModerateVery high (OSM routing)"
-  },
-  {
-    "objectID": "projects/dha_access/methods_comparison.html#coverage-results-comparison",
-    "href": "projects/dha_access/methods_comparison.html#coverage-results-comparison",
-    "title": "Methods Comparison",
-    "section": "8.2 Coverage results comparison",
-    "text": "8.2 Coverage results comparison\n\n\nMetricMethod 1Method 2Method 3Method 4 (road)% within 5 km23%37%27.3%36.0%% within 10 km51.6%61%53%71.1%% within 20 km80.5%82%80%83.3%\n\n\n\n\n\n\n\n\nNote\n\n\n\nMethods 1–3 use straight-line distance and cover all of South Africa. Method 4 uses road-network distance and covers Western Cape only — the figures are not directly comparable. Road distances are consistently higher than straight-line at the same threshold.\n\n\n\n\n\n\n\n\nTipWhich method should I use?\n\n\n\n\nDistrict-level dashboards: Method 1 — simple and conservative.\nSub-district modelled estimates: Method 2 — but be aware the population distribution is itself modelled.\nNational policy reporting: Method 3 — uses observed ward populations and provides the finest available spatial resolution.\nMaximum physical accuracy (Western Cape): Method 4 — road-network routing with observed satellite-derived population; currently limited to one province."
+    "section": "7.1 Results (Western Cape, death registration only)",
+    "text": "7.1 Results (Western Cape, death registration only)\n\n\nMeasure&lt; 5 km&lt; 10 km&lt; 20 kmStraight-line distance48.6%74.5%86.5%Road-network distance36.0%71.1%83.3%\n\n\n\n\nMeasure&lt; 10 min&lt; 30 min&lt; 60 minDriving time71.9%91.1%97.6%\n\n\n\n\n\n\n\n\nImportant\n\n\n\nRoad distance: 36.0% within 5 km, 71.1% within 10 km, 83.3% within 20 km. Driving time: 91.1% within 30 minutes, 97.6% within 60 minutes (death registration, DHA offices only, Western Cape).\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — Western Cape only; not yet run nationally. Assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method."
   }
 ]
