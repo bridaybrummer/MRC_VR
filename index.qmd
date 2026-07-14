@@ -1,0 +1,51 @@
+---
+title: "MRC Vital Registration Analysis"
+subtitle: "Analysis of South African vital registration data quality and monitoring"
+listing:
+  contents: projects/*/index.qmd
+  type: grid
+  grid-columns: 2
+  categories: true
+  sort: "date desc"
+  fields: [title, description, date, categories]
+  feed: true
+page-layout: full
+---
+
+## Overview
+
+This website presents analyses of South African vital registration data, including:
+
+- **Monitoring and evaluation** comparing vital registration data with demographic models
+- **Excess mortality analysis** at national and provincial levels
+- **Data quality assessments** examining garbage codes and completeness
+- **Service accessibility** analysis of Department of Home Affairs office coverage
+- **Statistical methods** for mortality estimation and uncertainty quantification
+
+## Projects
+
+Browse the analysis projects below. Each project includes methodology, interactive visualizations, and key findings.
+
+::: {#project-listing}
+:::
+
+## Data Sources
+
+- **Stats SA**: Mortality and causes of death reports (P0309.3 series)
+- **Thembisa Model**: Demographic projections for South Africa
+- **NMC Database**: Notifiable Medical Conditions surveillance data
+- **DHA Office Locations**: Department of Home Affairs office coordinates
+
+## Quick Links
+
+| Resource | Description |
+|----------|-------------|
+| [Monitoring & Evaluation](projects/mortality_estimates/index.qmd) | HIV/AIDS and TB mortality comparisons |
+| [National Overview](projects/national_overview/index.qmd) | Excess mortality by province and cause |
+| [Cause Code Analysis](projects/cause_codes/index.qmd) | Detailed ICD code-specific breakdowns |
+| [DHA Access](projects/dha_access/index.qmd) | Population coverage of Home Affairs offices |
+| [CI Modelling](projects/ci_modelling/index.qmd) | Statistical methods for uncertainty quantification |
+
+---
+
+*Last updated: `r Sys.Date()`*

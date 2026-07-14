@@ -1,0 +1,6 @@
+# Exclude the large full cross-tabulation file
+# This file is ~360MB and not needed for the lite app
+full_aggregation.csv
+
+# All other aggregated CSV files are small (~14MB total)
+# and safe to commit for deployment

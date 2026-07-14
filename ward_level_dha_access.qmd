@@ -1,0 +1,327 @@
+---
+title: "DHA Access: Comparing Analytical Approaches"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+execute:
+  warning: false
+  message: false
+  echo: false
+embed-resources: true
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+library(plotly)
+library(flextable)
+library(dplyr)
+library(scales)
+library(patchwork)
+
+# All outputs precomputed by ward_level_dha_access_script.R
+load("outputs/ward_level_dha_access.RData")
+```
+
+# The Problem
+
+Birth and death registration in South Africa requires physical access to a Department of Home Affairs (DHA) office. Death registration happens **only** at DHA offices; birth registration can also happen at a subset of hospitals with **DHA satellite desks**. Long travel distances are a plausible barrier to completeness for both. We compare **four analytical approaches** of increasing rigour to estimate what proportion of the population lives within reasonable reach of a registration node, then apply the most decision-relevant of them to quantify access for **both birth and death registration**.
+
+::: callout-tip
+## How to read this document
+
+1.  **Methods** — four approaches to estimating distance/coverage, simplest to most rigorous
+2.  **Comparison** — a qualitative feature comparison, and one table of completeness proportions across all four methods, split by birth vs death registration where available
+3.  **Chosen Method** — the approach used for reporting, with full results (birth vs death split) and limitations
+:::
+
+# Data Sources
+
+-   **Registration nodes**: 2024 DHA offices (all methods); a curated set of hospital-based DHA satellite desks is added for the birth-registration analysis (Method 3 only)
+-   **Population estimates**: Stats SA mid-year population estimates (2025, ward/district level); WorldPop 100m satellite-derived grid (2020, Method 4 only)
+-   **Spatial boundaries**: District boundaries (Stats SA); Ward boundaries (MDB 2020)
+
+::: panel-tabset
+## Population by District
+
+```{r}
+#| label: SA-pop-map
+SA_pop
+```
+
+## Number of Offices by District
+
+```{r}
+#| label: SA-offices-map
+SA_N_off
+```
+
+## Office Locations (Interactive)
+
+```{r}
+#| label: office-locations-interactive
+plotly::ggplotly(p_with_buffers, tooltip = "text")
+```
+:::
+
+------------------------------------------------------------------------
+
+# Methods
+
+```{r}
+#| label: method4-data
+#| include: false
+
+# Read pre-computed outputs from the redistribute_facility_deaths pipeline
+m4_data_dir <- "/Users/briday/Desktop/study_stats/redistribute_facility_deaths/outputs/tables"
+
+m4_summary <- read.csv(file.path(m4_data_dir, "coverage_office_distance_summary_western_cape_2026-06-09.csv"))
+
+# Extract key metrics from the summary CSV (metric/value format)
+m4_metrics <- setNames(m4_summary$value, m4_summary$metric)
+
+m4_pct_5km_road <- m4_metrics["pct_population_within_5km_road"]
+m4_pct_10km_road <- m4_metrics["pct_population_within_10km_road"]
+m4_pct_20km_road <- m4_metrics["pct_population_within_20km_road"]
+
+m4_pct_10min <- m4_metrics["pct_population_within_10min_drive"]
+m4_pct_30min <- m4_metrics["pct_population_within_30min_drive"]
+m4_pct_60min <- m4_metrics["pct_population_within_60min_drive"]
+
+m4_median_road <- m4_metrics["median_km_road_popweighted"]
+m4_total_pop <- m4_metrics["total_population"]
+m4_n_offices <- m4_metrics["n_offices"]
+```
+
+## Method 1: District-Level Office-to-Office Distance {#method1}
+
+::: callout-note
+## Approach
+
+Half the median nearest-neighbour distance between DHA offices in a district is used as a single distance proxy for the district's whole population.
+:::
+
+::: callout-important
+## Key finding
+
+**`r m1_national$pct_5km`%** of the population lives within 5km, **`r m1_national$pct_10km`%** within 10km, **`r m1_national$pct_20km`%** within 20km (death registration, DHA offices only).
+:::
+
+::: callout-warning
+## Limitations
+
+Ignores within-district variation and actual population distribution; conservative bias in rural districts with sparse but well-placed offices.
+:::
+
+## Method 2: District-Level Modelled Population Grid {#method2}
+
+::: callout-note
+## Approach
+
+A 1km grid is laid over each district; population is redistributed onto grid points using an **inverse power decay model** ($\alpha = 1.5$) that clusters population near offices, and distance to the nearest office is measured per grid point.
+:::
+
+::: callout-important
+## Key finding
+
+**`r m2_pct_5km`%** within 5km, **`r m2_pct_10km`%** within 10km, **`r m2_pct_20km`%** within 20km (death registration, DHA offices only).
+:::
+
+::: callout-warning
+## Limitations
+
+Population is modelled, not observed; the decay parameter is not empirically calibrated; distances are still straight-line.
+:::
+
+## Method 3: Ward-Level Centroid Distance {#method3}
+
+::: callout-note
+## Approach
+
+Actual ward-level population (Stats SA, 4,468 wards) is joined to ward polygons (MDB 2020); straight-line distance is measured from each **ward centroid** to the nearest registration node. Run twice: once against DHA offices only (death registration) and once adding hospital DHA satellite desks (birth registration).
+:::
+
+::: callout-important
+## Key finding
+
+Death registration: **`r m3_pct_5km`%** within 5km, **`r m3_pct_10km`%** within 10km, **`r m3_pct_20km`%** within 20km. Birth registration (with hospital satellites): **`r birth_pct_5km`%**, **`r birth_pct_10km`%**, **`r birth_pct_20km`%** respectively.
+:::
+
+::: callout-warning
+## Limitations
+
+Ward centroids are a proxy for where people live — large rural wards may have centroids far from population clusters; `r missing_pop` wards are missing population data; distances remain straight-line, not road-network.
+:::
+
+## Method 4: WorldPop Grid + OSM Road Network (Western Cape) {#method4}
+
+::: callout-note
+## Approach
+
+100m-resolution **observed** (satellite-derived) population from WorldPop is routed to the nearest DHA office over the actual **OpenStreetMap road network**, giving road-distance and driving-time coverage rather than straight-line distance. Implemented for the Western Cape only, in the companion [redistribute_facility_deaths](https://github.com/bridaybrummer/redistribute_facility_deaths) pipeline.
+:::
+
+::: callout-important
+## Key finding
+
+Road distance: **`r m4_pct_5km_road`%** within 5km, **`r m4_pct_10km_road`%** within 10km, **`r m4_pct_20km_road`%** within 20km. Driving time: **`r m4_pct_30min`%** within 30 minutes, **`r m4_pct_60min`%** within 60 minutes (death registration, DHA offices only, Western Cape).
+:::
+
+::: callout-warning
+## Limitations
+
+Western Cape only — not yet run nationally; assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method.
+:::
+
+------------------------------------------------------------------------
+
+# Comparison of Methods {#comparison}
+
+## Qualitative Comparison
+
+```{r}
+#| label: comparison-table-full
+
+comparison_df_v2 <- tibble::tribble(
+  ~Feature, ~`Method 1`, ~`Method 2`, ~`Method 3`, ~`Method 4`,
+  "Geographic unit", "District", "1km grid within district", "Ward (~4,400 units)", "100m population cell",
+  "Population data", "District totals", "District totals (modelled to grid)", "Ward-level counts (observed)", "WorldPop satellite grid (observed)",
+  "Distance measure", "Half-median inter-office distance", "Grid point to nearest office", "Ward centroid to nearest office", "Road-network distance & driving time",
+  "Birth vs death split", "No", "No", "Yes (hospital satellites added)", "No",
+  "Geographic coverage", "National", "National", "National", "Western Cape only",
+  "Key weakness", "Single estimate per district", "Modelled population may not reflect reality", "Centroid may not represent large rural wards", "Not yet run nationally"
+)
+
+flextable(comparison_df_v2) |>
+  bold(part = "header") |>
+  bg(j = "Method 3", bg = "#E8F5E9") |>
+  bg(j = "Method 4", bg = "#FFF3E0") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Qualitative comparison of the four DHA access methodologies")
+```
+
+## Completeness Proportions Across Methods
+
+The table below is the core comparison: estimated population **completeness** (% within reach of a registration node) for each method, split by registration type where the analysis was run.
+
+```{r}
+#| label: completeness-comparison-table
+
+completeness_df <- tibble::tribble(
+  ~Method, ~Scope, ~Registration, ~`% < 5km`, ~`% < 10km`, ~`% < 20km`,
+  "Method 1", "National", "Death (DHA only)", paste0(m1_national$pct_5km, "%"), paste0(m1_national$pct_10km, "%"), paste0(m1_national$pct_20km, "%"),
+  "Method 1", "National", "Birth", "N/A", "N/A", "N/A",
+  "Method 2", "National", "Death (DHA only)", paste0(m2_pct_5km, "%"), paste0(m2_pct_10km, "%"), paste0(m2_pct_20km, "%"),
+  "Method 2", "National", "Birth", "N/A", "N/A", "N/A",
+  "Method 3", "National", "Death (DHA only)", paste0(m3_pct_5km, "%"), paste0(m3_pct_10km, "%"), paste0(m3_pct_20km, "%"),
+  "Method 3", "National", "Birth (DHA + hospital)", paste0(birth_pct_5km, "%"), paste0(birth_pct_10km, "%"), paste0(birth_pct_20km, "%"),
+  "Method 4", "Western Cape", "Death, road distance (DHA only)", paste0(m4_pct_5km_road, "%"), paste0(m4_pct_10km_road, "%"), paste0(m4_pct_20km_road, "%"),
+  "Method 4", "Western Cape", "Birth", "N/A", "N/A", "N/A"
+)
+
+flextable(completeness_df) |>
+  bold(part = "header") |>
+  bg(i = ~ Registration %in% "Birth (DHA + hospital)", bg = "#E8F5E9") |>
+  merge_v(j = c("Method", "Scope")) |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("Population completeness (% within distance threshold) across all four methods, split by birth vs death registration where available")
+```
+
+::: callout-note
+Birth registration is only quantified separately for Method 3, because hospital-based DHA satellite desks (valid for births, not deaths) have so far only been linked into the ward-centroid pipeline. Extending the birth/death split to Methods 1, 2 and 4 is future work.
+:::
+
+------------------------------------------------------------------------
+
+# Chosen Method: Method 3 — Ward-Level Centroid Distance {#chosen-method}
+
+## Why this method
+
+Method 3 is used for reporting because it is the only approach that is simultaneously **national in scope**, uses **actual observed population** (not modelled), and has been extended to **both birth and death registration** by including hospital-based DHA satellite desks. Method 4 is more physically realistic (real road distances) but is currently limited to the Western Cape; Method 3 remains the best available national estimate until Method 4 is extended to all provinces.
+
+## Results: Death Registration (DHA Offices Only)
+
+```{r}
+#| label: chosen-death-summary
+m3_dist_summary
+```
+
+```{r}
+#| label: chosen-death-table
+ward_access_ft
+```
+
+```{r}
+#| label: chosen-death-map
+#| fig-width: 10
+#| fig-height: 8
+ward_distance_map
+```
+
+```{r}
+#| label: chosen-death-curve
+#| fig-width: 10
+#| fig-height: 6
+coverage_curve_plot
+```
+
+## Results: Birth vs Death Registration
+
+Adding hospital-based DHA satellite desks (valid for **birth** registration only) increases coverage relative to death registration, which is restricted to standalone DHA offices.
+
+```{r}
+#| label: chosen-birth-death-table
+if (exists("birth_vs_death_ft") && !is.null(birth_vs_death_ft)) {
+  birth_vs_death_ft
+} else {
+  cat("Birth registration comparison not available — run DHA_access/link_DHA_to_MFL.r first.")
+}
+```
+
+```{r}
+#| label: chosen-birth-death-map
+#| fig-width: 10
+#| fig-height: 8
+if (exists("birth_distance_map") && !is.null(birth_distance_map)) {
+  birth_distance_map
+}
+```
+
+```{r}
+#| label: chosen-birth-death-curve
+#| fig-width: 10
+#| fig-height: 6
+if (exists("birth_vs_death_curve_plot") && !is.null(birth_vs_death_curve_plot)) {
+  birth_vs_death_curve_plot
+}
+```
+
+::: callout-important
+## Key Finding
+
+Death registration (DHA offices only): **`r m3_pct_5km`%** of the population is within 5km, **`r m3_pct_10km`%** within 10km, **`r m3_pct_20km`%** within 20km. Birth registration (DHA + hospital satellites): **`r birth_pct_5km`%**, **`r birth_pct_10km`%**, **`r birth_pct_20km`%** respectively — a gain of **`r round(birth_pct_5km - m3_pct_5km, 1)`, `r round(birth_pct_10km - m3_pct_10km, 1)` and `r round(birth_pct_20km - m3_pct_20km, 1)` percentage points** at the 5/10/20km thresholds.
+:::
+
+::: callout-warning
+## Limitations
+
+-   Ward **centroids** are a proxy for where people live — large rural wards may have centroids far from actual population clusters
+-   `r missing_pop` wards are missing population data
+-   Distances are **straight-line**, not road-network or travel-time (Method 4 shows this matters — road distance coverage is consistently lower than straight-line at the same threshold)
+-   Does not account for office/hospital capacity, opening hours or queueing
+-   Hospital DHA satellite list is a curated snapshot and may not reflect the current set of facilities offering birth registration
+:::
+
+# Next Steps
+
+1.  **Extend Method 4 (road-network routing) nationally** and re-run the birth-vs-death split against it
+2.  **Add hospital DHA satellites to Methods 1, 2 and 4** so the birth/death completeness table has no "N/A" cells
+3.  **Obtain enumeration area data** from Stats SA to validate ward-centroid and modelled-grid population placement

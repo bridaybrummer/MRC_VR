@@ -1,0 +1,933 @@
+The following potential problems were identified in the project files:
+
+----------
+app_lite.R
+----------
+The following lines contain absolute paths:
+94:   shape_path <- "/Users/briday/Desktop/SAFETP/CLA/NMCleaner/data/shape_files.rda"
+
+Paths should be to files within the project directory.If your code fails to run post-deployment, please double-check these messages.
+── Preparing for deployment ────────────────────────────────────────────────────
+✔ Deploying "dashboard_lite" using "server: shinyapps.io / username: briday"
+ℹ Creating application on server...
+✔ Created application with id 16908308
+ℹ Bundling 13 files: 'app_lite.R', 'aggregated_data/.gitignore', 'aggregated_data/age_sex_year.csv', 'aggregated_data/cause_province_year.csv', 'aggregated_data/cause_year.csv', 'aggregated_data/district_year.csv', 'aggregated_data/full_aggregation.csv', 'aggregated_data/lgh_cause_year.csv', 'aggregated_data/monthly.csv', 'aggregated_data/province_year.csv', 'aggregated_data/pyramid_data.csv', 'aggregated_data/weekly_cause.csv', and 'aggregated_data/weekly_province.csv'
+ℹ Capturing R dependencies
+✔ Found 153 dependencies
+✔ Created 38,261,484b bundle
+ℹ Uploading bundle...
+✔ Uploaded bundle with id 11715677
+── Deploying to server ─────────────────────────────────────────────────────────
+Waiting for task: 1664248888
+  building: Processing bundle: 11715677
+  building: Parsing manifest
+  building: Building image: 14555600
+  building: Installing system dependencies
+  building: Fetching packages
+  building: Building package: fastymd
+  building: Building package: grates
+  building: Building package: officer
+  building: Building package: flextable
+  building: Building package: NMCleaner
+## Begin Task Log ##############################################################
+Quarto not found.
+[2026-03-16T11:14:11.049258855+0000] Execute script: packages/build/units.sh
++ set -e
++ apt-get update -qq
+W: http://cran.rstudio.com/bin/linux/ubuntu/jammy-cran40/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
++ apt-get install -y libudunits2-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libudunits2-0 libudunits2-data
+The following NEW packages will be installed:
+  libudunits2-0 libudunits2-data libudunits2-dev
+0 upgraded, 3 newly installed, 0 to remove and 157 not upgraded.
+Need to get 433 kB of archives.
+After this operation, 1064 kB of additional disk space will be used.
+Get:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy/universe amd64 libudunits2-data all 2.2.28-3 [19.0 kB]
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy/universe amd64 libudunits2-0 amd64 2.2.28-3 [50.3 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy/universe amd64 libudunits2-dev amd64 2.2.28-3 [364 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 433 kB in 0s (4540 kB/s)
+Selecting previously unselected package libudunits2-data.	
+(Reading database ... 	(Reading database ... 5%	(Reading database ... 10%	(Reading database ... 15%	(Reading database ... 20%	(Reading database ... 25%	(Reading database ... 30%	(Reading database ... 35%	(Reading database ... 40%	(Reading database ... 45%	(Reading database ... 50%	(Reading database ... 55%	(Reading database ... 60%	(Reading database ... 65%	(Reading database ... 70%	(Reading database ... 75%	(Reading database ... 80%	(Reading database ... 85%	(Reading database ... 90%	(Reading database ... 95%	(Reading database ... 100%	(Reading database ... 297217 files and directories currently installed.)	
+Preparing to unpack .../libudunits2-data_2.2.28-3_all.deb ...	
+Unpacking libudunits2-data (2.2.28-3) ...	
+Selecting previously unselected package libudunits2-0.	
+Preparing to unpack .../libudunits2-0_2.2.28-3_amd64.deb ...	
+Unpacking libudunits2-0 (2.2.28-3) ...	
+Selecting previously unselected package libudunits2-dev.	
+Preparing to unpack .../libudunits2-dev_2.2.28-3_amd64.deb ...	
+Unpacking libudunits2-dev (2.2.28-3) ...	
+Setting up libudunits2-data (2.2.28-3) ...	
+Setting up libudunits2-0 (2.2.28-3) ...	
+Setting up libudunits2-dev (2.2.28-3) ...	
+Processing triggers for install-info (6.8-4build1) ...	
+Processing triggers for libc-bin (2.35-0ubuntu3.11) ...	
+[2026-03-16T11:14:17.888632466+0000] Execute script: packages/build/V8.sh
+W: http://cran.rstudio.com/bin/linux/ubuntu/jammy-cran40/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libc-ares2 libnode72 libuv1-dev
+The following NEW packages will be installed:
+  libc-ares2 libnode-dev libnode72 libuv1-dev
+0 upgraded, 4 newly installed, 0 to remove and 157 not upgraded.
+Need to get 11.6 MB of archives.
+After this operation, 48.1 MB of additional disk space will be used.
+Get:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libuv1-dev amd64 1.43.0-1ubuntu0.1 [130 kB]
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libc-ares2 amd64 1.18.1-1ubuntu0.22.04.3 [45.1 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 libnode72 amd64 12.22.9~dfsg-1ubuntu3.6 [10.8 MB]
+Get:4 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 libnode-dev amd64 12.22.9~dfsg-1ubuntu3.6 [609 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 11.6 MB in 1s (9418 kB/s)
+Selecting previously unselected package libuv1-dev:amd64.	
+(Reading database ... 	(Reading database ... 5%	(Reading database ... 10%	(Reading database ... 15%	(Reading database ... 20%	(Reading database ... 25%	(Reading database ... 30%	(Reading database ... 35%	(Reading database ... 40%	(Reading database ... 45%	(Reading database ... 50%	(Reading database ... 55%	(Reading database ... 60%	(Reading database ... 65%	(Reading database ... 70%	(Reading database ... 75%	(Reading database ... 80%	(Reading database ... 85%	(Reading database ... 90%	(Reading database ... 95%	(Reading database ... 100%	(Reading database ... 297257 files and directories currently installed.)	
+Preparing to unpack .../libuv1-dev_1.43.0-1ubuntu0.1_amd64.deb ...	
+Unpacking libuv1-dev:amd64 (1.43.0-1ubuntu0.1) ...	
+Selecting previously unselected package libc-ares2:amd64.	
+Preparing to unpack .../libc-ares2_1.18.1-1ubuntu0.22.04.3_amd64.deb ...	
+Unpacking libc-ares2:amd64 (1.18.1-1ubuntu0.22.04.3) ...	
+Selecting previously unselected package libnode72:amd64.	
+Preparing to unpack .../libnode72_12.22.9~dfsg-1ubuntu3.6_amd64.deb ...	
+Unpacking libnode72:amd64 (12.22.9~dfsg-1ubuntu3.6) ...	
+Selecting previously unselected package libnode-dev.	
+Preparing to unpack .../libnode-dev_12.22.9~dfsg-1ubuntu3.6_amd64.deb ...	
+Unpacking libnode-dev (12.22.9~dfsg-1ubuntu3.6) ...	
+Setting up libuv1-dev:amd64 (1.43.0-1ubuntu0.1) ...	
+Setting up libc-ares2:amd64 (1.18.1-1ubuntu0.22.04.3) ...	
+Setting up libnode72:amd64 (12.22.9~dfsg-1ubuntu3.6) ...	
+Setting up libnode-dev (12.22.9~dfsg-1ubuntu3.6) ...	
+Processing triggers for libc-bin (2.35-0ubuntu3.11) ...	
+[2026-03-16T11:14:23.154116700+0000] Execute script: packages/build/textshaping.sh
++ set -e
++ apt-get update -qq
+W: http://cran.rstudio.com/bin/linux/ubuntu/jammy-cran40/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
++ apt-get install -y libharfbuzz-dev libfribidi-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  gir1.2-harfbuzz-0.0 libgraphite2-dev libharfbuzz-gobject0 libharfbuzz-icu0
+Suggested packages:
+  libgraphite2-utils
+The following NEW packages will be installed:
+  gir1.2-harfbuzz-0.0 libfribidi-dev libgraphite2-dev libharfbuzz-dev
+  libharfbuzz-gobject0 libharfbuzz-icu0
+0 upgraded, 6 newly installed, 0 to remove and 157 not upgraded.
+Need to get 697 kB of archives.
+After this operation, 3823 kB of additional disk space will be used.
+Get:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 gir1.2-harfbuzz-0.0 amd64 2.7.4-1ubuntu3.2 [31.6 kB]
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libfribidi-dev amd64 1.0.8-2ubuntu3.1 [64.8 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy/main amd64 libgraphite2-dev amd64 1.3.14-1build2 [14.7 kB]
+Get:4 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libharfbuzz-icu0 amd64 2.7.4-1ubuntu3.2 [5890 B]
+Get:5 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libharfbuzz-gobject0 amd64 2.7.4-1ubuntu3.2 [26.0 kB]
+Get:6 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libharfbuzz-dev amd64 2.7.4-1ubuntu3.2 [554 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 697 kB in 0s (2242 kB/s)
+Selecting previously unselected package gir1.2-harfbuzz-0.0:amd64.	
+(Reading database ... 	(Reading database ... 5%	(Reading database ... 10%	(Reading database ... 15%	(Reading database ... 20%	(Reading database ... 25%	(Reading database ... 30%	(Reading database ... 35%	(Reading database ... 40%	(Reading database ... 45%	(Reading database ... 50%	(Reading database ... 55%	(Reading database ... 60%	(Reading database ... 65%	(Reading database ... 70%	(Reading database ... 75%	(Reading database ... 80%	(Reading database ... 85%	(Reading database ... 90%	(Reading database ... 95%	(Reading database ... 100%	(Reading database ... 298340 files and directories currently installed.)	
+Preparing to unpack .../0-gir1.2-harfbuzz-0.0_2.7.4-1ubuntu3.2_amd64.deb ...	
+Unpacking gir1.2-harfbuzz-0.0:amd64 (2.7.4-1ubuntu3.2) ...	
+Selecting previously unselected package libfribidi-dev:amd64.	
+Preparing to unpack .../1-libfribidi-dev_1.0.8-2ubuntu3.1_amd64.deb ...	
+Unpacking libfribidi-dev:amd64 (1.0.8-2ubuntu3.1) ...	
+Selecting previously unselected package libgraphite2-dev:amd64.	
+Preparing to unpack .../2-libgraphite2-dev_1.3.14-1build2_amd64.deb ...	
+Unpacking libgraphite2-dev:amd64 (1.3.14-1build2) ...	
+Selecting previously unselected package libharfbuzz-icu0:amd64.	
+Preparing to unpack .../3-libharfbuzz-icu0_2.7.4-1ubuntu3.2_amd64.deb ...	
+Unpacking libharfbuzz-icu0:amd64 (2.7.4-1ubuntu3.2) ...	
+Selecting previously unselected package libharfbuzz-gobject0:amd64.	
+Preparing to unpack .../4-libharfbuzz-gobject0_2.7.4-1ubuntu3.2_amd64.deb ...	
+Unpacking libharfbuzz-gobject0:amd64 (2.7.4-1ubuntu3.2) ...	
+Selecting previously unselected package libharfbuzz-dev:amd64.	
+Preparing to unpack .../5-libharfbuzz-dev_2.7.4-1ubuntu3.2_amd64.deb ...	
+Unpacking libharfbuzz-dev:amd64 (2.7.4-1ubuntu3.2) ...	
+Setting up libharfbuzz-icu0:amd64 (2.7.4-1ubuntu3.2) ...	
+Setting up libfribidi-dev:amd64 (1.0.8-2ubuntu3.1) ...	
+Setting up libharfbuzz-gobject0:amd64 (2.7.4-1ubuntu3.2) ...	
+Setting up gir1.2-harfbuzz-0.0:amd64 (2.7.4-1ubuntu3.2) ...	
+Setting up libgraphite2-dev:amd64 (1.3.14-1build2) ...	
+Setting up libharfbuzz-dev:amd64 (2.7.4-1ubuntu3.2) ...	
+Processing triggers for libc-bin (2.35-0ubuntu3.11) ...	
+[2026-03-16T11:14:27.307462200+0000] Execute script: packages/build/sf.sh
++ set -e
+++ lsb_release -cs
++ OS_CODENAME=jammy
++ '[' jammy == xenial ']'
++ apt-get update -qq
+W: http://cran.rstudio.com/bin/linux/ubuntu/jammy-cran40/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
++ apt-get install -y libudunits2-dev libgdal-dev libgeos-dev libproj-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+libgdal-dev is already the newest version (3.4.1+dfsg-1build4).
+libgeos-dev is already the newest version (3.10.2-1).
+libgeos-dev set to manually installed.
+libproj-dev is already the newest version (8.2.1-1).
+libudunits2-dev is already the newest version (2.2.28-3).
+0 upgraded, 0 newly installed, 0 to remove and 157 not upgraded.
+[2026-03-16T11:14:30.149070121+0000] Execute script: packages/build/ragg.sh
++ set -e
++ apt-get update -qq
+W: http://cran.rstudio.com/bin/linux/ubuntu/jammy-cran40/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
++ apt-get install -y fonts-noto-color-emoji libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libharfbuzz-dev libfribidi-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+libjpeg-dev is already the newest version (8c-2ubuntu10).
+libjpeg-dev set to manually installed.
+fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.22.04.1).
+fonts-noto-color-emoji set to manually installed.
+libfreetype6-dev is already the newest version (2.11.1+dfsg-1ubuntu0.3).
+libfreetype6-dev set to manually installed.
+libfribidi-dev is already the newest version (1.0.8-2ubuntu3.1).
+libharfbuzz-dev is already the newest version (2.7.4-1ubuntu3.2).
+The following additional packages will be installed:
+  libpng-tools libpng16-16
+The following NEW packages will be installed:
+  libtiff5-dev
+The following packages will be upgraded:
+  libpng-dev libpng-tools libpng16-16
+3 upgraded, 1 newly installed, 0 to remove and 154 not upgraded.
+Need to get 415 kB of archives.
+After this operation, 30.7 kB of additional disk space will be used.
+Get:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpng-dev amd64 1.6.37-3ubuntu0.4 [193 kB]
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpng-tools amd64 1.6.37-3ubuntu0.4 [28.7 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpng16-16 amd64 1.6.37-3ubuntu0.4 [192 kB]
+Get:4 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libtiff5-dev amd64 4.3.0-6ubuntu0.12 [2100 B]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 415 kB in 0s (11.2 MB/s)
+(Reading database ... 	(Reading database ... 5%	(Reading database ... 10%	(Reading database ... 15%	(Reading database ... 20%	(Reading database ... 25%	(Reading database ... 30%	(Reading database ... 35%	(Reading database ... 40%	(Reading database ... 45%	(Reading database ... 50%	(Reading database ... 55%	(Reading database ... 60%	(Reading database ... 65%	(Reading database ... 70%	(Reading database ... 75%	(Reading database ... 80%	(Reading database ... 85%	(Reading database ... 90%	(Reading database ... 95%	(Reading database ... 100%	(Reading database ... 298475 files and directories currently installed.)	
+Preparing to unpack .../libpng-dev_1.6.37-3ubuntu0.4_amd64.deb ...	
+Unpacking libpng-dev:amd64 (1.6.37-3ubuntu0.4) over (1.6.37-3build5) ...	
+Preparing to unpack .../libpng-tools_1.6.37-3ubuntu0.4_amd64.deb ...	
+Unpacking libpng-tools (1.6.37-3ubuntu0.4) over (1.6.37-3build5) ...	
+Preparing to unpack .../libpng16-16_1.6.37-3ubuntu0.4_amd64.deb ...	
+Unpacking libpng16-16:amd64 (1.6.37-3ubuntu0.4) over (1.6.37-3build5) ...	
+Selecting previously unselected package libtiff5-dev:amd64.	
+Preparing to unpack .../libtiff5-dev_4.3.0-6ubuntu0.12_amd64.deb ...	
+Unpacking libtiff5-dev:amd64 (4.3.0-6ubuntu0.12) ...	
+Setting up libtiff5-dev:amd64 (4.3.0-6ubuntu0.12) ...	
+Setting up libpng16-16:amd64 (1.6.37-3ubuntu0.4) ...	
+Setting up libpng-tools (1.6.37-3ubuntu0.4) ...	
+Setting up libpng-dev:amd64 (1.6.37-3ubuntu0.4) ...	
+Processing triggers for libc-bin (2.35-0ubuntu3.11) ...	
+Quarto not found.
+[2026-03-16T11:15:37.005389866+0000] Installing R package: DBI (1.2.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘DBI’ ...
+* DONE (DBI)
+[2026-03-16T11:15:38.328653823+0000] Installing R package: KernSmooth (2.23-26)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘KernSmooth’ ...
+* DONE (KernSmooth)
+[2026-03-16T11:15:39.375978476+0000] Installing R package: MASS (7.3-65)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘MASS’ ...
+* DONE (MASS)
+[2026-03-16T11:15:40.491960067+0000] Installing R package: R6 (2.6.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘R6’ ...
+* DONE (R6)
+[2026-03-16T11:15:41.538916719+0000] Installing R package: RColorBrewer (1.1-3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘RColorBrewer’ ...
+* DONE (RColorBrewer)
+[2026-03-16T11:15:42.564491101+0000] Installing R package: Rcpp (1.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘Rcpp’ ...
+* DONE (Rcpp)
+[2026-03-16T11:15:44.200300557+0000] Installing R package: S7 (0.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘S7’ ...
+* DONE (S7)
+[2026-03-16T11:15:45.235732326+0000] Installing R package: backports (1.5.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘backports’ ...
+* DONE (backports)
+[2026-03-16T11:15:46.247240740+0000] Installing R package: base64enc (0.1-3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘base64enc’ ...
+* DONE (base64enc)
+[2026-03-16T11:15:47.326212173+0000] Installing R package: bigD (0.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘bigD’ ...
+* DONE (bigD)
+[2026-03-16T11:15:48.378818349+0000] Installing R package: bit (4.6.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘bit’ ...
+* DONE (bit)
+[2026-03-16T11:15:49.434001174+0000] Installing R package: bitops (1.0-9)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘bitops’ ...
+* DONE (bitops)
+[2026-03-16T11:15:50.454438642+0000] Installing R package: cli (3.6.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cli’ ...
+* DONE (cli)
+[2026-03-16T11:15:51.580817300+0000] Installing R package: clipr (0.8.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘clipr’ ...
+* DONE (clipr)
+[2026-03-16T11:15:52.643534918+0000] Installing R package: commonmark (2.0.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘commonmark’ ...
+* DONE (commonmark)
+[2026-03-16T11:15:53.698199493+0000] Installing R package: cpp11 (0.5.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cpp11’ ...
+* DONE (cpp11)
+[2026-03-16T11:15:54.782848952+0000] Installing R package: crayon (1.5.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘crayon’ ...
+* DONE (crayon)
+[2026-03-16T11:15:55.826256770+0000] Installing R package: curl (6.2.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘curl’ ...
+* DONE (curl)
+[2026-03-16T11:15:56.953489127+0000] Installing R package: data.table (1.18.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘data.table’ ...
+* DONE (data.table)
+[2026-03-16T11:15:58.258888857+0000] Installing R package: digest (0.6.39)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘digest’ ...
+* DONE (digest)
+[2026-03-16T11:15:59.305589924+0000] Installing R package: evaluate (1.0.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘evaluate’ ...
+* DONE (evaluate)
+[2026-03-16T11:16:00.353816829+0000] Installing R package: farver (2.1.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘farver’ ...
+* DONE (farver)
+[2026-03-16T11:16:01.532866074+0000] Installing R package: fastmap (1.2.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fastmap’ ...
+* DONE (fastmap)
+[2026-03-16T11:16:02.619574944+0000] Building R package: fastymd (0.1.4)
+/mnt/packages/build /mnt
+gcc -I"/opt/R/4.5.2/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c api.c -o api.o
+gcc -I"/opt/R/4.5.2/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c civil_from_days.c -o civil_from_days.o
+gcc -I"/opt/R/4.5.2/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c days_from_civil.c -o days_from_civil.o
+gcc -I"/opt/R/4.5.2/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c epochdays.c -o epochdays.o
+gcc -I"/opt/R/4.5.2/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c init.c -o init.o
+gcc -shared -L/opt/R/4.5.2/lib/R/lib -L/usr/local/lib -o fastymd.so api.o civil_from_days.o days_from_civil.o epochdays.o init.o -L/opt/R/4.5.2/lib/R/lib -lR
+* installing to library ‘/usr/lib/R’
+* installing *source* package ‘fastymd’ ...
+** this is package ‘fastymd’ version ‘0.1.4’
+** package ‘fastymd’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0’
+installing to /usr/lib/R/00LOCK-fastymd/00new/fastymd/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* creating tarball
+packaged installation of ‘fastymd’ as ‘fastymd_0.1.4_R_x86_64-pc-linux-gnu.tar.gz’
+* DONE (fastymd)
+/mnt
+Quarto not found.
+[2026-03-16T11:16:07.022290362+0000] Installing R package: fontBitstreamVera (0.1.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fontBitstreamVera’ ...
+* DONE (fontBitstreamVera)
+[2026-03-16T11:16:08.219826756+0000] Installing R package: fontLiberation (0.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fontLiberation’ ...
+* DONE (fontLiberation)
+[2026-03-16T11:16:09.445070488+0000] Installing R package: fs (1.6.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fs’ ...
+* DONE (fs)
+[2026-03-16T11:16:10.546318466+0000] Installing R package: generics (0.1.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘generics’ ...
+* DONE (generics)
+[2026-03-16T11:16:11.582694320+0000] Installing R package: glue (1.8.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘glue’ ...
+* DONE (glue)
+[2026-03-16T11:16:12.647907778+0000] Installing R package: jsonlite (2.0.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘jsonlite’ ...
+* DONE (jsonlite)
+[2026-03-16T11:16:13.773174361+0000] Installing R package: labeling (0.4.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘labeling’ ...
+* DONE (labeling)
+[2026-03-16T11:16:14.812942941+0000] Installing R package: lattice (0.22-7)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘lattice’ ...
+* DONE (lattice)
+[2026-03-16T11:16:15.912454698+0000] Installing R package: lazyeval (0.2.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘lazyeval’ ...
+* DONE (lazyeval)
+[2026-03-16T11:16:16.959459155+0000] Installing R package: magrittr (2.0.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘magrittr’ ...
+* DONE (magrittr)
+[2026-03-16T11:16:18.027356760+0000] Installing R package: mime (0.13)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘mime’ ...
+* DONE (mime)
+[2026-03-16T11:16:19.074874996+0000] Installing R package: pkgconfig (2.0.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘pkgconfig’ ...
+* DONE (pkgconfig)
+[2026-03-16T11:16:20.109693860+0000] Installing R package: prettyunits (1.2.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘prettyunits’ ...
+* DONE (prettyunits)
+[2026-03-16T11:16:21.164604092+0000] Installing R package: proxy (0.4-28)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘proxy’ ...
+* DONE (proxy)
+[2026-03-16T11:16:22.219807860+0000] Installing R package: ps (1.9.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘ps’ ...
+* DONE (ps)
+[2026-03-16T11:16:23.289038187+0000] Installing R package: rappdirs (0.3.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rappdirs’ ...
+* DONE (rappdirs)
+[2026-03-16T11:16:24.349571223+0000] Installing R package: rematch (2.0.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rematch’ ...
+* DONE (rematch)
+[2026-03-16T11:16:25.385262607+0000] Installing R package: rlang (1.1.7)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rlang’ ...
+* DONE (rlang)
+[2026-03-16T11:16:26.516945691+0000] Installing R package: rstudioapi (0.17.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rstudioapi’ ...
+* DONE (rstudioapi)
+[2026-03-16T11:16:27.576383943+0000] Installing R package: sourcetools (0.1.7-1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘sourcetools’ ...
+* DONE (sourcetools)
+[2026-03-16T11:16:28.657026157+0000] Installing R package: stringdist (0.9.15)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘stringdist’ ...
+* DONE (stringdist)
+[2026-03-16T11:16:29.715627601+0000] Installing R package: stringi (1.8.7)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘stringi’ ...
+* DONE (stringi)
+[2026-03-16T11:16:30.911056827+0000] Installing R package: sys (3.4.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘sys’ ...
+* DONE (sys)
+[2026-03-16T11:16:31.959865937+0000] Installing R package: utf8 (1.2.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘utf8’ ...
+* DONE (utf8)
+[2026-03-16T11:16:33.028255905+0000] Installing R package: uuid (1.2-1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘uuid’ ...
+* DONE (uuid)
+[2026-03-16T11:16:34.052866376+0000] Installing R package: viridisLite (0.4.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘viridisLite’ ...
+* DONE (viridisLite)
+[2026-03-16T11:16:35.151287561+0000] Installing R package: withr (3.0.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘withr’ ...
+* DONE (withr)
+[2026-03-16T11:16:36.220249918+0000] Installing R package: wk (0.9.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘wk’ ...
+* DONE (wk)
+[2026-03-16T11:16:37.335093811+0000] Installing R package: xfun (0.54)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘xfun’ ...
+* DONE (xfun)
+[2026-03-16T11:16:38.446213069+0000] Installing R package: xtable (1.8-4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘xtable’ ...
+* DONE (xtable)
+[2026-03-16T11:16:39.539494508+0000] Installing R package: yaml (2.3.12)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘yaml’ ...
+* DONE (yaml)
+[2026-03-16T11:16:40.603012511+0000] Installing R package: zip (2.3.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘zip’ ...
+* DONE (zip)
+[2026-03-16T11:16:41.672271624+0000] Installing R package: class (7.3-23)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘class’ ...
+* DONE (class)
+[2026-03-16T11:16:42.736206141+0000] Installing R package: units (1.0-0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘units’ ...
+* DONE (units)
+[2026-03-16T11:16:43.866336146+0000] Installing R package: bit64 (4.6.0-1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘bit64’ ...
+* DONE (bit64)
+[2026-03-16T11:16:44.941917804+0000] Installing R package: timechange (0.3.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘timechange’ ...
+* DONE (timechange)
+[2026-03-16T11:16:46.106567719+0000] Installing R package: tzdb (0.5.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tzdb’ ...
+* DONE (tzdb)
+[2026-03-16T11:16:47.360466391+0000] Building R package: grates (1.7.0)
+/mnt/packages/build /mnt
+* installing to library ‘/usr/lib/R’
+* installing *source* package ‘grates’ ...
+** this is package ‘grates’ version ‘1.7.0’
+** package ‘grates’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* creating tarball
+packaged installation of ‘grates’ as ‘grates_1.7.0_R_x86_64-pc-linux-gnu.tar.gz’
+* DONE (grates)
+/mnt
+Quarto not found.
+[2026-03-16T11:16:52.878310672+0000] Installing R package: fontquiver (0.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fontquiver’ ...
+* DONE (fontquiver)
+[2026-03-16T11:16:54.120888263+0000] Installing R package: V8 (8.0.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘V8’ ...
+* DONE (V8)
+[2026-03-16T11:16:56.468543381+0000] Installing R package: sp (2.2-0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘sp’ ...
+* DONE (sp)
+[2026-03-16T11:16:57.793082220+0000] Installing R package: zoo (1.8-14)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘zoo’ ...
+* DONE (zoo)
+[2026-03-16T11:16:58.910470235+0000] Installing R package: processx (3.8.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘processx’ ...
+* DONE (processx)
+[2026-03-16T11:16:59.961927113+0000] Installing R package: cachem (1.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cachem’ ...
+* DONE (cachem)
+[2026-03-16T11:17:01.022006599+0000] Installing R package: htmltools (0.5.9)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘htmltools’ ...
+* DONE (htmltools)
+[2026-03-16T11:17:02.100426060+0000] Installing R package: isoband (0.3.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘isoband’ ...
+* DONE (isoband)
+[2026-03-16T11:17:03.240822929+0000] Installing R package: later (1.4.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘later’ ...
+* DONE (later)
+[2026-03-16T11:17:04.408976036+0000] Installing R package: lifecycle (1.0.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘lifecycle’ ...
+* DONE (lifecycle)
+[2026-03-16T11:17:05.485347049+0000] Installing R package: xml2 (1.5.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘xml2’ ...
+* DONE (xml2)
+[2026-03-16T11:17:06.591990616+0000] Installing R package: askpass (1.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘askpass’ ...
+* DONE (askpass)
+[2026-03-16T11:17:07.658972721+0000] Installing R package: s2 (1.1.9)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘s2’ ...
+* DONE (s2)
+[2026-03-16T11:17:10.283902401+0000] Installing R package: highr (0.11)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘highr’ ...
+* DONE (highr)
+[2026-03-16T11:17:11.325170304+0000] Installing R package: litedown (0.8)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘litedown’ ...
+* DONE (litedown)
+[2026-03-16T11:17:12.386909566+0000] Installing R package: tinytex (0.58)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tinytex’ ...
+* DONE (tinytex)
+[2026-03-16T11:17:13.413515664+0000] Installing R package: e1071 (1.7-16)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘e1071’ ...
+* DONE (e1071)
+[2026-03-16T11:17:14.481817164+0000] Installing R package: lubridate (1.9.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘lubridate’ ...
+* DONE (lubridate)
+[2026-03-16T11:17:15.561057836+0000] Installing R package: juicyjuice (0.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘juicyjuice’ ...
+* DONE (juicyjuice)
+[2026-03-16T11:17:16.693047208+0000] Installing R package: geosphere (1.5-20)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘geosphere’ ...
+* DONE (geosphere)
+[2026-03-16T11:17:17.958074819+0000] Installing R package: callr (3.7.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘callr’ ...
+* DONE (callr)
+[2026-03-16T11:17:19.037973718+0000] Installing R package: memoise (2.0.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘memoise’ ...
+* DONE (memoise)
+[2026-03-16T11:17:20.085472420+0000] Installing R package: crosstalk (1.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘crosstalk’ ...
+* DONE (crosstalk)
+[2026-03-16T11:17:21.175147563+0000] Installing R package: fontawesome (0.5.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fontawesome’ ...
+* DONE (fontawesome)
+[2026-03-16T11:17:22.295922843+0000] Installing R package: jquerylib (0.1.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘jquerylib’ ...
+* DONE (jquerylib)
+[2026-03-16T11:17:23.393231044+0000] Installing R package: reactR (0.6.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘reactR’ ...
+* DONE (reactR)
+[2026-03-16T11:17:24.523199357+0000] Installing R package: sass (0.4.10)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘sass’ ...
+* DONE (sass)
+[2026-03-16T11:17:25.739150081+0000] Installing R package: promises (1.3.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘promises’ ...
+* DONE (promises)
+[2026-03-16T11:17:26.893617115+0000] Installing R package: gtable (0.3.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘gtable’ ...
+* DONE (gtable)
+[2026-03-16T11:17:27.956984482+0000] Installing R package: scales (1.4.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘scales’ ...
+* DONE (scales)
+[2026-03-16T11:17:29.026975211+0000] Installing R package: systemfonts (1.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘systemfonts’ ...
+* DONE (systemfonts)
+[2026-03-16T11:17:30.288619116+0000] Installing R package: vctrs (0.7.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘vctrs’ ...
+* DONE (vctrs)
+[2026-03-16T11:17:31.509336275+0000] Installing R package: openssl (2.3.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘openssl’ ...
+* DONE (openssl)
+[2026-03-16T11:17:32.630278798+0000] Installing R package: knitr (1.50)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘knitr’ ...
+* DONE (knitr)
+[2026-03-16T11:17:33.780711179+0000] Installing R package: markdown (2.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘markdown’ ...
+* DONE (markdown)
+[2026-03-16T11:17:34.851772189+0000] Installing R package: classInt (0.4-11)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘classInt’ ...
+* DONE (classInt)
+[2026-03-16T11:17:35.913223746+0000] Installing R package: conflicted (1.2.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘conflicted’ ...
+* DONE (conflicted)
+[2026-03-16T11:17:36.959702431+0000] Installing R package: bslib (0.9.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘bslib’ ...
+* DONE (bslib)
+[2026-03-16T11:17:38.742323437+0000] Installing R package: httpuv (1.6.16)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘httpuv’ ...
+* DONE (httpuv)
+[2026-03-16T11:17:40.106400129+0000] Installing R package: gdtools (0.4.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘gdtools’ ...
+* DONE (gdtools)
+[2026-03-16T11:17:41.217453696+0000] Installing R package: textshaping (1.0.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘textshaping’ ...
+* DONE (textshaping)
+[2026-03-16T11:17:42.378561529+0000] Installing R package: blob (1.2.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘blob’ ...
+* DONE (blob)
+[2026-03-16T11:17:43.422810676+0000] Installing R package: ggplot2 (4.0.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘ggplot2’ ...
+* DONE (ggplot2)
+[2026-03-16T11:17:44.820637572+0000] Installing R package: hms (1.1.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘hms’ ...
+* DONE (hms)
+[2026-03-16T11:17:45.791450377+0000] Installing R package: pillar (1.11.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘pillar’ ...
+* DONE (pillar)
+[2026-03-16T11:17:46.557899523+0000] Installing R package: purrr (1.2.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘purrr’ ...
+* DONE (purrr)
+[2026-03-16T11:17:47.290922472+0000] Installing R package: stringr (1.6.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘stringr’ ...
+* DONE (stringr)
+[2026-03-16T11:17:48.031288235+0000] Installing R package: tidyselect (1.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tidyselect’ ...
+* DONE (tidyselect)
+[2026-03-16T11:17:48.952496020+0000] Installing R package: httr (1.4.7)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘httr’ ...
+* DONE (httr)
+[2026-03-16T11:17:49.705212205+0000] Installing R package: ids (1.0.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘ids’ ...
+* DONE (ids)
+[2026-03-16T11:17:50.427041259+0000] Installing R package: sf (1.0-23)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘sf’ ...
+* DONE (sf)
+[2026-03-16T11:17:52.165973335+0000] Installing R package: rmarkdown (2.30)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rmarkdown’ ...
+* DONE (rmarkdown)
+[2026-03-16T11:17:53.203861136+0000] Installing R package: shiny (1.10.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘shiny’ ...
+* DONE (shiny)
+[2026-03-16T11:17:54.513864656+0000] Installing R package: ragg (1.5.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘ragg’ ...
+* DONE (ragg)
+[2026-03-16T11:17:56.366310527+0000] Installing R package: ggh4x (0.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘ggh4x’ ...
+* DONE (ggh4x)
+[2026-03-16T11:17:57.151578015+0000] Installing R package: progress (1.2.3)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘progress’ ...
+* DONE (progress)
+[2026-03-16T11:17:57.877626914+0000] Installing R package: tibble (3.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tibble’ ...
+* DONE (tibble)
+[2026-03-16T11:17:58.660945050+0000] Installing R package: selectr (0.5-0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘selectr’ ...
+* DONE (selectr)
+[2026-03-16T11:17:59.373399106+0000] Installing R package: snakecase (0.11.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘snakecase’ ...
+* DONE (snakecase)
+[2026-03-16T11:18:00.089330442+0000] Installing R package: gargle (1.6.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘gargle’ ...
+* DONE (gargle)
+[2026-03-16T11:18:00.865836166+0000] Installing R package: htmlwidgets (1.6.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘htmlwidgets’ ...
+* DONE (htmlwidgets)
+[2026-03-16T11:18:01.646297538+0000] Installing R package: reprex (2.1.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘reprex’ ...
+* DONE (reprex)
+[2026-03-16T11:18:02.390045356+0000] Installing R package: cellranger (1.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cellranger’ ...
+* DONE (cellranger)
+[2026-03-16T11:18:03.085632250+0000] Installing R package: dplyr (1.1.4)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘dplyr’ ...
+* DONE (dplyr)
+[2026-03-16T11:18:03.899875067+0000] Installing R package: forcats (1.0.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘forcats’ ...
+* DONE (forcats)
+[2026-03-16T11:18:04.651039232+0000] Installing R package: rematch2 (2.1.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rematch2’ ...
+* DONE (rematch2)
+[2026-03-16T11:18:05.376861608+0000] Installing R package: vroom (1.7.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘vroom’ ...
+* DONE (vroom)
+[2026-03-16T11:18:06.720573664+0000] Installing R package: rvest (1.0.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘rvest’ ...
+* DONE (rvest)
+[2026-03-16T11:18:07.514907594+0000] Installing R package: googledrive (2.1.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘googledrive’ ...
+* DONE (googledrive)
+[2026-03-16T11:18:08.310052922+0000] Installing R package: DT (0.33)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘DT’ ...
+* DONE (DT)
+[2026-03-16T11:18:09.417933277+0000] Installing R package: reactable (0.4.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘reactable’ ...
+* DONE (reactable)
+[2026-03-16T11:18:10.192202093+0000] Installing R package: readxl (1.4.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘readxl’ ...
+* DONE (readxl)
+[2026-03-16T11:18:11.028445195+0000] Installing R package: dtplyr (1.3.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘dtplyr’ ...
+* DONE (dtplyr)
+[2026-03-16T11:18:11.744713448+0000] Installing R package: tidyr (1.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tidyr’ ...
+* DONE (tidyr)
+[2026-03-16T11:18:12.520185936+0000] Installing R package: readr (2.1.6)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘readr’ ...
+* DONE (readr)
+[2026-03-16T11:18:13.447421911+0000] Installing R package: googlesheets4 (1.1.2)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘googlesheets4’ ...
+* DONE (googlesheets4)
+[2026-03-16T11:18:14.156899544+0000] Installing R package: gt (1.1.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘gt’ ...
+* DONE (gt)
+[2026-03-16T11:18:15.062075991+0000] Installing R package: broom (1.0.11)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘broom’ ...
+* DONE (broom)
+[2026-03-16T11:18:15.839048235+0000] Installing R package: cards (0.7.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cards’ ...
+* DONE (cards)
+[2026-03-16T11:18:16.570396405+0000] Installing R package: dbplyr (2.5.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘dbplyr’ ...
+* DONE (dbplyr)
+[2026-03-16T11:18:17.325485420+0000] Installing R package: fuzzyjoin (0.1.6.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘fuzzyjoin’ ...
+* DONE (fuzzyjoin)
+[2026-03-16T11:18:18.018517467+0000] Installing R package: janitor (2.2.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘janitor’ ...
+* DONE (janitor)
+[2026-03-16T11:18:18.757184618+0000] Building R package: officer (0.7.3.001)
+/mnt/packages/build /mnt
+Warning in untar2(tarfile, files, list, exdir, restore_times) :
+  skipping pax global extended headers
+* installing to library ‘/usr/lib/R’
+* installing *source* package ‘officer’ ...
+** this is package ‘officer’ version ‘0.7.3.001’
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* creating tarball
+packaged installation of ‘officer’ as ‘officer_0.7.3.001_R_x86_64-pc-linux-gnu.tar.gz’
+* DONE (officer)
+/mnt
+Quarto not found.
+[2026-03-16T11:18:32.639209693+0000] Installing R package: plotly (4.11.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘plotly’ ...
+* DONE (plotly)
+[2026-03-16T11:18:33.694348252+0000] Installing R package: haven (2.5.5)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘haven’ ...
+* DONE (haven)
+[2026-03-16T11:18:34.488341903+0000] Installing R package: modelr (0.1.11)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘modelr’ ...
+* DONE (modelr)
+[2026-03-16T11:18:35.192803835+0000] Installing R package: cardx (0.3.1)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘cardx’ ...
+* DONE (cardx)
+[2026-03-16T11:18:35.916442990+0000] Building R package: flextable (0.9.11.007)
+/mnt/packages/build /mnt
+Warning in untar2(tarfile, files, list, exdir, restore_times) :
+  skipping pax global extended headers
+* installing to library ‘/usr/lib/R’
+* installing *source* package ‘flextable’ ...
+** this is package ‘flextable’ version ‘0.9.11.007’
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* creating tarball
+packaged installation of ‘flextable’ as ‘flextable_0.9.11.007_R_x86_64-pc-linux-gnu.tar.gz’
+* DONE (flextable)
+/mnt
+Quarto not found.
+[2026-03-16T11:18:58.901046128+0000] Installing R package: tidyverse (2.0.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘tidyverse’ ...
+* DONE (tidyverse)
+[2026-03-16T11:18:59.621348766+0000] Installing R package: gtsummary (2.5.0)
+* installing to library ‘/usr/lib/R’
+* installing *binary* package ‘gtsummary’ ...
+* DONE (gtsummary)
+[2026-03-16T11:19:00.365777164+0000] Building R package: NMCleaner (0.0.0.9001)
+/mnt/packages/build /mnt
+Error in loadNamespace(x) : there is no package called ‘usethis’
+Error: unable to load R code in package ‘NMCleaner’
+Execution halted
+Warning in untar2(tarfile, files, list, exdir, restore_times) :
+  skipping pax global extended headers
+* installing to library ‘/usr/lib/R’
+* installing *source* package ‘NMCleaner’ ...
+** this is package ‘NMCleaner’ version ‘0.0.0.9001’
+** using staged installation
+** R
+** data
+*** moving datasets to lazyload DB
+** inst
+** byte-compile and prepare package for lazy loading
+ERROR: lazy loading failed for package ‘NMCleaner’
+* removing ‘/usr/lib/R/NMCleaner’## End Task Log ################################################################
+Error: Unhandled Exception: child_task=1664248889 child_task_status=failed: Error building image: Error building NMCleaner (0.0.0.9001). Build exited with non-zero status: 1
+Execution halted

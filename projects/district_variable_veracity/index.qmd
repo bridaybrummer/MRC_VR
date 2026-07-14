@@ -1,0 +1,155 @@
+---
+title: "District QA: Death Counts, Crude Rates, and Map Checks"
+description: "Simple district-level quality checks: do all districts report deaths, and which districts look high/low after matching deaths to MYPES population?"
+date: "2026-06-17"
+categories: [district, data-quality, crude-rates, deaths, mapping]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(data.table)
+  library(ggplot2)
+  library(flextable)
+  library(scales)
+  library(sf)
+})
+
+rda_candidates <- c(
+  "district_veracity_results.rda",
+  "projects/district_variable_veracity/district_veracity_results.rda"
+)
+rda_path <- rda_candidates[file.exists(rda_candidates)][1]
+
+if (is.na(rda_path) || !file.exists(rda_path)) {
+  stop("Run projects/district_variable_veracity/wrangling.R first.")
+}
+load(rda_path)
+```
+
+## Objective
+
+This page keeps the checks deliberately simple:
+
+1. plot district death counts,
+2. confirm district coverage (which districts have zero deaths),
+3. match deaths to district population (MYPES),
+4. map crude death rates to flag potential over- or under-reporting areas.
+
+No modelling or causal claims are made.
+
+## Coverage summary
+
+```{r}
+#| label: coverage-summary
+
+cat("Analysis year:", qa_summary$analysis_year, "\n")
+cat("Districts in map layer:", qa_summary$n_districts_map, "\n")
+cat("Districts with recorded deaths:", qa_summary$n_districts_with_deaths, "\n")
+cat("Districts with zero recorded deaths:", qa_summary$n_districts_no_deaths, "\n")
+cat("Unmatched death-district names (not in map):", qa_summary$n_death_district_names_not_in_map, "\n")
+```
+
+## Districts with zero deaths
+
+```{r}
+#| label: tbl-zero-deaths
+#| tbl-cap: "Table 1. Districts with zero deaths in the analysis year."
+
+zero_dt <- district_coverage[has_deaths == FALSE, .(province, district_name, deaths)]
+setorder(zero_dt, province, district_name)
+
+flextable(as.data.frame(zero_dt)) |>
+  colformat_double(j = "deaths", digits = 0, big.mark = ",") |>
+  theme_booktabs() |>
+  bold(part = "header") |>
+  autofit()
+```
+
+## Death counts by district
+
+```{r}
+#| label: fig-counts
+#| fig-cap: "Fig. 1. Death counts by district."
+#| fig-width: 9
+#| fig-height: 8
+
+fig_counts_bar
+```
+
+## Crude rate by district
+
+```{r}
+#| label: fig-rates
+#| fig-cap: "Fig. 2. Crude death rate per 100,000 by district (deaths / MYPES population)."
+#| fig-width: 9
+#| fig-height: 8
+
+fig_rates_bar
+```
+
+## District maps
+
+```{r}
+#| label: fig-map-counts
+#| fig-cap: "Fig. 3. Map of district death counts."
+#| fig-width: 8
+#| fig-height: 6
+
+fig_map_counts
+```
+
+```{r}
+#| label: fig-map-rates
+#| fig-cap: "Fig. 4. Map of district crude death rate per 100,000."
+#| fig-width: 8
+#| fig-height: 6
+
+fig_map_rates
+```
+
+## Highest and lowest crude-rate districts
+
+```{r}
+#| label: tbl-high-low-rates
+#| tbl-cap: "Table 2. Top/bottom 10 districts by crude death rate per 100,000."
+
+high <- district_rate_table[!is.na(crude_rate_per_100k)][1:10,
+  .(group = "Highest", province, district_name, deaths, population, crude_rate_per_100k)]
+low <- district_rate_table[!is.na(crude_rate_per_100k)][.N-9:.N,
+  .(group = "Lowest", province, district_name, deaths, population, crude_rate_per_100k)]
+tbl_hl <- rbind(high, low, fill = TRUE)
+setorder(tbl_hl, group, -crude_rate_per_100k)
+
+flextable(as.data.frame(tbl_hl)) |>
+  colformat_double(j = c("deaths", "population"), digits = 0, big.mark = ",") |>
+  colformat_double(j = "crude_rate_per_100k", digits = 1, big.mark = ",") |>
+  theme_booktabs() |>
+  bold(part = "header") |>
+  autofit()
+```
+
+## District name mismatches
+
+```{r}
+#| label: tbl-unmatched
+#| tbl-cap: "Table 3. Death-district names that did not match the district map after standardization."
+
+unmatched_tbl <- deaths_not_in_map
+if (nrow(unmatched_tbl) == 0) {
+  unmatched_tbl <- data.table(note = "No unmatched district names")
+}
+
+flextable(as.data.frame(unmatched_tbl)) |>
+  theme_booktabs() |>
+  bold(part = "header") |>
+  autofit()
+```
+
+## Interpretation notes
+
+- These are descriptive QA checks only.
+- Districts with zero deaths or extreme crude rates should be reviewed for completeness/coding issues before interpreting as true epidemiological differences.
+- Extreme high/low districts can reflect real variation, denominator mismatch, or under/over-reporting; this page is intended to flag where to investigate further.

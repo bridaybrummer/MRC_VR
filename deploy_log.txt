@@ -1,0 +1,29 @@
+── Preparing for deployment ────────────────────────────────────────────────────
+✔ Re-deploying "dashbaord" using "server: shinyapps.io / username: briday"
+ℹ Looking up application with id "13766338"...
+✔ Found application <https://briday.shinyapps.io/dashbaord/>
+ℹ Bundling 15 files: 'app_aggregated.R', 'aggregated_data/.gitignore', 'aggregated_data/age_sex_year.csv', 'aggregated_data/cause_province_year.csv', 'aggregated_data/cause_year.csv', 'aggregated_data/district_year.csv', 'aggregated_data/full_aggregation.csv', 'aggregated_data/lgh_cause_year.csv', 'aggregated_data/monthly.csv', 'aggregated_data/province_year.csv', 'aggregated_data/pyramid_data.csv', 'aggregated_data/weekly_cause.csv', 'aggregated_data/weekly_province.csv', 'shape_files.rda', and 'population_data.rda'
+ℹ Capturing R dependencies
+✔ Found 86 dependencies
+✔ Created 64,985,712b bundle
+ℹ Uploading bundle...
+✔ Uploaded bundle with id 11715579
+── Deploying to server ─────────────────────────────────────────────────────────
+Error in `POST()`:
+! <https://api.shinyapps.io/v1/applications/13766338/deploy> failed with
+  HTTP status 409
+Unable to dispatch task for application=13766338 as there are 1 tasks already
+in progress. This is most likely a transient error. Please try again in a bit.
+If this error persists please contact support.
+Backtrace:
+    ▆
+ 1. └─rsconnect::deployApp(...)
+ 2.   └─client$deployApplication(application, bundle$id, space)
+ 3.     └─rsconnect:::POST_JSON(service, authInfo, path, json)
+ 4.       └─rsconnect:::POST(...)
+ 5.         └─rsconnect:::httpRequestWithBody(...)
+ 6.           └─rsconnect:::handleResponse(...)
+ 7.             └─rsconnect (local) reportError(unlist(json$error))
+ 8.               └─cli::cli_abort(...)
+ 9.                 └─rlang::abort(...)
+Execution halted

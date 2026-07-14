@@ -1,0 +1,1063 @@
+---
+title: "Free State Cause-of-Death Coding Quality"
+subtitle: "From multiple-cause certification (Cause A–D) to the WHO underlying cause of death (UCoD)"
+description: "Data-quality assessment of the Part I cause lines and the derived underlying cause in the Isibalo/MACOD microdata, using the Free State province as a worked example, with implications for automated coding (IRIS / DoRIS)."
+date: "2026-06-16"
+categories: [data-quality, cause-of-death, multiple-causes, UCoD, WHO, IRIS, DoRIS, free-state]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+toc: true
+toc-depth: 3
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(arrow)
+  library(data.table)
+  library(ggplot2)
+  library(knitr)
+  library(scales)
+})
+
+theme_set(theme_minimal(base_size = 12))
+
+# ── locate the Free State dataset regardless of render cwd ───────────────────
+find_data_file <- function(rel) {
+  cand <- c(
+    rel,
+    file.path("../..", rel),
+    file.path("/Users/briday/Desktop/study_stats/MRC_VR", rel)
+  )
+  hit <- cand[file.exists(cand)]
+  if (length(hit)) normalizePath(hit[1]) else NULL
+}
+
+fs_path <- find_data_file("data/macod_isibalo/free_state_mortality.feather")
+stopifnot(!is.null(fs_path))
+fs <- as.data.table(read_feather(fs_path))
+
+# ── cleaning + classification helpers ────────────────────────────────────────
+# Sentinel / placeholder tokens that are NOT genuine ICD-10 codes.
+SENTINELS <- c("", "NA", "NULL", "....", "XXXX", "888", "000", "8888", "9999", "9996", "9998")
+
+clean_code <- function(x) {
+  y <- toupper(trimws(as.character(x)))
+  y[y %in% SENTINELS] <- NA_character_
+  y
+}
+
+# A "real" ICD-10 code: a letter (A–U) followed by a digit (optionally more).
+is_real_icd <- function(x) !is.na(x) & grepl("^[A-U][0-9]", x)
+
+# WHO / GBD-style "garbage" (ill-defined, non-specific, or impossible-as-UCoD)
+# codes. Pragmatic working flag, not the full GBD redistribution list.
+is_garbage_ucod <- function(x) {
+  L  <- substr(x, 1, 1)
+  n3 <- substr(x, 1, 3)
+  is.na(x) |
+    L == "R" |                                          # symptoms / ill-defined
+    n3 %in% c("I46","I50","I51","J96","A41","I99",
+              "J81","K72","N18","N19","E86","P28") |     # modes of death / non-specific
+    L == "U"                                             # special / emergency / COVID U-codes
+}
+
+cause_cols <- c("cause_a","cause_b","cause_c","cause_d")
+for (cc in c(cause_cols, "underlying_cause")) fs[[cc]] <- clean_code(fs[[cc]])
+
+# multiple-cause depth: number of Part I lines carrying a real ICD code
+fs[, n_cause := is_real_icd(cause_a) + is_real_icd(cause_b) +
+                is_real_icd(cause_c) + is_real_icd(cause_d)]
+
+# flags
+fs[, ucod_real    := is_real_icd(underlying_cause)]
+fs[, ucod_garbage := is_garbage_ucod(underlying_cause)]
+fs[, a_eq_ucod    := !is.na(cause_a) & !is.na(underlying_cause) & cause_a == underlying_cause]
+
+N_TOT  <- nrow(fs)
+YR_RNG <- range(fs$death_year_int, na.rm = TRUE)
+
+# unnatural-death availability (used in the poisoning section, §7)
+nu     <- suppressWarnings(as.integer(fs$natural_unnatural))
+N_UNNAT <- sum(nu == 2L, na.rm = TRUE)                         # unnatural
+N_UNK   <- sum(nu == 8L, na.rm = TRUE)                         # manner undetermined
+N_EXT   <- sum(!is.na(fs$underlying_cause) &
+               substr(fs$underlying_cause, 1, 1) %in% c("V","W","X","Y"))
+```
+
+# Why this matters
+
+Every death certificate in the South African civil-registration system records a
+**sequence of causes** in Part I of the medical certificate (the "Cause A → B → C
+→ D" chain), plus contributing conditions in Part II. From that free sequence a
+single **underlying cause of death (UCoD)** is derived — the condition that, per
+the WHO definition, *"initiated the train of morbid events leading directly to
+death"* (ICD-10, Volume 2). The UCoD is what almost every published mortality
+statistic, cause-specific rate, and excess-mortality model ultimately uses.
+
+The quality of that single UCoD is therefore only as good as (a) the underlying
+Cause A–D certification, and (b) the rule engine that selects the UCoD from it.
+This page profiles both, using the **Free State** province (`r format(N_TOT, big.mark=",")`
+deaths, `r YR_RNG[1]`–`r YR_RNG[2]`) from the Isibalo/MACOD microdata as a
+worked, reproducible example.
+
+::: callout-note
+## Free State as the worked example
+The Free State subset is built by `data/macod_isibalo/build_free_state.R` from
+the canonical MACOD dataset (`load_macod.R`). "Free State" here means **place of
+death** (StatsSA province code 4). All metrics below recompute directly from
+`free_state_mortality.feather`, so the page re-renders as the data is refreshed.
+:::
+
+# 1. Completeness of the Cause A–D lines
+
+The first quality question is simply: **is each cause line populated?**
+
+```{r}
+#| label: completeness
+nz <- function(x) !is.na(x)   # already cleaned to NA for sentinels
+comp <- fs[, .(
+  Deaths        = .N,
+  `Cause A (%)` = round(100 * mean(nz(cause_a)), 1),
+  `Cause B (%)` = round(100 * mean(nz(cause_b)), 1),
+  `Cause C (%)` = round(100 * mean(nz(cause_c)), 1),
+  `Cause D (%)` = round(100 * mean(nz(cause_d)), 1),
+  `UCoD (%)`    = round(100 * mean(nz(underlying_cause)), 1)
+), keyby = .(Year = death_year_int)]
+kable(comp, caption = "Share of records with a real ICD code on each Part I line and on the derived UCoD, by year.")
+```
+
+**Reading this table.** Cause A and the UCoD are essentially always present —
+that is expected, because a certificate with no immediate cause cannot be
+processed. The steep fall-off from Cause A → B → C → D is **not** missingness in
+the error sense: it reflects how many steps of the causal chain the certifier
+actually wrote. A certificate that legitimately has a single cause will show
+Cause A only. The diagnostic concern is the opposite extreme — an implausibly
+**high** share of single-line certificates (see §2).
+
+::: callout-warning
+## The `888` / `000` placeholder trap
+In the raw StatsSA files, empty cause lines are not blank — they are filled with
+sentinel tokens such as **`888`** ("no further cause") and **`000`**. A naïve
+`is.na()` or `nchar() > 0` completeness check counts these as *populated*,
+inflating apparent multiple-cause depth to ~100%. Here they are stripped to `NA`
+before any counting (`SENTINELS` in the setup chunk). Any downstream analysis of
+Cause B–D must do the same or it will badly over-count comorbidity.
+:::
+
+# 2. Multiple-cause depth (how rich is the certification?)
+
+```{r}
+#| label: depth-dist
+depth <- fs[, .(Deaths = .N), keyby = .(`Real codes in Part I` = n_cause)]
+depth[, `Share (%)` := round(100 * Deaths / sum(Deaths), 1)]
+kable(depth, caption = "Distribution of the number of genuine ICD codes recorded across Cause A–D.")
+```
+
+```{r}
+#| label: depth-trend
+#| fig-cap: "Mean number of certified causes per certificate, Free State. A rising line indicates richer (more informative) certification over time."
+#| fig-width: 8
+#| fig-height: 4.5
+dt_mean <- fs[, .(mean_n = mean(n_cause),
+                  pct_single = 100 * mean(n_cause <= 1)),
+              keyby = death_year_int]
+ggplot(dt_mean, aes(death_year_int, mean_n)) +
+  geom_line(linewidth = 1, colour = "#2c7fb8") +
+  geom_point(size = 2, colour = "#2c7fb8") +
+  scale_x_continuous(breaks = dt_mean$death_year_int) +
+  labs(x = "Death year", y = "Mean # causes (Cause A–D)",
+       title = "Certification depth over time — Free State")
+```
+
+```{r}
+#| label: single-cause
+pct_single_overall <- round(100 * mean(fs$n_cause <= 1), 1)
+pct_zero <- round(100 * mean(fs$n_cause == 0), 1)
+```
+
+**Interpretation.** Around **`r pct_single_overall`%** of Free State certificates
+carry at most one genuine cause code, and **`r pct_zero`%** carry none that pass
+the ICD-format check (these are dominated by ill-defined `R` codes — see §5).
+Mean depth rises gradually across the series, which is the *desired* direction:
+more complete causal chains give the UCoD-selection rules more to work with. A
+flat or falling line, or a province stuck near "1 cause", is a red flag for
+**thin certification** — the certifier writing only the mode of death.
+
+# 3. Cause A vs the underlying cause — the structural break
+
+If Cause A (the immediate cause) frequently *equals* the UCoD, the certificate is
+effectively single-step: no causal reasoning has been encoded. Tracking
+`Cause A == UCoD` over time is one of the most revealing QC signals in this
+dataset.
+
+```{r}
+#| label: a-eq-ucod
+#| fig-cap: "Percentage of certificates where Cause A is identical to the selected underlying cause. The abrupt 2009→2010 drop marks a change in coding process, not in mortality."
+#| fig-width: 8
+#| fig-height: 4.5
+aeq <- fs[, .(pct = 100 * mean(a_eq_ucod, na.rm = TRUE)), keyby = death_year_int]
+ggplot(aeq, aes(death_year_int, pct)) +
+  geom_line(linewidth = 1, colour = "#d95f0e") +
+  geom_point(size = 2, colour = "#d95f0e") +
+  scale_x_continuous(breaks = aeq$death_year_int) +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = "Death year", y = "Cause A == UCoD (%)",
+       title = "Immediate cause = underlying cause — Free State")
+```
+
+::: callout-important
+## A discontinuity that is an artefact, not an epidemiological signal
+`Cause A == UCoD` sits around **70–73%** for 2006–2009 and then **collapses to
+~25–30%** from 2010 onward. Mortality patterns do not change that abruptly. This
+is the fingerprint of a **change in the coding/processing pipeline** (most
+plausibly the move toward rule-based selection of the underlying cause rather
+than defaulting to the first-written line). Any trend analysis that crosses
+2009/2010 — including cause-specific Free State trends — must treat this as a
+**break point** and not interpret pre/post differences as real change. This is
+exactly the kind of issue automated coding (IRIS/DoRIS) is meant to make
+explicit and consistent (see §12).
+:::
+
+# 4. Which line of the chain does the UCoD come from?
+
+§3 reduced the comparison to a single yes/no: *does the UCoD equal Cause A?* But
+the underlying cause can legitimately be drawn from **any** line of the Part I
+chain. Under the WHO **General Principle**, the UCoD is the condition entered
+*alone* on the **lowest used line** of Part I, provided everything above it could
+plausibly have resulted from it. So the sharper, more general question — and the
+one most of this report turns on — is not "is the UCoD Cause A?" but **"which of
+Cause A / B / C / D is the UCoD actually drawn from?"**
+
+```{r}
+#| label: chain-origin
+p3 <- function(x) substr(x, 1, 3)
+cc <- fs[is_real_icd(underlying_cause)]                 # codeable UCoD only
+N_U <- nrow(cc)
+cc[, `:=`(rA = is_real_icd(cause_a), rB = is_real_icd(cause_b),
+          rC = is_real_icd(cause_c), rD = is_real_icd(cause_d))]
+cc[, eA := rA & cause_a == underlying_cause]
+cc[, eB := rB & cause_b == underlying_cause]
+cc[, eC := rC & cause_c == underlying_cause]
+cc[, eD := rD & cause_d == underlying_cause]
+cc[, origin := fifelse(eA, "Cause A (immediate)",
+              fifelse(eB, "Cause B",
+              fifelse(eC, "Cause C",
+              fifelse(eD, "Cause D", "Matches no Part I line"))))]
+ord <- c("Cause A (immediate)", "Cause B", "Cause C", "Cause D",
+         "Matches no Part I line")
+otab <- cc[, .(Deaths = .N), keyby = .(`UCoD is identical to` = factor(origin, ord))]
+otab[, `Share (%)` := round(100 * Deaths / sum(Deaths), 1)]
+kable(otab, caption = sprintf("Which Part I line the underlying cause is identical to (exact code match, first match counted A→D), among the %s deaths with a codeable ICD-10 UCoD.", format(N_U, big.mark = ",")))
+```
+
+```{r}
+#| label: chain-granularity
+cc[, eX := eA | eB | eC | eD]                           # exact match to any line
+cc[, pX := (rA & p3(cause_a) == p3(underlying_cause)) | # 3-char block match
+           (rB & p3(cause_b) == p3(underlying_cause)) |
+           (rC & p3(cause_c) == p3(underlying_cause)) |
+           (rD & p3(cause_d) == p3(underlying_cause))]
+pct_exact_chain <- round(100 * mean(cc$eX), 1)
+pct_pref_chain  <- round(100 * mean(cc$pX), 1)
+pct_drift       <- round(100 * mean(cc$pX & !cc$eX), 1)
+pct_orphan      <- round(100 * mean(!cc$pX), 1)
+```
+
+```{r}
+#| label: chain-origin-fig
+#| fig-cap: "Origin of the underlying cause within the Part I chain, Free State (deaths with a codeable UCoD). 'Matches no Part I line' is dominated by code-granularity drift, not lost provenance — see the callout below."
+#| fig-width: 8
+#| fig-height: 4.5
+of <- cc[, .(pct = 100 * .N / N_U), keyby = .(origin = factor(origin, ord))]
+ggplot(of, aes(origin, pct)) +
+  geom_col(fill = "#41ab5d") +
+  geom_text(aes(label = round(pct, 1)), vjust = -0.4, size = 3.2) +
+  theme(axis.text.x = element_text(angle = 18, hjust = 1)) +
+  labs(x = NULL, y = "Share of codeable-UCoD deaths (%)",
+       title = "Which Part I line is the UCoD drawn from? — Free State")
+```
+
+::: callout-important
+## Most "orphan" UCoDs are granularity drift, not a broken chain
+Taken literally, the UCoD is *exactly* identical to one of Cause A–D in only
+**`r pct_exact_chain`%** of codeable records — and matches **no** Part I line in
+the rest, which looks alarming. But matching at the **3-character ICD block**
+level — treating `J18` on the cause line and `J189` as the UCoD as the *same*
+condition — lifts traceability to **`r pct_pref_chain`%**. That
+**`r pct_drift`-percentage-point** gap is **pure code-granularity drift** between
+the certified cause lines and the derived UCoD, not a severed chain. Only
+**`r pct_orphan`%** of UCoDs trace to no Part I line even at block level, and
+almost none of those are recoverable from Part II or the injury fields.
+**Implication:** any UCoD-vs-chain reconciliation — and any IRIS/DoRIS input
+(§12) — must first normalise code granularity, or it will spuriously flag roughly
+half the records as "UCoD not in the chain".
+:::
+
+```{r}
+#| label: chain-multiline
+cc[, nlines := rA + rB + rC + rD]
+ml <- cc[nlines >= 2]                                   # chain selection possible
+pct_deeper_ml <- round(100 * mean(ml$eB | ml$eC | ml$eD), 1)
+by_yr <- ml[, .(pct_deeper = 100 * mean(eB | eC | eD)), keyby = death_year_int]
+```
+
+```{r}
+#| label: chain-year-fig
+#| fig-cap: "Among certificates with two or more completed Part I lines, the share where the UCoD is drawn from a deeper line (Cause B/C/D) rather than the immediate Cause A. The 2009→2010 collapse is the same pipeline change seen in §3."
+#| fig-width: 8
+#| fig-height: 4.5
+ggplot(by_yr, aes(death_year_int, pct_deeper)) +
+  geom_line(linewidth = 1, colour = "#d95f0e") +
+  geom_point(size = 2, colour = "#d95f0e") +
+  scale_x_continuous(breaks = by_yr$death_year_int) +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = "Death year", y = "UCoD from a deeper line B/C/D (%)",
+       title = "Where in the chain the UCoD is selected (multi-line certificates)")
+```
+
+**Interpretation.** When the certificate carries a real chain (**`r format(nrow(ml), big.mark=",")`**
+certificates with ≥2 completed Part I lines), the UCoD is drawn from a *deeper*
+line — Cause B, C or D rather than the immediate Cause A — in **`r pct_deeper_ml`%**
+of cases. That is the WHO General Principle visibly at work: the engine reaches
+past the immediate cause to the originating condition. But *how far* it reaches
+carries the now-familiar 2009/2010 fingerprint: deeper-line selection runs ~66%
+in 2006–2009, then drops to ~13–17% from 2010 onward. The **rule that maps the
+Part I chain onto a single UCoD changed at that boundary** — which is precisely
+why a legacy series and an IRIS-recoded series are not comparable across it (§12).
+
+# 5. Ill-defined and "garbage" underlying causes (WHO lens)
+
+The WHO and the Global Burden of Disease programme classify certain UCoD values
+as **"garbage codes"** — codes that are either ill-defined (the `R00–R99`
+symptoms chapter) or that name a *mode of death* (e.g. cardiac arrest `I46`,
+heart failure `I50`, respiratory failure `J96`, sepsis `A41`) which cannot
+logically be an *underlying* cause. A high garbage-code share erodes the
+usefulness of cause-specific statistics.
+
+```{r}
+#| label: garbage
+garb <- fs[, .(
+  Deaths              = .N,
+  `R99 as UCoD (%)`   = round(100 * mean(!is.na(underlying_cause) & underlying_cause == "R99"), 1),
+  `Any R-code (%)`    = round(100 * mean(!is.na(underlying_cause) & substr(underlying_cause,1,1) == "R"), 1),
+  `Garbage UCoD (%)`  = round(100 * mean(ucod_garbage), 1)
+), keyby = .(Year = death_year_int)]
+kable(garb, caption = "Ill-defined and garbage-code share of the underlying cause, by year (WHO/GBD-style flag).")
+```
+
+```{r}
+#| label: garbage-fig
+#| fig-cap: "Garbage-code share of the UCoD over time, Free State. The 2020–2021 spike coincides with COVID-19 pandemic disruption of certification."
+#| fig-width: 8
+#| fig-height: 4.5
+gf <- fs[, .(pct = 100 * mean(ucod_garbage)), keyby = death_year_int]
+ggplot(gf, aes(death_year_int, pct)) +
+  geom_col(fill = "#756bb1") +
+  geom_text(aes(label = round(pct, 0)), vjust = -0.4, size = 3.2) +
+  scale_x_continuous(breaks = gf$death_year_int) +
+  labs(x = "Death year", y = "Garbage UCoD (%)",
+       title = "Ill-defined underlying cause — Free State")
+```
+
+**Interpretation.** Roughly **one in five** Free State deaths has an ill-defined
+or non-specific underlying cause in a typical year, dominated by `R99`
+("ill-defined and unknown causes"). The share jumps sharply in **2020–2021**
+(peaking around 35% in 2021), consistent with pandemic-era pressure on
+certification and with provisional/U-coded COVID entries. For any cause-specific
+Free State analysis, these records either need **redistribution** (GBD-style) or
+explicit sensitivity analysis.
+
+# 6. Three ways to pick the tabulation cause — which is cleanest?
+
+The garbage burden in §5 was measured on the *processed* underlying cause. But
+that is only **one of three candidate rules** an analyst could use to choose the
+single cause a death is tabulated under. Each can be scored for ill-defined /
+garbage burden, and they do not agree:
+
+1. **Immediate cause** — just take **Cause A**, the first line written. Simplest,
+   but it is the *mode of death* end of the chain.
+2. **Lowest completed Part I line** — take the deepest line the certifier filled
+   in (Cause D if present, else C, else B, else A), as a crude proxy for "most
+   upstream". No selection rules applied.
+3. **Processed UCoD (IRIS / DoRIS)** — apply the WHO ICD selection and
+   modification rules to the whole certificate. This is what the published
+   `underlying_cause` represents, and what an IRIS/DoRIS pipeline (ICD-10 or
+   ICD-11) would standardise.
+
+```{r}
+#| label: three-methods
+# candidate tabulation causes
+fs[, m_imm  := cause_a]                                    # 1: immediate
+fs[, rD := is_real_icd(cause_d)]; fs[, rC := is_real_icd(cause_c)]
+fs[, rB := is_real_icd(cause_b)]; fs[, rA := is_real_icd(cause_a)]
+fs[, m_low  := fifelse(rD, cause_d,                        # 2: lowest completed line
+               fifelse(rC, cause_c,
+               fifelse(rB, cause_b,
+               fifelse(rA, cause_a, NA_character_))))]
+fs[, m_ucod := underlying_cause]                           # 3: processed UCoD
+
+meth <- data.table(
+  `Selection rule` = c("1. Immediate cause (Cause A)",
+                       "2. Lowest completed Part I line",
+                       "3. Processed UCoD (IRIS/DoRIS-style)"),
+  `Garbage / ill-defined (%)` = c(round(100 * mean(is_garbage_ucod(fs$m_imm)), 1),
+                                  round(100 * mean(is_garbage_ucod(fs$m_low)), 1),
+                                  round(100 * mean(is_garbage_ucod(fs$m_ucod)), 1)),
+  `R-code (%)`     = c(round(100 * mean(!is.na(fs$m_imm)  & substr(fs$m_imm,1,1)  == "R"), 1),
+                       round(100 * mean(!is.na(fs$m_low)  & substr(fs$m_low,1,1)  == "R"), 1),
+                       round(100 * mean(!is.na(fs$m_ucod) & substr(fs$m_ucod,1,1) == "R"), 1)),
+  `Missing / non-ICD (%)` = c(round(100 * mean(!is_real_icd(fs$m_imm)), 1),
+                              round(100 * mean(!is_real_icd(fs$m_low)), 1),
+                              round(100 * mean(!is_real_icd(fs$m_ucod)), 1))
+)
+kable(meth, caption = "Ill-defined / garbage burden of three candidate rules for choosing the single tabulation cause, Free State (all years).")
+```
+
+```{r}
+#| label: three-methods-fig
+#| fig-cap: "Garbage / ill-defined share by year under each of the three selection rules, Free State. The processed UCoD is consistently the cleanest; taking the lowest completed line is no better \u2014 often worse \u2014 than the immediate cause."
+#| fig-width: 8
+#| fig-height: 4.5
+my <- rbindlist(list(
+  fs[, .(rule = "Immediate (Cause A)",  pct = 100 * mean(is_garbage_ucod(m_imm))),  by = death_year_int],
+  fs[, .(rule = "Lowest Part I line",   pct = 100 * mean(is_garbage_ucod(m_low))),  by = death_year_int],
+  fs[, .(rule = "Processed UCoD",       pct = 100 * mean(is_garbage_ucod(m_ucod))), by = death_year_int]
+))
+ggplot(my, aes(death_year_int, pct, colour = rule)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.6) +
+  scale_x_continuous(breaks = unique(my$death_year_int)) +
+  scale_colour_manual(values = c("Immediate (Cause A)" = "#d95f0e",
+                                 "Lowest Part I line"  = "#756bb1",
+                                 "Processed UCoD"      = "#2c7fb8")) +
+  labs(x = "Death year", y = "Garbage / ill-defined (%)", colour = NULL,
+       title = "Garbage burden by tabulation-cause selection rule — Free State")
+```
+
+```{r}
+#| label: three-methods-vals
+g_imm  <- round(100 * mean(is_garbage_ucod(fs$m_imm)), 1)
+g_low  <- round(100 * mean(is_garbage_ucod(fs$m_low)), 1)
+g_ucod <- round(100 * mean(is_garbage_ucod(fs$m_ucod)), 1)
+```
+
+**Interpretation.** The three rules are *not* interchangeable. Taking the
+**immediate cause** leaves **`r g_imm`%** garbage and taking the **lowest
+completed line** leaves **`r g_low`%** — essentially the same, and in several
+years the lowest line is actually *worse*. That is counter-intuitive until you
+remember the chain is often written **out of order or padded**: the last filled
+line is frequently itself a mode of death (`R99`, cardiac/respiratory arrest), so
+"go deepest" does not mean "go most upstream". Only the **rule-based processed
+UCoD** meaningfully reduces the burden, to **`r g_ucod`%**, because the WHO
+selection/modification rules can *reject* an ill-defined line in favour of a
+specific one elsewhere on the certificate.
+
+::: callout-important
+## What this says about IRIS / DoRIS and ICD-10 vs ICD-11
+- **Automated processing earns its keep here.** The ~`r round(g_imm - g_ucod,0)`-point
+  gap between the immediate cause and the processed UCoD is the value the WHO
+  selection rules add — and it is exactly that logic IRIS/DoRIS encode
+  *reproducibly*. A naive "Cause A" or "lowest line" tabulation throws that away.
+- **It is a floor, not a fix.** Even the processed UCoD sits at `r g_ucod`%
+  garbage. IRIS/DoRIS standardise *selection*; they do not invent specificity
+  where the certificate only ever named a symptom. Garbage-code redistribution
+  (§5) is still required afterwards.
+- **ICD-10 → ICD-11.** Re-coding under ICD-11 (with its different chapter
+  structure, post-coordination, and revised modes-of-death handling) is itself a
+  *fourth* rule and will shift these numbers again. As with the 2009/2010 break
+  (§3–§4), an ICD-10 series and an ICD-11 series are **not directly comparable**;
+  any migration needs a dual-coded bridge period on a subset like this one.
+:::
+
+# 7. Worked rejections: when a better UCoD beats the line written
+
+§6 argued in aggregate that the processed UCoD carries less garbage than the
+immediate cause or the lowest line. This section makes that **concrete** by
+pulling real Free State certificates where the immediate cause (Cause A) is a
+*mode of death* — cardiac arrest, respiratory failure, sepsis, dehydration — and
+the WHO rules correctly **reject it** and select a specific underlying cause from
+elsewhere on the certificate. These are exactly the cases an IRIS/DoRIS pipeline
+handles automatically and a naive "Cause A" or "lowest line" tabulation gets
+wrong.
+
+```{r}
+#| label: reject-setup
+p3 <- function(x) substr(x, 1, 3)
+low_line <- fs$m_low   # lowest completed Part I line, built in §6
+
+# certificates where Cause A is garbage/mode-of-death but the UCoD is specific
+ucod_spec <- is_real_icd(fs$underlying_cause) & !is_garbage_ucod(fs$underlying_cause)
+rej_imm <- fs[is_garbage_ucod(cause_a) & ucod_spec &
+              p3(cause_a) != p3(underlying_cause)]
+rej_low <- fs[is_garbage_ucod(low_line) & ucod_spec &
+              p3(low_line) != p3(underlying_cause)]
+pct_rej_imm <- round(100 * nrow(rej_imm) / nrow(fs), 1)
+n_rej_imm   <- nrow(rej_imm)
+n_rej_low   <- nrow(rej_low)
+
+# short clinical labels for the codes that show up in these rejections
+lab <- c(
+  E86 = "Volume depletion (dehydration)", A09 = "Infectious gastroenteritis / diarrhoea",
+  I46 = "Cardiac arrest",                 I10 = "Essential hypertension",
+  I50 = "Heart failure",                  I11 = "Hypertensive heart disease",
+  J96 = "Respiratory failure",            J18 = "Pneumonia, organism unspecified",
+  A41 = "Sepsis",                         A16 = "Respiratory tuberculosis",
+  N19 = "Unspecified kidney failure",     N18 = "Chronic kidney disease",
+  E14 = "Diabetes mellitus (unspecified)",D84 = "Immunodeficiency (HIV-associated)",
+  B20 = "HIV disease",                    B23 = "HIV disease", B33 = "Viral disease",
+  J44 = "COPD",                           I64 = "Stroke, unspecified",
+  I21 = "Acute myocardial infarction",    J22 = "Acute lower respiratory infection",
+  P96 = "Perinatal condition")
+llab <- function(code3) ifelse(is.na(lab[code3]), "—", lab[code3])
+```
+
+```{r}
+#| label: reject-pairs
+rp <- rej_imm[, .N, by = .(a3 = p3(cause_a), u3 = p3(underlying_cause))][order(-N)][1:12]
+rp_tbl <- data.table(
+  `Immediate cause written (Cause A) — a mode of death` = paste0(rp$a3, "  ", llab(rp$a3)),
+  `Underlying cause selected instead (UCoD)`            = paste0(rp$u3, "  ", llab(rp$u3)),
+  Certificates = format(rp$N, big.mark = ",")
+)
+kable(rp_tbl, caption = sprintf("The 12 most common rejections in the Free State data: Cause A is a non-specific mode of death, but the rules select a specific underlying cause from another line. These %s certificates (%s%% of all deaths) would be mis-tabulated by an immediate-cause rule.", format(n_rej_imm, big.mark = ","), pct_rej_imm))
+```
+
+**How to read these pairs.** Every row is a place where "tabulate the immediate
+cause" would have recorded a *non-actionable mode of death* and the WHO selection
+rules recovered the real story:
+
+- **Dehydration → diarrhoeal disease** (`E86 → A09`, the single most common
+  rejection): the patient died dehydrated, but the *cause* was infectious
+  gastroenteritis. An immediate-cause count would log "volume depletion"; the
+  UCoD correctly logs a vaccine-/WASH-preventable enteric infection.
+- **Cardiac arrest → hypertension** (`I46 → I10`) and **heart failure →
+  hypertensive heart disease** (`I50 → I11`): the heart stopping is the mode;
+  hypertension is the modifiable underlying cause a programme would target.
+- **Respiratory failure → pneumonia or TB** (`J96 → J18` / `A16`): "the lungs
+  failed" versus a treatable infection — and in South Africa often **TB**, which
+  has completely different surveillance implications.
+- **Sepsis → diabetes, pneumonia, or HIV-related immunodeficiency**
+  (`A41 → E14` / `J18` / `D84`): sepsis is the final common pathway; the UCoD
+  names the chronic condition that let it happen.
+
+```{r}
+#| label: reject-modes
+modes <- c("E86","I46","I50","J96","A41","N19","N18","R57")
+mk <- rbindlist(lapply(modes, function(m) {
+  s <- rej_imm[p3(cause_a) == m]
+  if (!nrow(s)) return(NULL)
+  top <- s[, .N, by = .(u3 = p3(underlying_cause))][order(-N)][1:3]
+  data.table(
+    `Mode of death on Cause A` = paste0(m, "  ", llab(m)),
+    `Certificates rejected`    = format(nrow(s), big.mark = ","),
+    `Top underlying causes selected instead` =
+      paste(paste0(top$u3, " ", llab(top$u3), " (", top$N, ")"), collapse = "; "))
+}))
+kable(mk, caption = "For each canonical mode of death appearing as the immediate cause, how often it is rejected and the specific underlying causes chosen in its place, Free State.")
+```
+
+```{r}
+#| label: reject-chains
+chain <- rej_imm[is_real_icd(cause_b) | is_real_icd(cause_c) | is_real_icd(cause_d)]
+fmt <- function(x) fifelse(is.na(x), "·", x)
+cex <- chain[, .(chainstr = paste(fmt(cause_a), "→", fmt(cause_b), "→",
+                                  fmt(cause_c), "→", fmt(cause_d)),
+                 underlying_cause)][
+          , .N, by = .(`Part I chain as written (A → B → C → D)` = chainstr,
+                       `UCoD selected` = underlying_cause)][order(-N)][1:12]
+cex[, Certificates := format(N, big.mark = ",")][, N := NULL]
+kable(cex, caption = "Twelve real Free State certificate chains where the rules looked past a mode-of-death immediate cause to a specific underlying cause deeper in Part I.")
+```
+
+::: callout-important
+## Why this strengthens the case for rule-based UCoD selection
+These are not edge cases — **`r format(n_rej_imm, big.mark=",")` certificates
+(`r pct_rej_imm`% of all Free State deaths)** have a mode of death on the
+immediate line that the rules correctly override. The lowest-line rule does
+little better: it still leaves **`r format(n_rej_low, big.mark=",")`** certificates
+with a garbage deepest line that the processed UCoD improves on, because certifiers
+often write the mode of death *last*. The reproducible application of the WHO
+selection and modification rules — which is precisely what **IRIS / DoRIS**
+automate — is what converts "the heart stopped / the lungs failed / the patient
+was septic" into hypertension, pneumonia, TB, diabetes, and HIV: the causes that
+actually drive prevention policy. This is the mechanism behind the aggregate
+gap in §6.
+:::
+
+# 8. Does `Cause A == UCoD` predict a garbage underlying cause?
+
+§3 showed that a large share of certificates are *single-step* — Cause A is
+carried straight through as the UCoD, with no causal chain encoded. A natural
+quality question is whether those single-step certificates are also the ones most
+likely to produce an **ill-defined / garbage UCoD**. If so, `Cause A == UCoD`
+is not merely a marker of a thin chain; it is a leading indicator of
+low-specificity output.
+
+To avoid a spurious result, this section is restricted to records with a
+**codeable (real ICD-10) UCoD**. A missing/sentinel UCoD can never equal Cause A
+by construction, so including those records would manufacture an association.
+
+```{r}
+#| label: aeq-garbage
+sub <- fs[is_real_icd(underlying_cause) & !is.na(cause_a)]
+sub[, garb := substr(underlying_cause, 1, 1) == "R" |
+               substr(underlying_cause, 1, 3) %in% c("I46","I50","I51","J96",
+                                                     "A41","I99","J81","K72",
+                                                     "N18","N19","E86","P28") |
+               substr(underlying_cause, 1, 1) == "U"]
+
+tab <- sub[, .(
+  Deaths             = .N,
+  `Garbage UCoD (n)` = sum(garb),
+  `Garbage UCoD (%)` = round(100 * mean(garb), 1)
+), keyby = .(`Cause A == UCoD` = fifelse(a_eq_ucod,
+                                         "Yes (single-step)",
+                                         "No (UCoD from deeper line)"))]
+kable(tab, caption = "Garbage/ill-defined share of the underlying cause, by whether the immediate cause (Cause A) was carried straight through as the UCoD. Restricted to records with a codeable ICD-10 UCoD.")
+```
+
+```{r}
+#| label: aeq-garbage-rr
+n1 <- sub[a_eq_ucod == TRUE,  .N]; x1 <- sub[a_eq_ucod == TRUE,  sum(garb)]
+n0 <- sub[a_eq_ucod == FALSE, .N]; x0 <- sub[a_eq_ucod == FALSE, sum(garb)]
+g1 <- x1 / n1; g0 <- x0 / n0
+rr <- g1 / g0
+se <- sqrt((1 - g1) / x1 + (1 - g0) / x0)          # SE of log relative risk
+ci <- exp(log(rr) + c(-1, 1) * 1.96 * se)
+pval <- suppressWarnings(chisq.test(table(sub$a_eq_ucod, sub$garb))$p.value)
+
+pct_aeq_g  <- round(100 * g1, 1)
+pct_naeq_g <- round(100 * g0, 1)
+rr_fmt <- formatC(rr, format = "f", digits = 1)
+ci_fmt <- paste0(formatC(ci[1], format = "f", digits = 1), "\u2013",
+                 formatC(ci[2], format = "f", digits = 1))
+pval_fmt <- if (pval < 0.001) "< 0.001" else formatC(pval, format = "f", digits = 3)
+```
+
+```{r}
+#| label: aeq-garbage-trend
+#| fig-cap: "Garbage-UCoD share by year, split by whether the certificate was single-step (Cause A = UCoD) or had the UCoD selected from a deeper Part I line, Free State."
+#| fig-width: 8
+#| fig-height: 4.5
+gy <- sub[, .(pct = 100 * mean(garb)),
+          keyby = .(death_year_int,
+                    grp = fifelse(a_eq_ucod, "Cause A = UCoD", "Cause A \u2260 UCoD"))]
+ggplot(gy, aes(death_year_int, pct, colour = grp)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_x_continuous(breaks = unique(gy$death_year_int)) +
+  scale_colour_manual(values = c("Cause A = UCoD" = "#d95f0e",
+                                 "Cause A \u2260 UCoD" = "#2c7fb8")) +
+  labs(x = "Death year", y = "Garbage UCoD (%)", colour = NULL,
+       title = "Garbage UCoD: single-step vs chain-selected certification")
+```
+
+**Interpretation.** Among single-step certificates (`Cause A = UCoD`),
+**`r pct_aeq_g`%** carry a garbage/ill-defined UCoD, versus **`r pct_naeq_g`%**
+where the UCoD was selected from a deeper line — a relative risk of
+**`r rr_fmt`** (95% CI `r ci_fmt`; χ² p `r pval_fmt`). The mechanism is direct:
+when the certifier writes only a mode of death or an `R`-code on the first line
+and nothing beneath it, that single token becomes *both* Cause A and the UCoD.
+`Cause A == UCoD` is therefore not just a "thin chain" flag — it is a cheap,
+single-field **data-quality KPI** that can be monitored prospectively: a rising
+share of single-step certificates predicts a rising share of uninformative
+underlying causes, and the two co-spike in the 2020–2021 pandemic years.
+
+# 9. Immediate vs underlying cause — which should drive action?
+
+The WHO underlying cause is the standard tabulation cause and the correct
+denominator for primary-prevention targets and international comparability. But
+*"the condition that initiated the chain"* is not always the condition a health
+system could have acted on in the final illness. This section challenges the
+reflex of collapsing every death to a single UCoD by asking what information is
+**discarded** when we move from the immediate cause (Cause A) to the UCoD.
+
+```{r}
+#| label: chapter-map
+icd_chapter <- function(x) {
+  L  <- substr(x, 1, 1)
+  d2 <- suppressWarnings(as.integer(substr(x, 2, 3)))
+  out <- rep(NA_character_, length(x))
+  out[L %in% c("A","B")]                 <- "I Infectious & parasitic"
+  out[L == "C" | (L == "D" & d2 <= 48)]  <- "II Neoplasms"
+  out[L == "D" & d2 >= 50]               <- "III Blood & immune"
+  out[L == "E"]                          <- "IV Endocrine / metabolic"
+  out[L == "F"]                          <- "V Mental & behavioural"
+  out[L == "G"]                          <- "VI Nervous system"
+  out[L == "H"]                          <- "VII\u2013VIII Eye & ear"
+  out[L == "I"]                          <- "IX Circulatory"
+  out[L == "J"]                          <- "X Respiratory"
+  out[L == "K"]                          <- "XI Digestive"
+  out[L == "L"]                          <- "XII Skin"
+  out[L == "M"]                          <- "XIII Musculoskeletal"
+  out[L == "N"]                          <- "XIV Genitourinary"
+  out[L == "O"]                          <- "XV Pregnancy & childbirth"
+  out[L == "P"]                          <- "XVI Perinatal"
+  out[L == "Q"]                          <- "XVII Congenital"
+  out[L == "R"]                          <- "XVIII Ill-defined (R)"
+  out[L %in% c("S","T")]                 <- "XIX Injury & poisoning"
+  out[L %in% c("V","W","X","Y")]         <- "XX External causes"
+  out[L == "Z"]                          <- "XXI Factors / contact"
+  out[L == "U"]                          <- "U Special (incl. COVID)"
+  out
+}
+
+both <- fs[is_real_icd(cause_a) & is_real_icd(underlying_cause)]
+both[, chap_a := icd_chapter(cause_a)]
+both[, chap_u := icd_chapter(underlying_cause)]
+disc <- round(100 * both[, mean(chap_a != chap_u)], 1)
+```
+
+```{r}
+#| label: chapter-compare
+ca <- both[, .(n = .N), keyby = .(Chapter = chap_a)][, .(Chapter, `Cause A (%)` = round(100 * n / sum(n), 1))]
+cu <- both[, .(n = .N), keyby = .(Chapter = chap_u)][, .(Chapter, `UCoD (%)`   = round(100 * n / sum(n), 1))]
+cmp <- merge(ca, cu, by = "Chapter", all = TRUE)
+for (j in c("Cause A (%)", "UCoD (%)")) set(cmp, which(is.na(cmp[[j]])), j, 0)
+cmp[, `Shift (UCoD - A)` := `UCoD (%)` - `Cause A (%)`]
+setorder(cmp, -`UCoD (%)`)
+kable(cmp, caption = "ICD-chapter distribution of the immediate cause (Cause A) vs the underlying cause, among deaths where both are codeable. The shift column shows where the UCoD adds (+) or removes (\u2212) weight relative to the immediate cause.")
+```
+
+```{r}
+#| label: chapter-diverge
+#| fig-cap: "Percentage-point shift in chapter weight when moving from the immediate cause to the underlying cause. Positive (blue) = the chapter is up-weighted by the UCoD (what to prevent); negative (orange) = down-weighted (proximate killers retained by the immediate cause)."
+#| fig-width: 8
+#| fig-height: 5
+cmp2 <- cmp[(`UCoD (%)` + `Cause A (%)`) > 0.1]
+setorder(cmp2, `Shift (UCoD - A)`)
+cmp2[, Chapter := factor(Chapter, levels = Chapter)]
+ggplot(cmp2, aes(Chapter, `Shift (UCoD - A)`, fill = `Shift (UCoD - A)` > 0)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c(`TRUE` = "#2c7fb8", `FALSE` = "#d95f0e"), guide = "none") +
+  labs(x = NULL, y = "Percentage-point shift (UCoD \u2212 immediate cause)",
+       title = "What the underlying cause adds and removes vs the immediate cause")
+```
+
+```{r}
+#| label: chapter-transition
+gain <- cmp[which.max(`Shift (UCoD - A)`), Chapter]
+loss <- cmp[which.min(`Shift (UCoD - A)`), Chapter]
+
+topu <- both[, .N, keyby = chap_u][order(-N)][1:6, chap_u]
+tr <- both[chap_u %in% topu, .N, by = .(chap_u, chap_a)]
+tr[, share := round(100 * N / sum(N)), by = chap_u]
+setorder(tr, chap_u, -N)
+top3 <- tr[, .(`Most common immediate causes (Cause A chapter)` =
+               paste0(head(chap_a, 3), " \u2014 ", head(share, 3), "%", collapse = "; ")),
+           by = chap_u]
+uc <- both[chap_u %in% topu, .(`UCoD deaths` = .N), keyby = chap_u]
+out <- merge(uc, top3, by = "chap_u")
+setorder(out, -`UCoD deaths`)
+out[, `UCoD deaths` := format(`UCoD deaths`, big.mark = ",")]
+setnames(out, "chap_u", "Underlying cause chapter")
+kable(out, caption = "For the six most common underlying-cause chapters, the immediate causes (Cause A) most often recorded on the same certificates \u2014 i.e. the proximate conditions that preceded death.")
+```
+
+**What the data show.** In **`r disc`%** of Free State deaths the immediate cause
+and the UCoD fall in **different ICD chapters** — moving to the UCoD changes the
+clinical story, not just the code. The shift is systematic (chart above): the
+UCoD up-weights **`r gain`** while the immediate cause retains weight in
+**`r loss`** and the other mode-of-death / ill-defined / respiratory chapters.
+The transition table makes the point concrete: chronic underlying causes are
+reached *through* a small set of treatable proximate conditions (infections,
+respiratory failure, ill-defined collapse).
+
+::: callout-important
+## The case for not collapsing everything to the UCoD
+The UCoD and the immediate cause answer **different action questions**:
+
+- **UCoD → "what should we prevent?"** It points upstream to the modifiable
+  risk (hypertension, HIV, diabetes, tobacco) and is the right basis for
+  primary-prevention policy and inter-country comparison.
+- **Immediate cause → "what could the health system have intervened on?"** It
+  names the proximate, often *treatable* event in the final illness (the sepsis,
+  the bleed, the respiratory failure) — the signal a hospital or district
+  quality-of-care review actually needs.
+
+Using the UCoD as the *sole* information for action silently discards the second
+question for `r disc`% of deaths. The defensible position is **multiple-cause
+analysis (MCOD)** — report the UCoD for prevention targets *and* the
+immediate/contributing causes for service-delivery action — rather than swapping
+one for the other.
+:::
+
+::: callout-warning
+## Caveat: the immediate cause is itself noisier
+This is an argument for using *both*, not for replacing the UCoD. The immediate
+cause carries a **higher** share of `R`-codes and modes of death (§5–6), so a
+naïve "Cause A only" tabulation would be even less specific than the UCoD. The
+actionable middle ground is structured MCOD reporting, ideally after the
+sentinel-cleaning and automated-selection steps described in §12.
+:::
+
+# 10. Worked example: poisoning deaths (X-codes)
+
+Poisoning is an ideal stress-test of the immediate-vs-underlying question because
+it is an **external cause**. Under WHO rules a poisoning certificate should carry
+*two complementary codes*: the **external cause** (the *how* and *intent* — an
+`X` code: accidental, self-inflicted, or assault) and the **nature of injury**
+(the *what* — a `T36–T65` toxic-effect code naming the substance's clinical
+effect). The external cause is the WHO underlying cause; the nature-of-injury and
+any organ failure are the proximate, clinically actionable events. Poisoning
+therefore lets us see, in one well-defined group, exactly what the move to a
+single UCoD keeps and what it discards.
+
+::: callout-note
+## First: does the Isibalo/MACOD extract retain unnatural deaths?
+Yes. In the Free State subset, `natural_unnatural == 2` (unnatural) covers
+**`r format(N_UNNAT, big.mark=",")`** deaths and a further
+**`r format(N_UNK, big.mark=",")`** are coded `8` (manner undetermined);
+external-cause `V/W/X/Y` codes appear as the UCoD in
+**`r format(N_EXT, big.mark=",")`** records — effectively all the unnatural
+deaths. Injury deaths are *not* dropped from the extract, so a poisoning analysis
+is possible. (`build_free_state.R` carries `natural_unnatural` and the full
+`injury_a–d` / `underlying_injury` fields through from `load_macod.R`.)
+:::
+
+Poisoning here is defined **tightly** by the external-cause X-code, excluding the
+garbage `X59` ("exposure to unspecified factor") and `X09` which are the
+external-cause analogue of `R99`:
+
+- **Accidental** poisoning: `X40–X49`
+- **Intentional self-poisoning** (suicide): `X60–X69`
+- **Assault** by poisoning: `X85–X90`
+
+```{r}
+#| label: poison-setup
+# clean the injury (external-cause / nature-of-injury) fields too
+inj_cols <- intersect(c("injury_a","injury_b","injury_c","injury_d",
+                        "other_injury","underlying_injury"), names(fs))
+for (cc in inj_cols) fs[[cc]] <- clean_code(fs[[cc]])
+
+is_poison_x <- function(x) {
+  d <- suppressWarnings(as.integer(substr(x, 2, 3)))
+  !is.na(x) & substr(x, 1, 1) == "X" & (d %in% c(40:49, 60:69, 85:90))
+}
+is_tox_T <- function(x) {                    # nature-of-injury: toxic effects
+  d <- suppressWarnings(as.integer(substr(x, 2, 3)))
+  !is.na(x) & substr(x, 1, 1) == "T" & (d %in% 36:65)
+}
+poison_intent <- function(x) {
+  d <- suppressWarnings(as.integer(substr(x, 2, 3)))
+  fifelse(substr(x,1,1)=="X" & d %in% 40:49, "Accidental (X40–49)",
+  fifelse(substr(x,1,1)=="X" & d %in% 60:69, "Intentional self-poisoning (X60–69)",
+  fifelse(substr(x,1,1)=="X" & d %in% 85:90, "Assault (X85–90)", NA_character_)))
+}
+
+# a death is "poisoning" if a poisoning X-code is the underlying external cause
+ub <- if ("underlying_injury" %in% names(fs)) fs$underlying_injury else NA_character_
+fs[, poison_ucod := fcoalesce(
+      fifelse(is_poison_x(underlying_cause), underlying_cause, NA_character_),
+      fifelse(is_poison_x(ub),               ub,               NA_character_))]
+fs[, is_poison := !is.na(poison_ucod)]
+pz <- fs[is_poison == TRUE]
+N_POIS <- nrow(pz)
+```
+
+```{r}
+#| label: poison-intent
+pz[, intent := poison_intent(poison_ucod)]
+it <- pz[, .(Deaths = .N), keyby = .(`Intent (external cause)` = intent)]
+it[, `Share (%)` := round(100 * Deaths / sum(Deaths), 1)]
+kable(it, caption = sprintf("Free State poisoning deaths (n = %s) by intent, classified from the underlying external-cause X-code.", format(N_POIS, big.mark = ",")))
+```
+
+```{r}
+#| label: poison-immediate-vs-ucod
+# Cause A (immediate) vs underlying external cause, and nature-of-injury capture
+pz[, a_is_xcode  := !is.na(cause_a) & substr(cause_a, 1, 1) == "X"]
+pz[, a_eq_poison := !is.na(cause_a) & cause_a == poison_ucod]
+pz[, has_tox_T   := is_tox_T(cause_a) | is_tox_T(cause_b) | is_tox_T(cause_c) |
+                    is_tox_T(cause_d) |
+                    (if ("injury_a" %in% names(pz)) is_tox_T(injury_a) else FALSE) |
+                    (if ("underlying_injury" %in% names(pz)) is_tox_T(underlying_injury) else FALSE)]
+
+pct_single_pois <- round(100 * mean(pz$a_eq_poison), 1)
+pct_a_xcode     <- round(100 * mean(pz$a_is_xcode), 1)
+pct_tox_T       <- round(100 * mean(pz$has_tox_T), 1)
+pct_unspec      <- round(100 * mean(pz$poison_ucod %in% c("X49","X40","X44")), 1)
+n_pesticide     <- pz[poison_ucod %in% c("X48","X68"), .N]
+n_self          <- pz[grepl("^X6", poison_ucod), .N]
+```
+
+```{r}
+#| label: poison-structure
+struc <- data.table(
+  Metric = c("Immediate cause (Cause A) is itself the X-code",
+             "Cause A is identical to the underlying external cause (single-step)",
+             "Any nature-of-injury toxic-effect code (T36–T65) recorded"),
+  `Share of poisoning deaths (%)` = c(pct_a_xcode, pct_single_pois, pct_tox_T)
+)
+kable(struc, caption = "How the poisoning certificate is structured: the external cause is duplicated as the immediate cause, and the clinical nature-of-injury code is almost never present.")
+```
+
+```{r}
+#| label: poison-agents
+ag <- pz[, .(Deaths = .N), keyby = .(`Underlying external cause` = poison_ucod)][order(-Deaths)][1:10]
+kable(ag, caption = "Most common underlying poisoning codes, Free State. X48/X68 = pesticides; X49/X40/X44 = unspecified or other chemicals/drugs; X60–X69 = intentional self-poisoning.")
+```
+
+```{r}
+#| label: poison-year
+#| fig-cap: "Free State poisoning deaths by year and intent. The 2021–2022 rise most plausibly reflects improved external-cause capture in the 2022 data vintage rather than a true epidemic — a comparability caveat, not a finding."
+#| fig-width: 8
+#| fig-height: 4.5
+py <- pz[, .(Deaths = .N), keyby = .(death_year_int, intent)]
+ggplot(py, aes(death_year_int, Deaths, fill = intent)) +
+  geom_col() +
+  scale_x_continuous(breaks = unique(py$death_year_int)) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(x = "Death year", y = "Poisoning deaths", fill = NULL,
+       title = "Poisoning deaths by intent over time — Free State")
+```
+
+**What the poisoning case shows.** For these `r format(N_POIS, big.mark=",")`
+deaths the immediate cause and the underlying cause are essentially the **same
+single X-code**: Cause A is identical to the underlying external cause in
+**`r pct_single_pois`%** of records, and a nature-of-injury toxic-effect code
+(`T36–T65`) — the part that names *what the poison did to the body* — is recorded
+in only **`r pct_tox_T`%**. In other words, the certificate captures the *how/why*
+(intent + agent, which is exactly what the UCoD needs) but discards the *clinical
+what* (the toxidrome / organ failure that a clinician or a poisons-centre audit
+would act on).
+
+::: callout-important
+## Immediate vs underlying — the action split, made concrete
+- **Underlying cause (the X-code) → prevention.** It tells us
+  `r n_self` deaths were **intentional self-poisoning** (a mental-health and
+  means-restriction signal) and that pesticides (`X48`/`X68`,
+  `r n_pesticide` deaths) are a leading agent in this largely agricultural
+  province (a regulatory / agrochemical-access signal). This is genuinely
+  actionable upstream information that the UCoD captures well.
+- **Immediate / nature-of-injury → clinical care.** The toxic effect and the
+  proximate organ failure — what the emergency unit actually managed — are mostly
+  **absent**. So for poisoning, the *clinical* action question is the one the data
+  cannot currently answer, regardless of which single cause we tabulate.
+:::
+
+::: callout-warning
+## Two data-quality flags specific to poisoning
+1. **Agent specificity is poor.** A large share of accidental poisonings are
+   coded to non-specific chemicals (`X49`/`X40`/`X44`, `r pct_unspec`% of
+   poisoning deaths) — the external-cause analogue of the `R99` problem in §5.
+   This blunts both prevention targeting and intent classification.
+2. **The 2021–2022 surge is a comparability artefact, not an epidemic.** The
+   jump in counts coincides with the 2022 data vintage's richer external-cause
+   coding (the same vintage change discussed for causes in §3). Treat
+   cross-vintage poisoning trends with caution and anchor any time series to a
+   consistent coding era.
+:::
+
+The practical message mirrors §9: the UCoD is the right tabulation cause for
+**poisoning prevention** (intent + agent), but a poisoning audit aimed at
+**clinical care** needs the nature-of-injury and contributing conditions, which
+are systematically thin here. Automated coding (§12) can enforce the
+external-cause + nature-of-injury *pairing* WHO expects, but it cannot create a
+`T`-code the certifier never wrote.
+
+# 11. Non-ICD and impossible values in the UCoD
+
+```{r}
+#| label: sentinel-ucod
+bad <- fs[!is_real_icd(underlying_cause),
+          .(Deaths = .N),
+          by = .(`UCoD value` = fifelse(is.na(underlying_cause), "(missing/sentinel)", underlying_cause))][order(-Deaths)][1:12]
+kable(bad, caption = "Most common underlying-cause values that are NOT well-formed ICD-10 codes (sentinels + external-cause codes used directly).")
+```
+
+Note the presence of **external-cause codes** (`V`, `W`, `X`, `Y` chapters — e.g.
+`X59` exposure to unspecified factor, `X99` assault by sharp object, `V89`
+traffic) appearing as the underlying cause. These are valid ICD codes but, under
+WHO rules, an external cause should be paired with the *nature-of-injury* code;
+their appearance as a bare UCoD is a known certification/coding quality issue for
+injury deaths and should be cross-checked against the `injury_a–d` fields.
+
+# 12. What this means for automated coding (IRIS / DoRIS)
+
+::: callout-note
+IRIS (the Iris Institute / DIMDI rule engine, built on the NCHS ACME/MICAR logic)
+and **DoRIS** are tools that take the Cause A–D text/codes and **deterministically
+select the underlying cause** using the WHO ICD-10 selection and modification
+rules. Moving Free State / national certification onto IRIS or DoRIS would
+standardise UCoD selection — but the issues surfaced above will translate into
+specific failure modes. Anticipated issues:
+:::
+
+**A. Input-quality issues (garbage in → garbage out).**
+
+- **Sentinel codes (`888`, `000`)** must be mapped to "no entry" before the
+  engine runs. If passed through, IRIS will either reject the record or treat
+  them as real conditions, corrupting the selection.
+- **Thin certification** (§2–3): when ~50% of certificates carry a single cause,
+  the rule engine has no chain to reason over and will simply echo Cause A. The
+  apparent "improvement" from automation will be small where input depth is low —
+  the gain from IRIS is proportional to certification richness.
+- **Ill-defined Cause A (`R99`, modes of death)** (§5): IRIS will faithfully
+  carry an ill-defined immediate cause through to the UCoD when nothing better is
+  present. Automation does **not** fix `R99`; it only makes the selection
+  reproducible. Garbage-code redistribution is a separate, post-IRIS step.
+
+**B. Mapping & version issues.**
+
+- **ICD-10 version drift.** IRIS is keyed to a specific ICD-10 update/edition.
+  South African historical files (2006–2022) may mix code vintages and use
+  3-character vs 4-character codes inconsistently (e.g. `J18` vs `J189` both
+  appear). Codes must be normalised to the granularity IRIS expects, or valid
+  codes will be flagged as unknown.
+- **Local / non-standard codes.** Sentinels and StatsSA-specific groupings
+  (`underlying_broad_grp`, `underlying_main_grp`) are not ICD and must be
+  excluded from the IRIS input.
+
+**C. Structural / comparability issues.**
+
+- **The 2009/2010 break (§3)** means a back-series re-coded with IRIS will *not*
+  be comparable to the legacy UCoD series. Re-coding the whole history through one
+  engine is the cleanest fix, but it changes published numbers — this must be
+  communicated as a methods change, not a data revision.
+- **Part I vs Part II placement.** IRIS treats Part I (the causal chain) and
+  Part II (contributing conditions) differently. In this dataset the Part II
+  fields (`part2_cause_a/b`) are only present from ~2009; feeding them in
+  inconsistently across years will produce year-dependent UCoD behaviour.
+- **External causes** (§11): IRIS expects the underlying (external) cause and the
+  injury/nature code together. The split `cause_*` / `injury_*` layout here must
+  be reassembled into the WHO certificate structure before coding, or injury
+  deaths will be mis-selected.
+
+**D. Process recommendations.**
+
+1. **Pre-clean** all cause lines to NA-out sentinels (`888`, `000`, …) and
+   normalise code granularity before any IRIS/DoRIS run.
+2. **Re-code the full back-series** through a single engine/version to remove the
+   2010 discontinuity, and publish legacy vs re-coded side-by-side.
+3. **Keep a garbage-code redistribution stage** *after* automated selection — IRIS
+   standardises selection, it does not improve specificity.
+4. **Validate on the Free State subset first** (this file): compare IRIS-selected
+   UCoD against the existing `underlying_cause`, quantify concordance, and inspect
+   the discordant cases by ICD chapter before scaling nationally.
+
+# Reproducibility
+
+```{r}
+#| label: provenance
+prov <- data.table(
+  Item = c("Source dataset", "Geography", "Records", "Years", "Sentinels stripped"),
+  Value = c("free_state_mortality.feather (build_free_state.R → load_macod.R)",
+            "Free State, place of death (StatsSA prov = 4)",
+            format(N_TOT, big.mark = ","),
+            paste(YR_RNG, collapse = "–"),
+            paste(setdiff(SENTINELS, c("","NA","NULL")), collapse = ", "))
+)
+kable(prov)
+```
+
+All figures recompute from the Free State feather at render time. To refresh the
+data: rebuild the canonical dataset (`Rscript data/macod_isibalo/load_macod.R`),
+then the province subset (`Rscript data/macod_isibalo/build_free_state.R`).

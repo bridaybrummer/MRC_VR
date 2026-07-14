@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-03-09">
+<meta name="description" content="Epidemiology of poisoning-related mortality from the national vital registration system, 1997–2022">
+
+<title>Poisoning Deaths in South Africa – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Poisoning Deaths in South Africa</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a>
+  <ul class="collapse">
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics"><span class="header-section-number">1.1</span> Summary statistics</a></li>
+  </ul></li>
+  <li><a href="#trends-over-time" id="toc-trends-over-time" class="nav-link" data-scroll-target="#trends-over-time"><span class="header-section-number">2</span> Trends over time</a>
+  <ul class="collapse">
+  <li><a href="#annual-deaths-and-crude-death-rate" id="toc-annual-deaths-and-crude-death-rate" class="nav-link" data-scroll-target="#annual-deaths-and-crude-death-rate"><span class="header-section-number">2.1</span> Annual deaths and crude death rate</a></li>
+  <li><a href="#deaths-by-intent" id="toc-deaths-by-intent" class="nav-link" data-scroll-target="#deaths-by-intent"><span class="header-section-number">2.2</span> Deaths by intent</a></li>
+  <li><a href="#annual-summary" id="toc-annual-summary" class="nav-link" data-scroll-target="#annual-summary"><span class="header-section-number">2.3</span> Annual summary</a></li>
+  </ul></li>
+  <li><a href="#epicurve" id="toc-epicurve" class="nav-link" data-scroll-target="#epicurve"><span class="header-section-number">3</span> Epicurve</a>
+  <ul class="collapse">
+  <li><a href="#monthly-time-series" id="toc-monthly-time-series" class="nav-link" data-scroll-target="#monthly-time-series"><span class="header-section-number">3.1</span> Monthly time series</a></li>
+  <li><a href="#monthly-seasonality" id="toc-monthly-seasonality" class="nav-link" data-scroll-target="#monthly-seasonality"><span class="header-section-number">3.2</span> Monthly seasonality</a></li>
+  </ul></li>
+  <li><a href="#age-and-sex" id="toc-age-and-sex" class="nav-link" data-scroll-target="#age-and-sex"><span class="header-section-number">4</span> Age and sex</a>
+  <ul class="collapse">
+  <li><a href="#age-sex-pyramid" id="toc-age-sex-pyramid" class="nav-link" data-scroll-target="#age-sex-pyramid"><span class="header-section-number">4.1</span> Age-sex pyramid</a></li>
+  <li><a href="#age-sex-pyramid-by-intent" id="toc-age-sex-pyramid-by-intent" class="nav-link" data-scroll-target="#age-sex-pyramid-by-intent"><span class="header-section-number">4.2</span> Age-sex pyramid by intent</a></li>
+  <li><a href="#age-sex-table" id="toc-age-sex-table" class="nav-link" data-scroll-target="#age-sex-table"><span class="header-section-number">4.3</span> Age × sex table</a></li>
+  </ul></li>
+  <li><a href="#age-group-trends-over-time" id="toc-age-group-trends-over-time" class="nav-link" data-scroll-target="#age-group-trends-over-time"><span class="header-section-number">5</span> Age-group trends over time</a>
+  <ul class="collapse">
+  <li><a href="#age-year-heatmap-nominal-counts" id="toc-age-year-heatmap-nominal-counts" class="nav-link" data-scroll-target="#age-year-heatmap-nominal-counts"><span class="header-section-number">5.1</span> Age × year heatmap — nominal counts</a></li>
+  <li><a href="#age-year-heatmap-proportional-share" id="toc-age-year-heatmap-proportional-share" class="nav-link" data-scroll-target="#age-year-heatmap-proportional-share"><span class="header-section-number">5.2</span> Age × year heatmap — proportional share</a></li>
+  <li><a href="#estimated-annual-percentage-change-eapc-by-age-group" id="toc-estimated-annual-percentage-change-eapc-by-age-group" class="nav-link" data-scroll-target="#estimated-annual-percentage-change-eapc-by-age-group"><span class="header-section-number">5.3</span> Estimated annual percentage change (EAPC) by age group</a></li>
+  </ul></li>
+  <li><a href="#age-group-trends-by-sex" id="toc-age-group-trends-by-sex" class="nav-link" data-scroll-target="#age-group-trends-by-sex"><span class="header-section-number">6</span> Age-group trends by sex</a>
+  <ul class="collapse">
+  <li><a href="#age-year-heatmap-counts-by-sex" id="toc-age-year-heatmap-counts-by-sex" class="nav-link" data-scroll-target="#age-year-heatmap-counts-by-sex"><span class="header-section-number">6.1</span> Age × year heatmap — counts by sex</a></li>
+  <li><a href="#age-year-heatmap-within-sex-proportional-share" id="toc-age-year-heatmap-within-sex-proportional-share" class="nav-link" data-scroll-target="#age-year-heatmap-within-sex-proportional-share"><span class="header-section-number">6.2</span> Age × year heatmap — within-sex proportional share</a></li>
+  <li><a href="#eapc-by-age-group-male-vs-female-comparison" id="toc-eapc-by-age-group-male-vs-female-comparison" class="nav-link" data-scroll-target="#eapc-by-age-group-male-vs-female-comparison"><span class="header-section-number">6.3</span> EAPC by age group — male vs female comparison</a></li>
+  </ul></li>
+  <li><a href="#geographic-distribution" id="toc-geographic-distribution" class="nav-link" data-scroll-target="#geographic-distribution"><span class="header-section-number">7</span> Geographic distribution</a>
+  <ul class="collapse">
+  <li><a href="#district-hot-spots-last-3-years" id="toc-district-hot-spots-last-3-years" class="nav-link" data-scroll-target="#district-hot-spots-last-3-years"><span class="header-section-number">7.1</span> District hot spots: last 3 years</a></li>
+  </ul></li>
+  <li><a href="#cause-breakdown-icd-subcodes" id="toc-cause-breakdown-icd-subcodes" class="nav-link" data-scroll-target="#cause-breakdown-icd-subcodes"><span class="header-section-number">8</span> Cause breakdown — ICD subcodes</a></li>
+  <li><a href="#years-of-life-lost-yll" id="toc-years-of-life-lost-yll" class="nav-link" data-scroll-target="#years-of-life-lost-yll"><span class="header-section-number">9</span> Years of Life Lost (YLL)</a>
+  <ul class="collapse">
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">9.1</span> Summary</a></li>
+  <li><a href="#total-yll-by-age-group-and-sex" id="toc-total-yll-by-age-group-and-sex" class="nav-link" data-scroll-target="#total-yll-by-age-group-and-sex"><span class="header-section-number">9.2</span> Total YLL by age group and sex</a></li>
+  <li><a href="#mean-yll-per-death-by-age-group" id="toc-mean-yll-per-death-by-age-group" class="nav-link" data-scroll-target="#mean-yll-per-death-by-age-group"><span class="header-section-number">9.3</span> Mean YLL per death by age group</a></li>
+  <li><a href="#annual-yll-trend-by-sex" id="toc-annual-yll-trend-by-sex" class="nav-link" data-scroll-target="#annual-yll-trend-by-sex"><span class="header-section-number">9.4</span> Annual YLL trend by sex</a></li>
+  <li><a href="#yll-heatmap-age-group-year" id="toc-yll-heatmap-age-group-year" class="nav-link" data-scroll-target="#yll-heatmap-age-group-year"><span class="header-section-number">9.5</span> YLL heatmap — age group × year</a></li>
+  </ul></li>
+  <li><a href="#death-institution-place-of-death" id="toc-death-institution-place-of-death" class="nav-link" data-scroll-target="#death-institution-place-of-death"><span class="header-section-number">10</span> Death institution / place of death</a>
+  <ul class="collapse">
+  <li><a href="#x40x49-distribution-by-death-institution" id="toc-x40x49-distribution-by-death-institution" class="nav-link" data-scroll-target="#x40x49-distribution-by-death-institution"><span class="header-section-number">10.1</span> X40–X49: distribution by death institution</a></li>
+  <li><a href="#intent-composition-within-each-facility-setting" id="toc-intent-composition-within-each-facility-setting" class="nav-link" data-scroll-target="#intent-composition-within-each-facility-setting"><span class="header-section-number">10.2</span> Intent composition within each facility setting</a></li>
+  </ul></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps"><span class="header-section-number">11</span> Next steps</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">12</span> References</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div><div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>Download PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Poisoning Deaths in South Africa</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">poisoning</div>
+    <div class="quarto-category">injury-mortality</div>
+    <div class="quarto-category">vital-registration</div>
+    <div class="quarto-category">icd10</div>
+    <div class="quarto-category">epidemiology</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Epidemiology of poisoning-related mortality from the national vital registration system, 1997–2022
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
+<p>Poisoning is a significant cause of injury death in South Africa. This page describes the epidemiology of poisoning deaths recorded in the national vital registration (VR) system, using underlying-cause ICD-10 codes. Four intent categories are distinguished, though <strong>the category boundaries are substantially distorted by the absence of a manner of death field on the South African death notification form</strong> (see methodological note below):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ICD-10 block</th>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X40–X49</td>
+<td style="text-align: left;">Accidental / unspecified</td>
+<td style="text-align: left;">Unintentional exposure <em>or intent not documented on DNF</em> (ICD-10 default)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">X60–X69</td>
+<td style="text-align: left;">Self-harm</td>
+<td style="text-align: left;">Intentional self-poisoning</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">X85</td>
+<td style="text-align: left;">Assault</td>
+<td style="text-align: left;">Poisoning inflicted by another person</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Y10–Y19</td>
+<td style="text-align: left;">Undetermined</td>
+<td style="text-align: left;">Intent unknown or not specified</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Caution: intent categories reflect ICD-10 coding defaults, not certified intent
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>South Africa’s death notification form (DNF) <strong>does not include a field for manner of death</strong>, contrary to the WHO-recommended Medical Certificate of Cause of Death <span class="citation" data-cites="groenewald2023importance">(<a href="#ref-groenewald2023importance" role="doc-biblioref">1</a>)</span>. Under ICD-10 Volume 2 coding rules, when manner of death is not stated by the certifier, external cause deaths are assigned to the most appropriate <strong>Accidental</strong> code by default <span class="citation" data-cites="who2016icd10">(<a href="#ref-who2016icd10" role="doc-biblioref">2</a>)</span>.</p>
+<p>This structural omission has two direct consequences for the intent breakdown presented in this analysis:</p>
+<ul>
+<li><p><strong>“Accidental” (X40–X49) is substantially over-represented.</strong> In the absence of a certified manner, Stats SA coders apply the ICD-10 default and assign an accidental poisoning code. The scale of this effect is illustrated starkly for firearm deaths: Groenewald et al.&nbsp;(2023) showed that in Stats SA’s 2017 data, <strong>98.7% of firearm deaths were coded as accidental</strong>, while the National Cause-of-Death Validation (NCoDV) forensic data from the same period found 88.5% were homicides <span class="citation" data-cites="groenewald2023misclassification">(<a href="#ref-groenewald2023misclassification" role="doc-biblioref">3</a>)</span>. The same mechanism applies to poisoning, where the absence of certified intent causes genuine self-harm and assault deaths to be silently absorbed into the accidental category.</p></li>
+<li><p><strong>“Self-harm” (X60–X69) and “Undetermined” (Y10–Y19) are substantially under-represented.</strong> These categories require the certifier to explicitly document suicidal intent or uncertainty — information that in South Africa is almost exclusively available from forensic pathology reports. Non-forensic certifiers (the majority for poisoning deaths in clinical settings) default to the accidental category or do not specify intent, regardless of clinical context or stigma considerations <span class="citation" data-cites="prinsloo2017 norman2007 pillayvwyk2016">(<a href="#ref-prinsloo2017" role="doc-biblioref">4</a>–<a href="#ref-pillayvwyk2016" role="doc-biblioref">6</a>)</span>.</p></li>
+</ul>
+<p><strong>Interpretation:</strong> The “Accidental” category in these data should be read as <strong>“accidental or intent not specified.”</strong> The true proportion of intentional and undetermined-intent poisoning deaths is almost certainly higher than shown. Accurate intent-stratified estimates require triangulation with forensic mortality surveillance data, poison information centre (NPIS) call records, and other independent sources <span class="citation" data-cites="prinsloo2024">(<a href="#ref-prinsloo2024" role="doc-biblioref">7</a>)</span>.</p>
+</div>
+</div>
+<section id="summary-statistics" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">1.1</span> Summary statistics</h3>
+<div class="cell">
+<div id="tbl-overall" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-overall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Table 1. Overall summary — poisoning deaths, vital registration
+</figcaption>
+<div aria-describedby="tbl-overall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-74038d40{}.cl-73fee8d0{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-740111e6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-74012488{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74012489{width:2.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7401248a{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74012492{width:2.5in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74012493{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74012494{width:2.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-74038d40"><thead><tr style="overflow-wrap:break-word;"><th class="cl-74012488"><p class="cl-740111e6"><span class="cl-73fee8d0">Metric</span></p></th><th class="cl-74012489"><p class="cl-740111e6"><span class="cl-73fee8d0">Value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">Total poisoning deaths</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">62,399</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">Analysis years</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">1997 - 2022</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">% Male</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">59.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">Median age (years)</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">30</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">% Accidental/unspec.</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">43.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">% Self-harm</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">4.2%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7401248a"><p class="cl-740111e6"><span class="cl-73fee8d0">% Assault</span></p></td><td class="cl-74012492"><p class="cl-740111e6"><span class="cl-73fee8d0">0%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74012493"><p class="cl-740111e6"><span class="cl-73fee8d0">% Undetermined</span></p></td><td class="cl-74012494"><p class="cl-740111e6"><span class="cl-73fee8d0">52.5%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="trends-over-time" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="trends-over-time"><span class="header-section-number">2</span> Trends over time</h2>
+<section id="annual-deaths-and-crude-death-rate" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="annual-deaths-and-crude-death-rate"><span class="header-section-number">2.1</span> Annual deaths and crude death rate</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-annual-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-annual-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-annual-trend-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Fig. 1. Annual poisoning deaths. Bars = observed count; dashed red line = OLS trend with 95% CI.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-crude-rate-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-crude-rate-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-crude-rate-trend-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-crude-rate-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Fig. 2. Annual poisoning crude death rate (deaths per 100,000 population).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="deaths-by-intent" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="deaths-by-intent"><span class="header-section-number">2.2</span> Deaths by intent</h3>
+<p>The <strong>“Accidental/unspec.”</strong> category (blue) dominates because ICD-10 Vol. 2 coding rules assign an accidental code whenever manner of death is not stated — see the methodological note above <span class="citation" data-cites="groenewald2023importance who2016icd10">(<a href="#ref-groenewald2023importance" role="doc-biblioref">1</a>,<a href="#ref-who2016icd10" role="doc-biblioref">2</a>)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-intent-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-intent-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-intent-trend-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-intent-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Fig. 3. Annual poisoning deaths by intent (stacked area). Blue = accidental/unspecified; red = self-harm; orange = assault; green = undetermined.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="annual-summary" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="annual-summary"><span class="header-section-number">2.3</span> Annual summary</h3>
+<div class="cell">
+<div id="tbl-year-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-year-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Table 2. Annual poisoning deaths by intent, % male, and median age.
+</figcaption>
+<div aria-describedby="tbl-year-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-74f5e888{}.cl-74f04324{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-74f25d44{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-74f27644{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2764e{width:1.334in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2764f{width:0.827in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27650{width:0.695in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27658{width:1.07in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27659{width:0.702in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27662{width:0.938in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27663{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27664{width:1.334in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27665{width:0.827in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2766c{width:0.695in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2766d{width:1.07in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2766e{width:0.702in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27676{width:0.938in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27677{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27678{width:1.334in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27680{width:0.827in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27681{width:0.695in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27682{width:1.07in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f27683{width:0.702in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-74f2768a{width:0.938in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-74f5e888"><thead><tr style="overflow-wrap:break-word;"><th class="cl-74f27644"><p class="cl-74f25d44"><span class="cl-74f04324">Year</span></p></th><th class="cl-74f27644"><p class="cl-74f25d44"><span class="cl-74f04324">Total</span></p></th><th class="cl-74f2764e"><p class="cl-74f25d44"><span class="cl-74f04324">Accidental/unspec.</span></p></th><th class="cl-74f2764f"><p class="cl-74f25d44"><span class="cl-74f04324">Self-harm</span></p></th><th class="cl-74f27650"><p class="cl-74f25d44"><span class="cl-74f04324">Assault</span></p></th><th class="cl-74f27658"><p class="cl-74f25d44"><span class="cl-74f04324">Undetermined</span></p></th><th class="cl-74f27659"><p class="cl-74f25d44"><span class="cl-74f04324">% Male</span></p></th><th class="cl-74f27662"><p class="cl-74f25d44"><span class="cl-74f04324">Median age</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,997</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,085</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">601</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">21</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">463</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.7</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">26</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,998</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,467</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">812</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">26</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">629</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.1</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,999</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,084</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,016</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">46</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,022</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">60.3</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,000</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,015</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">888</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">45</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">1</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,081</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.7</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">31</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,001</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,025</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">799</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">67</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,159</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">60.3</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">30</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,002</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,320</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,128</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">56</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">2</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,134</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">57.6</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">34</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,003</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,159</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,011</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">55</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,093</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.9</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,004</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,471</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,121</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">84</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,266</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.2</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,005</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,373</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,124</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">110</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,139</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.9</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">27</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,006</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,483</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,236</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">84</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,163</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">57.8</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">25</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,007</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,030</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">780</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">109</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,141</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.5</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,008</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">1,981</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">816</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">99</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,066</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">58.0</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,009</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,029</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">835</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">72</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,122</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">62.0</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,010</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,167</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">895</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">108</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,164</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.8</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">27</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,011</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,012</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">883</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">102</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,027</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">61.8</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">30</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,012</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,151</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">913</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">131</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,107</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.8</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,013</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,222</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">825</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">162</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,235</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.4</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,014</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,404</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">888</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">139</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,377</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">60.1</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">28</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,015</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,716</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">959</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">106</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,651</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">61.9</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,016</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,676</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">936</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">82</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,658</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.7</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,017</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,582</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">771</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">98</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,713</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.1</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">30</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,018</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,919</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">851</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">82</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,986</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.1</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">30</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,019</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">3,218</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">1,155</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">77</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,986</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">57.6</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">31</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,020</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,994</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">924</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">69</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">2</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,999</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">57.8</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">32</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">2,021</span></p></td><td class="cl-74f27663"><p class="cl-74f25d44"><span class="cl-74f04324">3,839</span></p></td><td class="cl-74f27664"><p class="cl-74f25d44"><span class="cl-74f04324">2,313</span></p></td><td class="cl-74f27665"><p class="cl-74f25d44"><span class="cl-74f04324">353</span></p></td><td class="cl-74f2766c"><p class="cl-74f25d44"><span class="cl-74f04324">0</span></p></td><td class="cl-74f2766d"><p class="cl-74f25d44"><span class="cl-74f04324">1,173</span></p></td><td class="cl-74f2766e"><p class="cl-74f25d44"><span class="cl-74f04324">59.1</span></p></td><td class="cl-74f27676"><p class="cl-74f25d44"><span class="cl-74f04324">31</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-74f27677"><p class="cl-74f25d44"><span class="cl-74f04324">2,022</span></p></td><td class="cl-74f27677"><p class="cl-74f25d44"><span class="cl-74f04324">3,977</span></p></td><td class="cl-74f27678"><p class="cl-74f25d44"><span class="cl-74f04324">2,554</span></p></td><td class="cl-74f27680"><p class="cl-74f25d44"><span class="cl-74f04324">219</span></p></td><td class="cl-74f27681"><p class="cl-74f25d44"><span class="cl-74f04324">1</span></p></td><td class="cl-74f27682"><p class="cl-74f25d44"><span class="cl-74f04324">1,203</span></p></td><td class="cl-74f27683"><p class="cl-74f25d44"><span class="cl-74f04324">61.0</span></p></td><td class="cl-74f2768a"><p class="cl-74f25d44"><span class="cl-74f04324">32</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="epicurve" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="epicurve"><span class="header-section-number">3</span> Epicurve</h2>
+<section id="monthly-time-series" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="monthly-time-series"><span class="header-section-number">3.1</span> Monthly time series</h3>
+<p>The monthly epicurve shows all poisoning deaths from 1997 to 2022, stacked by intent category. The overlaid LOESS smoother (dark line with 95% CI) tracks the long-term trajectory of total counts while the stacked colours reveal whether any compositional shift in intent type accompanied the volume change.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-weekly-epicurve" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-weekly-epicurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-weekly-epicurve-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-weekly-epicurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Fig. 3. Monthly poisoning deaths by intent (stacked bars). Dark line + band = LOESS total-count smoother (span ≈ 5-year window) with 95% CI. The dominant blue category (‘Accidental/unspec.’) is inflated by the ICD-10 coding default applied whenever manner of death is absent from the death notification form.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="monthly-seasonality" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="monthly-seasonality"><span class="header-section-number">3.2</span> Monthly seasonality</h3>
+<p>Average deaths per calendar month (averaged across all years), with ±1 SD error bars. A consistent seasonal pattern would suggest environmental or behavioural drivers (e.g.&nbsp;agricultural pesticide exposure in summer, indoor heating–related gas poisoning in winter).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-seasonality" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-seasonality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-seasonality-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-seasonality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Fig. 4. Mean poisoning deaths per calendar month (+/-1 SD across years).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="age-and-sex" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="age-and-sex"><span class="header-section-number">4</span> Age and sex</h2>
+<section id="age-sex-pyramid" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="age-sex-pyramid"><span class="header-section-number">4.1</span> Age-sex pyramid</h3>
+<p>The population pyramid shows the sex- and age-distribution of all poisoning deaths. Males to the left, females to the right.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-pyramid" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pyramid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-pyramid-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pyramid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Fig. 5. Age-sex pyramid — all poisoning deaths. Blue = male; red = female.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="age-sex-pyramid-by-intent" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="age-sex-pyramid-by-intent"><span class="header-section-number">4.2</span> Age-sex pyramid by intent</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-pyramid-intent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pyramid-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-pyramid-intent-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pyramid-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Fig. 6. Age-sex pyramids by intent category (accidental/unspecified, self-harm, undetermined). The ‘Accidental/unspec.’ panel is the most affected by the ICD-10 coding default and likely absorbs cases of genuine self-harm and undetermined intent. X-axis scales differ by panel.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="age-sex-table" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="age-sex-table"><span class="header-section-number">4.3</span> Age × sex table</h3>
+<div class="cell">
+<div id="tbl-age-sex" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-age-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Table 3. Poisoning deaths by age group and sex
+</figcaption>
+<div aria-describedby="tbl-age-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7583d5bc{}.cl-757fde26{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-758176a0{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-758176aa{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-758186f4{width:0.99in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-758186fe{width:0.668in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-758186ff{width:0.795in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-75818708{width:0.99in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-75818709{width:0.668in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7581870a{width:0.795in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-75818712{width:0.99in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-75818713{width:0.668in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7581871c{width:0.795in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7583d5bc"><thead><tr style="overflow-wrap:break-word;"><th class="cl-758186f4"><p class="cl-758176a0"><span class="cl-757fde26">Age group</span></p></th><th class="cl-758186fe"><p class="cl-758176aa"><span class="cl-757fde26">Male</span></p></th><th class="cl-758186ff"><p class="cl-758176aa"><span class="cl-757fde26">Female</span></p></th><th class="cl-758186fe"><p class="cl-758176aa"><span class="cl-757fde26">Total</span></p></th><th class="cl-758186ff"><p class="cl-758176aa"><span class="cl-757fde26">% Male</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">&lt;1</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">4,502</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">3,874</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">8,376</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">53.7</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">1-4</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">2,394</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">2,023</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">4,417</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">54.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">5-9</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">693</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">565</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,258</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">55.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">10-14</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">558</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">832</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,390</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">40.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">15-19</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,424</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">2,825</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">4,249</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">33.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">20-24</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">2,969</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">2,406</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">5,375</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">55.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">25-29</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">3,904</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">2,143</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">6,047</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">64.6</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">30-34</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">4,018</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">1,820</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">5,838</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">68.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">35-39</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">3,518</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">1,598</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">5,116</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">68.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">40-44</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">3,009</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">1,304</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">4,313</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">69.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">45-49</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">2,558</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">1,252</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">3,810</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">67.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">50-54</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">2,046</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">1,014</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">3,060</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">66.9</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">55-59</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,581</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">835</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">2,416</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">65.4</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">60-64</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,285</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">684</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,969</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">65.3</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">65-69</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">944</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">610</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,554</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">60.7</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818708"><p class="cl-758176a0"><span class="cl-757fde26">70-74</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">611</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">521</span></p></td><td class="cl-75818709"><p class="cl-758176aa"><span class="cl-757fde26">1,132</span></p></td><td class="cl-7581870a"><p class="cl-758176aa"><span class="cl-757fde26">54.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-75818712"><p class="cl-758176a0"><span class="cl-757fde26">75+</span></p></td><td class="cl-75818713"><p class="cl-758176aa"><span class="cl-757fde26">1,005</span></p></td><td class="cl-7581871c"><p class="cl-758176aa"><span class="cl-757fde26">1,074</span></p></td><td class="cl-75818713"><p class="cl-758176aa"><span class="cl-757fde26">2,079</span></p></td><td class="cl-7581871c"><p class="cl-758176aa"><span class="cl-757fde26">48.3</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="age-group-trends-over-time" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="age-group-trends-over-time"><span class="header-section-number">5</span> Age-group trends over time</h2>
+<section id="age-year-heatmap-nominal-counts" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="age-year-heatmap-nominal-counts"><span class="header-section-number">5.1</span> Age × year heatmap — nominal counts</h3>
+<p>Each cell shows the <strong>absolute number of poisoning deaths</strong> in that age band and calendar year. This reveals which groups contribute the most deaths in volume terms and allows direct comparison across time.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-year-count-heatmap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-year-count-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-year-count-heatmap-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-year-count-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Fig. 9a. Annual poisoning deaths by age group (raw count). Darker = more deaths.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="age-year-heatmap-proportional-share" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="age-year-heatmap-proportional-share"><span class="header-section-number">5.2</span> Age × year heatmap — proportional share</h3>
+<p>Each cell shows that age band’s <strong>share of that year’s total poisoning deaths</strong> (%). Using proportions rather than raw counts removes the effect of overall volume changes and isolates structural shifts in the age distribution — e.g.&nbsp;a darkening row signals a rising share for that group regardless of whether total deaths rose or fell.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-year-heatmap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-year-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-year-heatmap-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-year-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Fig. 9b. Proportion of annual poisoning deaths by age group (heatmap). Darker = higher share. Each column sums to 100%.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="estimated-annual-percentage-change-eapc-by-age-group" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="estimated-annual-percentage-change-eapc-by-age-group"><span class="header-section-number">5.3</span> Estimated annual percentage change (EAPC) by age group</h3>
+<p>The EAPC is derived from a log-linear regression of annual death counts on calendar year for each age band independently (with a 0.5 continuity correction for zero counts). It estimates the average year-on-year percentage change across 1997–2022. Red = increasing trend; blue = decreasing; faded points indicate <em>p</em> ≥ 0.05. This is the standard WHO / GBD approach for characterising mortality trends by subgroup.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-eapc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-eapc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-eapc-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-eapc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Fig. 10. EAPC by age group with 95% CI. Solid (opaque) points are statistically significant (p &lt; 0.05). EAPC = estimated annual % change in poisoning death count, 1997–2022.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="age-group-trends-by-sex" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="age-group-trends-by-sex"><span class="header-section-number">6</span> Age-group trends by sex</h2>
+<p>The three figures below stratify the age-trend analysis by sex, enabling direct comparison between male and female poisoning death patterns — e.g.&nbsp;whether rising counts in older age groups are driven by males, and whether any increase in younger age groups is female-predominant.</p>
+<section id="age-year-heatmap-counts-by-sex" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="age-year-heatmap-counts-by-sex"><span class="header-section-number">6.1</span> Age × year heatmap — counts by sex</h3>
+<p>Two side-by-side heatmaps showing raw death counts. Allows comparison of absolute burden between sexes across the age-year space.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-year-sex-count" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-year-sex-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-year-sex-count-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-year-sex-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Fig. 11a. Annual poisoning deaths by age group, stratified by sex (raw count). Each panel’s colour scale is shared, so darker cells can be compared directly between male and female panels.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="age-year-heatmap-within-sex-proportional-share" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="age-year-heatmap-within-sex-proportional-share"><span class="header-section-number">6.2</span> Age × year heatmap — within-sex proportional share</h3>
+<p>Each cell is the <strong>percentage of that sex’s total deaths</strong> in that year falling in that age band. Proportions are computed separately within each sex, so the panels show whether the <em>age structure</em> of male and female poisoning deaths has shifted over time — independently of the overall sex ratio in deaths.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-year-sex-prop" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-year-sex-prop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-year-sex-prop-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-year-sex-prop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Fig. 11b. Proportion of annual poisoning deaths by age group within each sex. Each panel’s columns sum to 100%.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="eapc-by-age-group-male-vs-female-comparison" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="eapc-by-age-group-male-vs-female-comparison"><span class="header-section-number">6.3</span> EAPC by age group — male vs female comparison</h3>
+<p>Log-linear EAPC estimated separately for each age group × sex combination. Blue circles = males; red triangles = females; faded = <em>p</em> ≥ 0.05. Reading across a row for a given age band shows which sex is driving any trend — and whether both sexes are changing in the same direction and magnitude.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-age-sex-eapc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-age-sex-eapc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-age-sex-eapc-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-age-sex-eapc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Fig. 12. EAPC by age group and sex with 95% CI. Blue circle = male; red triangle = female. Faded = non-significant (p ≥ 0.05). Points are horizontally dodged for legibility.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="geographic-distribution" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="geographic-distribution"><span class="header-section-number">7</span> Geographic distribution</h2>
+<p>Counts by province of <strong>usual residence</strong> (<code>ResProvince</code>), excluding records coded as “Outside SA” or “Unspecified”.</p>
+<section id="district-hot-spots-last-3-years" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="district-hot-spots-last-3-years"><span class="header-section-number">7.1</span> District hot spots: last 3 years</h3>
+<p>Pooling the last 3 years stabilizes district-level crude rates and makes potential geographic hot spots easier to interpret than a single-year map.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-district-hotspot-map-3yr" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-district-hotspot-map-3yr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-district-hotspot-map-3yr-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-district-hotspot-map-3yr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Fig. 7a. District hot spot map from pooled crude poisoning death rates over the last 3 years. Red = top decile of district crude rates; blue = bottom decile.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-provincial" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-provincial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-provincial-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-provincial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Fig. 7. Poisoning deaths by province of usual residence. Provinces ordered by count.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="cause-breakdown-icd-subcodes" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="cause-breakdown-icd-subcodes"><span class="header-section-number">8</span> Cause breakdown — ICD subcodes</h2>
+<p>The top 15 three-character ICD-10 subcodes within the poisoning block, ranked by total deaths across the study period.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-top-icd" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-top-icd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-top-icd-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top-icd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: Fig. 8. Top 15 ICD-10 subcodes for poisoning deaths.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="years-of-life-lost-yll" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="years-of-life-lost-yll"><span class="header-section-number">9</span> Years of Life Lost (YLL)</h2>
+<p>YLL is computed as the sum of remaining life expectancy at age of death across all registered poisoning deaths with a known, valid age and documented sex (male or female). Individual ages are mapped to WHO standard remaining life expectancy using linear interpolation of the WHO reference life table (Murray 1994; LE at birth = 82.5 years). Records with unknown age or unknown/other sex are excluded from this section but remain in the death-count analyses above.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Reference life table
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The WHO/GBD standard life table (Murray 1994) anchors YLL at a life expectancy of <strong>82.5 years at birth</strong>, providing a universal comparison benchmark independent of local South African life expectancy — which has fluctuated substantially over the study period due to HIV/AIDS and ART roll-out. Using a fixed standard means YLL reflects potential life lost relative to a best-practice survival frontier rather than current national survival. Standard values used for key ages: age 0 → 82.5 yr; age 20 → 62.8 yr; age 40 → 43.1 yr; age 60 → 24.3 yr; age 75 → 11.8 yr.</p>
+</div>
+</div>
+<section id="summary" class="level3" data-number="9.1">
+<h3 data-number="9.1" class="anchored" data-anchor-id="summary"><span class="header-section-number">9.1</span> Summary</h3>
+<div class="cell">
+<div id="tbl-yll-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yll-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Table 4. YLL by age group and sex — all poisoning deaths with valid age and known sex (1997–2022). YLL computed using WHO standard life table (Murray 1994). ‘YLL/death’ = mean standard life-years lost per registered death.
+</figcaption>
+<div aria-describedby="tbl-yll-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7b7586dc{}.cl-7b70f040{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7b72cc8a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7b72cc94{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7b72df72{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df7c{width:0.966in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df7d{width:0.813in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df7e{width:1.161in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df86{width:1.112in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df87{width:0.959in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df88{width:1.307in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df90{width:0.973in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df91{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df92{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df9a{width:0.966in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df9b{width:0.813in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72df9c{width:1.161in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfa4{width:1.112in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfa5{width:0.959in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfa6{width:1.307in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfae{width:0.973in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfaf{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfb0{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfb1{width:0.966in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfb8{width:0.813in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfb9{width:1.161in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfba{width:1.112in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfc2{width:0.959in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfc3{width:1.307in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfc4{width:0.973in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7b72dfcc{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7b7586dc"><thead><tr style="overflow-wrap:break-word;"><th class="cl-7b72df72"><p class="cl-7b72cc8a"><span class="cl-7b70f040">Age group</span></p></th><th class="cl-7b72df7c"><p class="cl-7b72cc94"><span class="cl-7b70f040">Male deaths</span></p></th><th class="cl-7b72df7d"><p class="cl-7b72cc94"><span class="cl-7b70f040">Male YLL</span></p></th><th class="cl-7b72df7e"><p class="cl-7b72cc94"><span class="cl-7b70f040">Male YLL/death</span></p></th><th class="cl-7b72df86"><p class="cl-7b72cc94"><span class="cl-7b70f040">Female deaths</span></p></th><th class="cl-7b72df87"><p class="cl-7b72cc94"><span class="cl-7b70f040">Female YLL</span></p></th><th class="cl-7b72df88"><p class="cl-7b72cc94"><span class="cl-7b70f040">Female YLL/death</span></p></th><th class="cl-7b72df90"><p class="cl-7b72cc94"><span class="cl-7b70f040">Total deaths</span></p></th><th class="cl-7b72df91"><p class="cl-7b72cc94"><span class="cl-7b70f040">Total YLL</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">&lt;1</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">4,502</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">371,460</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">82.5</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,874</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">319,644</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">82.5</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">8,376</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">691,104</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">1-4</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,394</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">193,555</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">80.8</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,023</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">163,550</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">80.8</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">4,417</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">357,104</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">5-9</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">693</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">52,689</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">76.0</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">565</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">42,904</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">75.9</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,258</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">95,593</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">10-14</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">558</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">39,411</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">70.6</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">832</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">58,263</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">70.0</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,390</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">97,673</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">15-19</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,424</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">93,150</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">65.4</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,825</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">185,639</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">65.7</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">4,249</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">278,789</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">20-24</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,969</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">179,908</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">60.6</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,406</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">146,553</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">60.9</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">5,375</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">326,460</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">25-29</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,904</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">217,935</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">55.8</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,143</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">119,814</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">55.9</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">6,047</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">337,749</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">30-34</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">4,018</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">204,984</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">51.0</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,820</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">92,838</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">51.0</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">5,838</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">297,821</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">35-39</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,518</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">162,460</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">46.2</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,598</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">73,801</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">46.2</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">5,116</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">236,261</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">40-44</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,009</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">124,195</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">41.3</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,304</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">53,780</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">41.2</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">4,313</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">177,975</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">45-49</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,558</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">93,184</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">36.4</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,252</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">45,579</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">36.4</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,810</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">138,762</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">50-54</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,046</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">64,861</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">31.7</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,014</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">32,213</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">31.8</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">3,060</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">97,074</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">55-59</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,581</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">42,754</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">27.0</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">835</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">22,682</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">27.2</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,416</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">65,437</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">60-64</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,285</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">29,078</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">22.6</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">684</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">15,447</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">22.6</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,969</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">44,525</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">65-69</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">944</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">17,356</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">18.4</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">610</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">11,118</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">18.2</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,554</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">28,474</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72df92"><p class="cl-7b72cc8a"><span class="cl-7b70f040">70-74</span></p></td><td class="cl-7b72df9a"><p class="cl-7b72cc94"><span class="cl-7b70f040">611</span></p></td><td class="cl-7b72df9b"><p class="cl-7b72cc94"><span class="cl-7b70f040">8,704</span></p></td><td class="cl-7b72df9c"><p class="cl-7b72cc94"><span class="cl-7b70f040">14.2</span></p></td><td class="cl-7b72dfa4"><p class="cl-7b72cc94"><span class="cl-7b70f040">521</span></p></td><td class="cl-7b72dfa5"><p class="cl-7b72cc94"><span class="cl-7b70f040">7,376</span></p></td><td class="cl-7b72dfa6"><p class="cl-7b72cc94"><span class="cl-7b70f040">14.2</span></p></td><td class="cl-7b72dfae"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,132</span></p></td><td class="cl-7b72dfaf"><p class="cl-7b72cc94"><span class="cl-7b70f040">16,079</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7b72dfb0"><p class="cl-7b72cc8a"><span class="cl-7b70f040">75+</span></p></td><td class="cl-7b72dfb1"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,005</span></p></td><td class="cl-7b72dfb8"><p class="cl-7b72cc94"><span class="cl-7b70f040">7,099</span></p></td><td class="cl-7b72dfb9"><p class="cl-7b72cc94"><span class="cl-7b70f040">7.1</span></p></td><td class="cl-7b72dfba"><p class="cl-7b72cc94"><span class="cl-7b70f040">1,074</span></p></td><td class="cl-7b72dfc2"><p class="cl-7b72cc94"><span class="cl-7b70f040">7,371</span></p></td><td class="cl-7b72dfc3"><p class="cl-7b72cc94"><span class="cl-7b70f040">6.9</span></p></td><td class="cl-7b72dfc4"><p class="cl-7b72cc94"><span class="cl-7b70f040">2,079</span></p></td><td class="cl-7b72dfcc"><p class="cl-7b72cc94"><span class="cl-7b70f040">14,470</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="total-yll-by-age-group-and-sex" class="level3" data-number="9.2">
+<h3 data-number="9.2" class="anchored" data-anchor-id="total-yll-by-age-group-and-sex"><span class="header-section-number">9.2</span> Total YLL by age group and sex</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-age-sex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-age-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-age-sex-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-age-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: Fig. 13. Total YLL by age group, stratified by sex (1997–2022). Blue = male; red = female. YLL computed from individual registered ages using the WHO standard life table.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mean-yll-per-death-by-age-group" class="level3" data-number="9.3">
+<h3 data-number="9.3" class="anchored" data-anchor-id="mean-yll-per-death-by-age-group"><span class="header-section-number">9.3</span> Mean YLL per death by age group</h3>
+<p>YLL per death declines monotonically with age because older decedents have fewer remaining standard life-years. The pattern reveals where the <strong>per-death burden</strong> is highest — typically in younger age groups — even when older groups contribute more deaths in absolute terms.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-per-death" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-per-death-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-per-death-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-per-death-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: Fig. 14. Mean YLL per registered poisoning death by age group and sex. Reflects the WHO standard remaining life expectancy applied at each recorded age.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="annual-yll-trend-by-sex" class="level3" data-number="9.4">
+<h3 data-number="9.4" class="anchored" data-anchor-id="annual-yll-trend-by-sex"><span class="header-section-number">9.4</span> Annual YLL trend by sex</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-year-sex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-year-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-year-sex-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-year-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: Fig. 15. Annual total YLL from poisoning deaths by sex (1997–2022). Blue = male; red = female.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yll-heatmap-age-group-year" class="level3" data-number="9.5">
+<h3 data-number="9.5" class="anchored" data-anchor-id="yll-heatmap-age-group-year"><span class="header-section-number">9.5</span> YLL heatmap — age group × year</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-age-year" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-age-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-age-year-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-age-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20: Fig. 16. YLL by age group and calendar year (heatmap). Darker cells = higher YLL. Combines the effect of death counts and age-at-death distribution.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="death-institution-place-of-death" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="death-institution-place-of-death"><span class="header-section-number">10</span> Death institution / place of death</h2>
+<p>The <code>DeathInst</code> field on the South African death notification form records where the death occurred. Values are: <strong>Hospital</strong> (1), <strong>Emergency room / Outpatient</strong> (2), <strong>Dead on arrival</strong> (3), <strong>Nursing home</strong> (4), <strong>Home</strong> (5), <strong>Other</strong> (6), <strong>Unknown</strong> (8), and <strong>Unspecified</strong> (9). For the broad grouping below, categories 1, 2, and 4 are combined as <strong>Health facility</strong>; category 3 (<strong>Dead on arrival</strong>) is kept separate because it implies the death occurred outside a facility but was certified at one; categories 5 and 6 form <strong>Out of facility</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Unspecified records (code 9)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A substantial proportion of records carry code 9 (Unspecified). This likely reflects incomplete form completion rather than a genuinely unknown setting, and mirrors the broader data-quality limitations of the vital registration system. These records are retained in the tables below but excluded from the bar charts to avoid distorting the proportions of known categories. Their exclusion is reported in the figure footnotes.</p>
+</div>
+</div>
+<section id="x40x49-distribution-by-death-institution" class="level3" data-number="10.1">
+<h3 data-number="10.1" class="anchored" data-anchor-id="x40x49-distribution-by-death-institution"><span class="header-section-number">10.1</span> X40–X49: distribution by death institution</h3>
+<p>The chart below shows where accidental/unspecified poisoning deaths (X40–X49) occurred, excluding the Unknown and Unspecified categories. The “Unspecified” share is shown in the table.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-facility-acc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-facility-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-facility-acc-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-facility-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: Fig. 17. Death institution for X40–X49 (accidental/unspecified) poisoning deaths. Records coded Unknown (8) or Unspecified (9) are excluded from this chart but included in the table below.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-facility-acc" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-facility-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Table 5. X40–X49 poisoning deaths by death institution (known records only, excluding Unknown/Unspecified).
+</figcaption>
+<div aria-describedby="tbl-facility-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7be41462{}.cl-7be09c42{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7be21504{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7be2150e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7be225bc{width:2.196in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225c6{width:1.321in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225c7{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225c8{width:1.126in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225d0{width:2.196in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225d1{width:1.321in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225d2{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225da{width:1.126in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225db{width:2.196in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225dc{width:1.321in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225dd{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7be225e4{width:1.126in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7be41462"><thead><tr style="overflow-wrap:break-word;"><th class="cl-7be225bc"><p class="cl-7be21504"><span class="cl-7be09c42">Death institution</span></p></th><th class="cl-7be225c6"><p class="cl-7be21504"><span class="cl-7be09c42">Facility group</span></p></th><th class="cl-7be225c7"><p class="cl-7be2150e"><span class="cl-7be09c42">N</span></p></th><th class="cl-7be225c8"><p class="cl-7be2150e"><span class="cl-7be09c42">% of X40-49</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7be225d0"><p class="cl-7be21504"><span class="cl-7be09c42">Hospital</span></p></td><td class="cl-7be225d1"><p class="cl-7be21504"><span class="cl-7be09c42">Health facility</span></p></td><td class="cl-7be225d2"><p class="cl-7be2150e"><span class="cl-7be09c42">18,611</span></p></td><td class="cl-7be225da"><p class="cl-7be2150e"><span class="cl-7be09c42">68.8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7be225d0"><p class="cl-7be21504"><span class="cl-7be09c42">Home</span></p></td><td class="cl-7be225d1"><p class="cl-7be21504"><span class="cl-7be09c42">Out of facility</span></p></td><td class="cl-7be225d2"><p class="cl-7be2150e"><span class="cl-7be09c42">1,435</span></p></td><td class="cl-7be225da"><p class="cl-7be2150e"><span class="cl-7be09c42">5.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7be225d0"><p class="cl-7be21504"><span class="cl-7be09c42">Emergency room/Outpatient</span></p></td><td class="cl-7be225d1"><p class="cl-7be21504"><span class="cl-7be09c42">Health facility</span></p></td><td class="cl-7be225d2"><p class="cl-7be2150e"><span class="cl-7be09c42">1,035</span></p></td><td class="cl-7be225da"><p class="cl-7be2150e"><span class="cl-7be09c42">3.8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7be225d0"><p class="cl-7be21504"><span class="cl-7be09c42">Dead on arrival</span></p></td><td class="cl-7be225d1"><p class="cl-7be21504"><span class="cl-7be09c42">Dead on arrival</span></p></td><td class="cl-7be225d2"><p class="cl-7be2150e"><span class="cl-7be09c42">497</span></p></td><td class="cl-7be225da"><p class="cl-7be2150e"><span class="cl-7be09c42">1.8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7be225d0"><p class="cl-7be21504"><span class="cl-7be09c42">Other</span></p></td><td class="cl-7be225d1"><p class="cl-7be21504"><span class="cl-7be09c42">Out of facility</span></p></td><td class="cl-7be225d2"><p class="cl-7be2150e"><span class="cl-7be09c42">481</span></p></td><td class="cl-7be225da"><p class="cl-7be2150e"><span class="cl-7be09c42">1.8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7be225db"><p class="cl-7be21504"><span class="cl-7be09c42">Nursing home</span></p></td><td class="cl-7be225dc"><p class="cl-7be21504"><span class="cl-7be09c42">Health facility</span></p></td><td class="cl-7be225dd"><p class="cl-7be2150e"><span class="cl-7be09c42">59</span></p></td><td class="cl-7be225e4"><p class="cl-7be2150e"><span class="cl-7be09c42">0.2%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="intent-composition-within-each-facility-setting" class="level3" data-number="10.2">
+<h3 data-number="10.2" class="anchored" data-anchor-id="intent-composition-within-each-facility-setting"><span class="header-section-number">10.2</span> Intent composition within each facility setting</h3>
+<p>The proportional stacked bars show how the intent mix varies across facility settings. Because “Accidental/unspec.” is the ICD-10 default when manner is not stated, settings where non-forensic clinicians certify deaths (e.g.&nbsp;hospital wards) are expected to show the highest proportional contribution from this category.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-facility-intent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-facility-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-facility-intent-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-facility-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22: Fig. 18. Intent composition of poisoning deaths within each facility setting (100% stacked bars). ‘Other’ intent excluded. Percentages are within-setting shares.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-facility-intent" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-facility-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Table 6. Poisoning deaths by facility setting and intent (all records, including Unknown/Unspecified). ‘% Acc./unspec.’ = proportion of that setting’s deaths coded X40–X49.
+</figcaption>
+<div aria-describedby="tbl-facility-intent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7c087b68{}.cl-7c040c7c{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7c05a4c4{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7c05a4c5{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7c05b9b4{width:1.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9b5{width:1.568in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9be{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9bf{width:0.786in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9c8{width:1.245in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9c9{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9ca{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9d2{width:1.737in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9d3{width:1.568in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9d4{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9dc{width:0.786in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9dd{width:1.245in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9e6{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9e7{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9e8{width:1.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9f0{width:1.568in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9f1{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9f2{width:0.786in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9f3{width:1.245in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9fa{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7c05b9fb{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7c087b68"><thead><tr style="overflow-wrap:break-word;"><th class="cl-7c05b9b4"><p class="cl-7c05a4c4"><span class="cl-7c040c7c">Facility setting</span></p></th><th class="cl-7c05b9b5"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">Accidental/unspec.</span></p></th><th class="cl-7c05b9be"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">Self-harm</span></p></th><th class="cl-7c05b9bf"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">Assault</span></p></th><th class="cl-7c05b9c8"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">Undetermined</span></p></th><th class="cl-7c05b9c9"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">Total</span></p></th><th class="cl-7c05b9ca"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">% Acc./unspec.</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7c05b9d2"><p class="cl-7c05a4c4"><span class="cl-7c040c7c">Health facility</span></p></td><td class="cl-7c05b9d3"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">19,705</span></p></td><td class="cl-7c05b9d4"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">1,137</span></p></td><td class="cl-7c05b9dc"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">4</span></p></td><td class="cl-7c05b9dd"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">11,099</span></p></td><td class="cl-7c05b9e6"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">31,945</span></p></td><td class="cl-7c05b9e7"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">61.7%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7c05b9d2"><p class="cl-7c05a4c4"><span class="cl-7c040c7c">Dead on arrival</span></p></td><td class="cl-7c05b9d3"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">497</span></p></td><td class="cl-7c05b9d4"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">148</span></p></td><td class="cl-7c05b9dc"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">0</span></p></td><td class="cl-7c05b9dd"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">1,480</span></p></td><td class="cl-7c05b9e6"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">2,125</span></p></td><td class="cl-7c05b9e7"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">23.4%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7c05b9d2"><p class="cl-7c05a4c4"><span class="cl-7c040c7c">Out of facility</span></p></td><td class="cl-7c05b9d3"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">1,916</span></p></td><td class="cl-7c05b9d4"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">487</span></p></td><td class="cl-7c05b9dc"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">0</span></p></td><td class="cl-7c05b9dd"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">7,869</span></p></td><td class="cl-7c05b9e6"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">10,272</span></p></td><td class="cl-7c05b9e7"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">18.7%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7c05b9e8"><p class="cl-7c05a4c4"><span class="cl-7c040c7c">Unknown/unspecified</span></p></td><td class="cl-7c05b9f0"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">4,916</span></p></td><td class="cl-7c05b9f1"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">830</span></p></td><td class="cl-7c05b9f2"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">2</span></p></td><td class="cl-7c05b9f3"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">12,309</span></p></td><td class="cl-7c05b9fa"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">18,057</span></p></td><td class="cl-7c05b9fb"><p class="cl-7c05a4c5"><span class="cl-7c040c7c">27.2%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="next-steps" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">11</span> Next steps</h2>
+<ul>
+<li>Add population denominators to compute age-standardised mortality rates.</li>
+<li>Stratify provincial trends by intent.</li>
+<li>Link to external toxicology data (e.g.&nbsp;NPIS calls, emergency department presentations) for triangulation with IMS and NCoDV forensic data.</li>
+<li>Investigate the spike/dip years visible in the epicurve.</li>
+<li>Apply probabilistic redistribution of the “Accidental” category using forensic correction factors (e.g.&nbsp;from <span class="citation" data-cites="groenewald2023misclassification">(<a href="#ref-groenewald2023misclassification" role="doc-biblioref">3</a>)</span>) to obtain intent-adjusted estimates.</li>
+</ul>
+</section>
+<section id="references" class="level2" data-number="12">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">12 References</h2><div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-groenewald2023importance" class="csl-entry" role="listitem">
+<div class="csl-left-margin">1. </div><div class="csl-right-inline">Groenewald P, Matzopoulos R, Afonso E, Bradshaw D. The importance of including manner of (injury) death on the death notification form. S Afr Med J. 2023;113(9):11–2. doi:<a href="https://doi.org/10.7196/SAMJ.2023.v113i9.915">10.7196/SAMJ.2023.v113i9.915</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/37882128">37882128</a>.</div>
+</div>
+<div id="ref-who2016icd10" class="csl-entry" role="listitem">
+<div class="csl-left-margin">2. </div><div class="csl-right-inline">World Health Organization. International statistical classification of diseases and related health problems, 10th revision, volume 2: Instruction manual [Internet]. 5th ed. Geneva: World Health Organization; 2016. Available from: <a href="https://apps.who.int/classifications/icd10/browse/2016/en">https://apps.who.int/classifications/icd10/browse/2016/en</a></div>
+</div>
+<div id="ref-groenewald2023misclassification" class="csl-entry" role="listitem">
+<div class="csl-left-margin">3. </div><div class="csl-right-inline">Groenewald P, Kallis N, Holmgren C, Glass T, Anthony A, Maud P, et al. Further evidence of misclassification of the injury deaths in <span>South Africa</span>: <span>When</span> will the barriers to accurate injury death statistics be removed? S Afr Med J. 2023;113(9):30–5. doi:<a href="https://doi.org/10.7196/SAMJ.2023.v113i9.836">10.7196/SAMJ.2023.v113i9.836</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/37882130">37882130</a>; PubMed Central PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11017197">PMC11017197</a>.</div>
+</div>
+<div id="ref-prinsloo2017" class="csl-entry" role="listitem">
+<div class="csl-left-margin">4. </div><div class="csl-right-inline">Prinsloo M, Bradshaw D, Joubert J, Matzopoulos R, Groenewald P. <span class="nocase">South Africa’s</span> vital statistics are currently not suitable for monitoring progress towards injury and violence <span>Sustainable Development Goals</span>. S Afr Med J. 2017;107(6):470–1. doi:<a href="https://doi.org/10.7196/SAMJ.2017.v107i6.12464">10.7196/SAMJ.2017.v107i6.12464</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/28604314">28604314</a>.</div>
+</div>
+<div id="ref-norman2007" class="csl-entry" role="listitem">
+<div class="csl-left-margin">5. </div><div class="csl-right-inline">Norman R, Matzopoulos R, Groenewald P, Bradshaw D. The high burden of injuries in <span>South Africa</span>. Bull World Health Organ. 2007;85(9):695–702. doi:<a href="https://doi.org/10.2471/blt.06.037184">10.2471/blt.06.037184</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/18026626">18026626</a>; PubMed Central PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2636399">PMC2636399</a>.</div>
+</div>
+<div id="ref-pillayvwyk2016" class="csl-entry" role="listitem">
+<div class="csl-left-margin">6. </div><div class="csl-right-inline">Pillay-van Wyk V, Msemburi W, Laubscher R, Dorrington R, Groenewald P, Glass T, et al. Mortality trends and differentials in <span>South Africa</span> from 1997 to 2012: Second <span class="nocase">National Burden of Disease Study</span>. Lancet Glob Health. 2016;4(9):e642–53. doi:<a href="https://doi.org/10.1016/S2214-109X(16)30113-9">10.1016/S2214-109X(16)30113-9</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/27539806">27539806</a>.</div>
+</div>
+<div id="ref-prinsloo2024" class="csl-entry" role="listitem">
+<div class="csl-left-margin">7. </div><div class="csl-right-inline">Prinsloo M, Mhlongo S, Roomaney R, Marineau L, Mamashela T, Dekel B, et al. Injury mortality in <span>South Africa</span>: A 2009 and 2017 comparison to track progress to meeting sustainable development goal targets. Glob Health Action. 2024;17(1):2377828. doi:<a href="https://doi.org/10.1080/16549716.2024.2377828">10.1080/16549716.2024.2377828</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/39145429">39145429</a>.</div>
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

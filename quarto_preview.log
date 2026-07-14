@@ -1,0 +1,27 @@
+[1m[34m[1/2] projects/j_code_modelling/index.qmd[39m[22m
+[31m
+
+processing file: index.qmd
+[39m1/9                       
+2/9 [setup]               
+3/9                       
+4/9 [tbl-scenario-summary]
+5/9                       
+6/9 [fig-expected-deaths] 
+7/9                       
+8/9 [fig-excess-deaths]   
+9/9                       
+[31moutput file: index.knit.md
+
+[39m[1m[34m[2/2] index.qmd[39m[22m
+[33mWARN: Unable to create a feed as the required `site-url` property is missing from this project.[39m
+
+Output created: ../../docs/projects/j_code_modelling/index.html
+
+[1m[34mTerminating existing preview server....[39m[22m[1m[34mDONE
+[39m[22m
+[1m[34mPreparing to preview[39m[22m
+
+[32mWatching files for changes[39m
+[32mBrowse at [39m[4m[32mhttp://localhost:4976/projects/j_code_modelling/index.html[39m[24m
+Listening on http://127.0.0.1:4976/

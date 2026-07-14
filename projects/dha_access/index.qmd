@@ -1,0 +1,76 @@
+---
+title: "DHA Service Access and Coverage"
+description: "Population-weighted access to Department of Home Affairs offices for birth and death registration in South Africa"
+date: "2026-01-20"
+categories: [access, spatial, DHA, registration]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(flextable)
+ward_output <- "../../outputs/ward_level_dha_access.RData"
+if (!file.exists(ward_output)) {
+  message("Running ward-level wrangling script...")
+  source("../../ward_level_dha_access_script.R", local = new.env())
+}
+load(ward_output)
+```
+
+## Overview
+
+Birth and death registration in South Africa happens at Department of Home Affairs (DHA) offices. **Access to these offices is a precondition for complete vital registration**, and poor geographic access is a plausible driver of under-registration in remote areas.
+
+This project answers: **what proportion of the South African population lives within reach of a DHA registration node?** Coverage estimates are reported separately for **death registration** (DHA offices only) and **birth registration** (DHA offices + hospital-based DHA satellites, since most births occur in facilities).
+
+## How the analysis is organised
+
+::: {.callout-tip}
+## Preferred method
+All headline results use **Method 3 — ward-level centroid distance**. Population is taken from observed Stats SA 2025 ward-level estimates; distance is the straight-line distance from each ward centroid to the nearest registration node.
+:::
+
+| Page | Purpose |
+|---|---|
+| [Methodology — Method 3](methodology.qmd) | How ward-level access is computed and why Method 3 is preferred |
+| [Methods Comparison](methods_comparison.qmd) | Side-by-side comparison of three approaches (district inter-office, modelled grid, ward centroid) |
+| [Sensitivity: 500 m density check](sensitivity.qmd) | Are DHA offices in plausibly dense areas? Modelled population density within 500 m of each node, benchmarked against the ward-density distribution |
+| [**Death registration coverage**](death_registration.qmd) | Final results — DHA offices only |
+| [**Birth registration coverage**](birth_registration.qmd) | Final results — DHA offices + hospital-based DHA satellites (from the DHA↔MFL linkage) |
+
+## Headline numbers (Method 3)
+
+```{r}
+#| label: tbl-headline
+#| echo: false
+tibble::tribble(
+  ~Indicator,                                ~`Death reg. (DHA only)`,         ~`Birth reg. (DHA + hospital)`,
+  "% population within 5 km of a node",      paste0(m3_pct_5km,  "%"),         paste0(birth_pct_5km,  "%"),
+  "% population within 10 km of a node",     paste0(m3_pct_10km, "%"),         paste0(birth_pct_10km, "%"),
+  "% population within 20 km of a node",     paste0(m3_pct_20km, "%"),         paste0(birth_pct_20km, "%"),
+  "Number of registration nodes",            as.character(n_standalone_dha),   as.character(n_standalone_dha + n_hospital_dha)
+) |>
+  flextable() |>
+  bold(part = "header") |>
+  bg(j = "Birth reg. (DHA + hospital)", bg = "#E8F5E9") |>
+  theme_zebra() |>
+  autofit() |>
+  set_caption("National coverage — Method 3 (ward centroid to nearest registration node)")
+```
+
+## Data sources
+
+- **DHA office locations** — 2024 DHA offices dataset (`r n_standalone_dha` standalone offices with coordinates)
+- **Hospital-based DHA satellites** — `r n_hospital_dha` public hospitals matched to MFL coordinates via the linkage in `DHA_access/link_DHA_to_MFL.r`
+- **Population** — Stats SA mid-year ward-level estimates (2025)
+- **Boundaries** — MDB 2020 ward shapefile (4,468 wards)
+
+## Limitations
+
+- Ward centroids are proxies for population locations; large rural wards may have centroids far from where people actually live.
+- Distances are straight-line, not road-network or travel time.
+- Hospital satellites are assumed to offer the relevant registration service whenever they appear on the curated list — actual service hours and uptake are not modelled.
+- Office capacity and service quality are not accounted for.
+
+See each child page for method-specific limitations.

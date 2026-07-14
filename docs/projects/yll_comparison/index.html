@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-03-10">
+<meta name="description" content="YLL analysis comparing South Africa’s Notifiable Medical Conditions (NMC) — including poisoning — against other injuries, violence, drowning, vaccine-preventable conditions, and cancers. National vital registration data 1997–2022.">
+
+<title>Years of Life Lost: NMC Conditions in Comparative Perspective – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Years of Life Lost: NMC Conditions in Comparative Perspective</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><span class="header-section-number">1</span> Background</a></li>
+  <li><a href="#notifiable-medical-conditions-nmc-icd-10-mapping" id="toc-notifiable-medical-conditions-nmc-icd-10-mapping" class="nav-link" data-scroll-target="#notifiable-medical-conditions-nmc-icd-10-mapping"><span class="header-section-number">2</span> Notifiable Medical Conditions (NMC) — ICD-10 Mapping</a></li>
+  <li><a href="#yll-summary-all-years-1997---2022" id="toc-yll-summary-all-years-1997---2022" class="nav-link" data-scroll-target="#yll-summary-all-years-1997---2022"><span class="header-section-number">3</span> YLL Summary: All Years (1997 - 2022)</a></li>
+  <li><a href="#yll-summary-most-recent-year-2022" id="toc-yll-summary-most-recent-year-2022" class="nav-link" data-scroll-target="#yll-summary-most-recent-year-2022"><span class="header-section-number">4</span> YLL Summary: Most Recent Year (2022)</a></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures"><span class="header-section-number">5</span> Figures</a>
+  <ul class="collapse">
+  <li><a href="#total-yll-by-cause-group" id="toc-total-yll-by-cause-group" class="nav-link" data-scroll-target="#total-yll-by-cause-group"><span class="header-section-number">5.1</span> Total YLL by cause group</a></li>
+  <li><a href="#mean-yll-per-death-prematurity" id="toc-mean-yll-per-death-prematurity" class="nav-link" data-scroll-target="#mean-yll-per-death-prematurity"><span class="header-section-number">5.2</span> Mean YLL per death (prematurity)</a></li>
+  <li><a href="#share-of-total-yll" id="toc-share-of-total-yll" class="nav-link" data-scroll-target="#share-of-total-yll"><span class="header-section-number">5.3</span> Share of total YLL</a></li>
+  <li><a href="#deaths-vs-mean-yll-positioning-causes-across-burden-dimensions" id="toc-deaths-vs-mean-yll-positioning-causes-across-burden-dimensions" class="nav-link" data-scroll-target="#deaths-vs-mean-yll-positioning-causes-across-burden-dimensions"><span class="header-section-number">5.4</span> Deaths vs mean YLL: positioning causes across burden dimensions</a></li>
+  <li><a href="#yll-trends-over-time" id="toc-yll-trends-over-time" class="nav-link" data-scroll-target="#yll-trends-over-time"><span class="header-section-number">5.5</span> YLL trends over time</a></li>
+  <li><a href="#yll-rank-over-time-bump-chart" id="toc-yll-rank-over-time-bump-chart" class="nav-link" data-scroll-target="#yll-rank-over-time-bump-chart"><span class="header-section-number">5.6</span> YLL rank over time (bump chart)</a></li>
+  <li><a href="#yll-by-age-group" id="toc-yll-by-age-group" class="nav-link" data-scroll-target="#yll-by-age-group"><span class="header-section-number">5.7</span> YLL by age group</a></li>
+  <li><a href="#yll-by-sex-most-recent-year" id="toc-yll-by-sex-most-recent-year" class="nav-link" data-scroll-target="#yll-by-sex-most-recent-year"><span class="header-section-number">5.8</span> YLL by sex (most recent year)</a></li>
+  </ul></li>
+  <li><a href="#poisoning-yll-breakdown-by-intent" id="toc-poisoning-yll-breakdown-by-intent" class="nav-link" data-scroll-target="#poisoning-yll-breakdown-by-intent"><span class="header-section-number">6</span> Poisoning YLL breakdown by intent</a></li>
+  <li><a href="#methods-note" id="toc-methods-note" class="nav-link" data-scroll-target="#methods-note"><span class="header-section-number">7</span> Methods note</a>
+  <ul class="collapse">
+  <li><a href="#yll-formula" id="toc-yll-formula" class="nav-link" data-scroll-target="#yll-formula"><span class="header-section-number">7.1</span> YLL formula</a></li>
+  <li><a href="#cause-group-assignment" id="toc-cause-group-assignment" class="nav-link" data-scroll-target="#cause-group-assignment"><span class="header-section-number">7.2</span> Cause group assignment</a></li>
+  <li><a href="#data-limitations" id="toc-data-limitations" class="nav-link" data-scroll-target="#data-limitations"><span class="header-section-number">7.3</span> Data limitations</a></li>
+  </ul></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps"><span class="header-section-number">8</span> Next steps</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Years of Life Lost: NMC Conditions in Comparative Perspective</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">YLL</div>
+    <div class="quarto-category">burden-of-disease</div>
+    <div class="quarto-category">NMC</div>
+    <div class="quarto-category">poisoning</div>
+    <div class="quarto-category">injury-mortality</div>
+    <div class="quarto-category">vital-registration</div>
+    <div class="quarto-category">icd10</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    YLL analysis comparing South Africa’s Notifiable Medical Conditions (NMC) — including poisoning — against other injuries, violence, drowning, vaccine-preventable conditions, and cancers. National vital registration data 1997–2022.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 10, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="background" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="background"><span class="header-section-number">1</span> Background</h2>
+<p><strong>Years of Life Lost (YLL)</strong> is a summary measure of premature mortality that weights each death by the remaining life expectancy the deceased would have had if they had not died. Unlike simple death counts, YLL captures <em>how early</em> deaths occur: a death at age 5 contributes far more YLL than a death at age 75, even though both count as one death.</p>
+<p>This analysis applies the <strong>South Africa 2022 national life table</strong> (Statistics South Africa) as the reference standard. For each death in the vital registration dataset, YLL is calculated as the remaining life expectancy at the age of death. Results are summarised across cause groups spanning:</p>
+<ul>
+<li><em>External causes</em> — poisoning, road traffic injuries, drowning, interpersonal violence, self-harm, falls, burns</li>
+<li><em>NMC communicable conditions</em> — tuberculosis, HIV/AIDS, vaccine-preventable diseases, other notifiable infections</li>
+<li><em>Chronic non-communicable conditions</em> — cancers, cardiovascular disease, diabetes</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Life table note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>YLL values use an <strong>approximated</strong> South Africa 2022 combined-sex abridged life table derived from Statistics South Africa mid-year population estimates. Exact single-year values should be substituted from the official StatsSA P0302.3 (2022 edition) when published. All figures may differ slightly from GBD or WHO estimates, which use global frontier reference tables.</p>
+<p>The dataset contains deaths from 1997 - 2022. The overall summary table covers all years; the “most recent year” table uses 2022 only.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="notifiable-medical-conditions-nmc-icd-10-mapping" class="level2 page-columns page-full" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="notifiable-medical-conditions-nmc-icd-10-mapping"><span class="header-section-number">2</span> Notifiable Medical Conditions (NMC) — ICD-10 Mapping</h2>
+<p>The table below summarises South Africa’s Notifiable Medical Conditions (NMCs) under the National Health Act (Government Gazette No.&nbsp;38764, 2015) and their corresponding ICD-10 underlying-cause-of-death codes as expected in Stats SA vital registration data.</p>
+<div class="cell page-columns page-full">
+<div id="tbl-nmc-map" class="cell quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-tbl figure page-columns page-full">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nmc-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Table 1. South Africa Notifiable Medical Conditions and corresponding ICD-10 underlying-cause-of-death codes.
+</figcaption>
+<div aria-describedby="tbl-nmc-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<div class="cell-output-display column-page">
+<div class="tabwid"><style>.cl-99f0b8f4{}.cl-99eb286c{font-family:'Helvetica';font-size:8.5pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-99eb2876{font-family:'Helvetica';font-size:8.5pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(139, 0, 0, 1.00);background-color:transparent;}.cl-99ed6ece{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-99ed6ed8{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-99ed8706{width:2.6in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8710{width:1.4in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8711{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8712{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed871a{width:2.6in;background-color:rgba(240, 255, 244, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed871b{width:1.4in;background-color:rgba(240, 255, 244, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8724{width:1.8in;background-color:rgba(240, 255, 244, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8725{width:3in;background-color:rgba(240, 255, 244, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8726{width:2.6in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed872e{width:1.4in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed872f{width:1.8in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8730{width:3in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8738{width:2.6in;background-color:rgba(239, 247, 255, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8739{width:1.4in;background-color:rgba(239, 247, 255, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed873a{width:1.8in;background-color:rgba(239, 247, 255, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed873b{width:3in;background-color:rgba(239, 247, 255, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8742{width:2.6in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8743{width:1.4in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8744{width:1.8in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed874c{width:3in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed874d{width:2.6in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8756{width:1.4in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed8757{width:1.8in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-99ed876a{width:3in;background-color:rgba(255, 245, 245, 1.00);vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-99f0b8f4"><thead><tr style="overflow-wrap:break-word;"><th class="cl-99ed8706"><p class="cl-99ed6ece"><span class="cl-99eb286c">NMC condition</span></p></th><th class="cl-99ed8710"><p class="cl-99ed6ece"><span class="cl-99eb286c">ICD-10 UCD codes</span></p></th><th class="cl-99ed8711"><p class="cl-99ed6ece"><span class="cl-99eb286c">Category</span></p></th><th class="cl-99ed8712"><p class="cl-99ed6ece"><span class="cl-99eb286c">Vaccine / intervention context</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Diphtheria</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A36</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: DTP / DTP-HepB-Hib</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Pertussis (whooping cough)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A37</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: DTP / DTP-HepB-Hib</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Tetanus (neonatal)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A33</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: DTP</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Tetanus (other)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A34-A35</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: DTP</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Poliomyelitis (wild/vaccine-derived)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A80</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: OPV/IPV</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Measles</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B05</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: Measles / MMR</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Rubella</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B06</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: MMR</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Congenital rubella syndrome</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">P35.0</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: MMR (maternal immunisation)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Hepatitis B (acute)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B16</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: HepB (birth dose + EPI)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Hepatitis B (chronic / NOS)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B17-B19</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: HepB</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Meningococcal disease</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A39</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: MenC/MenACWY</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Influenza (novel subtypes / pandemic)</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">J09-J11</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: seasonal influenza</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed871a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Yellow fever</span></p></td><td class="cl-99ed871b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A95</span></p></td><td class="cl-99ed8724"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine-preventable</span></p></td><td class="cl-99ed8725"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: YF (endemic risk only)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Cholera</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A00</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: OCV (oral cholera vaccine)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Typhoid fever</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A01</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Shigellosis (bacillary dysentery)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A03</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Non-typhoidal Salmonella (food-borne)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A02</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Hepatitis A</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B15</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Viral hepatitis E</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B17.2</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Enteric / waterborne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Malaria</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B50-B54</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vector-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: SP2 pilot / RTS,S</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Dengue fever</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A90-A91</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vector-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Rift Valley fever</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A92.4</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vector-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Plague</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A20</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vector-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Rabies</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A82</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Zoonotic / contact</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Brucellosis</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A23</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Zoonotic / contact</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Anthrax</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A22</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Zoonotic / contact</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Leptospirosis</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A27</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Zoonotic / contact</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Haemorrhagic fever (viral / NOS)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A96-A99</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Zoonotic / contact</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Legionellosis</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A48.1</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Respiratory</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">SARS / COVID-19</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">U07-U08 / J06.9</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Respiratory</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: COVID-19 (emergency)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Middle East respiratory syndrome (MERS)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B34.4</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Respiratory</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No routine vaccine in SA</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8738"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Tuberculosis (all forms)</span></p></td><td class="cl-99ed8739"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A15-A19</span></p></td><td class="cl-99ed873a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">High-burden communicable</span></p></td><td class="cl-99ed873b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: BCG (protects against severe TB in children)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8738"><p class="cl-99ed6ed8"><span class="cl-99eb286c">HIV/AIDS</span></p></td><td class="cl-99ed8739"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B20-B24</span></p></td><td class="cl-99ed873a"><p class="cl-99ed6ed8"><span class="cl-99eb286c">High-burden communicable</span></p></td><td class="cl-99ed873b"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Vaccine: none (PMTCT / ART programme)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Syphilis (congenital)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">A50</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">STI / blood-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No vaccine; PMTCT / STI management</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Neonatal ophthalmia (gonococcal/chlamydia)</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">P39.1 / A74.0</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">STI / blood-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No vaccine; ophthalmic prophylaxis</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8726"><p class="cl-99ed6ed8"><span class="cl-99eb286c">Hepatitis C</span></p></td><td class="cl-99ed872e"><p class="cl-99ed6ed8"><span class="cl-99eb286c">B17.1</span></p></td><td class="cl-99ed872f"><p class="cl-99ed6ed8"><span class="cl-99eb286c">STI / blood-borne</span></p></td><td class="cl-99ed8730"><p class="cl-99ed6ed8"><span class="cl-99eb286c">No vaccine; HCV treatment</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8742"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Poisoning — accidental / unspecified</span></p></td><td class="cl-99ed8743"><p class="cl-99ed6ed8"><span class="cl-99eb2876">X40-X49</span></p></td><td class="cl-99ed8744"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Environmental / toxic / external</span></p></td><td class="cl-99ed874c"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Notifiable: food/pesticide/household</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8742"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Poisoning — intentional self-harm</span></p></td><td class="cl-99ed8743"><p class="cl-99ed6ed8"><span class="cl-99eb2876">X60-X69</span></p></td><td class="cl-99ed8744"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Environmental / toxic / external</span></p></td><td class="cl-99ed874c"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Notifiable: self-inflicted toxic exposure</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8742"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Poisoning — assault</span></p></td><td class="cl-99ed8743"><p class="cl-99ed6ed8"><span class="cl-99eb2876">X85</span></p></td><td class="cl-99ed8744"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Environmental / toxic / external</span></p></td><td class="cl-99ed874c"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Notifiable: homicidal poisoning</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed8742"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Poisoning — undetermined intent</span></p></td><td class="cl-99ed8743"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Y10-Y19</span></p></td><td class="cl-99ed8744"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Environmental / toxic / external</span></p></td><td class="cl-99ed874c"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Notifiable: undetermined toxic exposure</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-99ed874d"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Food-borne illness (notifiable outbreak)</span></p></td><td class="cl-99ed8756"><p class="cl-99ed6ed8"><span class="cl-99eb2876">A02 / A05 / A06</span></p></td><td class="cl-99ed8757"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Environmental / toxic / external</span></p></td><td class="cl-99ed876a"><p class="cl-99ed6ed8"><span class="cl-99eb2876">Notifiable: outbreak reporting</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Coding caveat for external-cause NMCs
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Poisoning deaths in Stats SA vital registration data are subject to systematic <strong>intent misclassification</strong>: because South Africa’s death notification form lacks a certified manner-of-death field, ICD-10 Vol. 2 rules assign the <em>accidental</em> code by default when intent is unstated. As a result, the X40–X49 (accidental) category substantially over-counts genuinely accidental poisonings, absorbing cases of self-harm and assault. See the <a href="../../projects/poisoning_deaths/index.html">Poisoning Deaths analysis</a> for a detailed discussion.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="yll-summary-all-years-1997---2022" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="yll-summary-all-years-1997---2022"><span class="header-section-number">3</span> YLL Summary: All Years (1997 - 2022)</h2>
+<div class="cell">
+<div id="tbl-yll-overall" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yll-overall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Table 2. Total YLL by cause group — all deaths, 1997 - 2022. SA 2022 national life table (combined sex). ‘Other cause’ excluded from % calculation.
+</figcaption>
+<div aria-describedby="tbl-yll-overall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-9a151a00{}.cl-9a1047e6{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9a121008{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9a121009{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9a123ce0{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cea{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123ceb{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cf4{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cf5{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cf6{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cfe{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123cff{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d00{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d01{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d08{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d09{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d0a{width:2.203in;background-color:rgba(239, 247, 255, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d0b{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d12{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d1c{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d1d{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d1e{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d26{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d27{width:2.203in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d28{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d29{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d30{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d31{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d3a{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d3b{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d3c{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d3d{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d3e{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d44{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d45{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d46{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d4e{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d4f{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d50{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d58{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d62{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d6c{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d6d{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d6e{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d76{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d77{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d78{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d79{width:2.203in;background-color:rgba(255, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d80{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d81{width:2.203in;background-color:rgba(239, 247, 255, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d8a{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d8b{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d8c{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d8d{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d94{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d95{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d96{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d97{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d9e{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123d9f{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123da8{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123da9{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123db2{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123db3{width:0.98in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123db4{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123db5{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a123dbc{width:1.098in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-9a151a00"><thead><tr style="overflow-wrap:break-word;"><th class="cl-9a123ce0"><p class="cl-9a121008"><span class="cl-9a1047e6">Cause group</span></p></th><th class="cl-9a123cea"><p class="cl-9a121008"><span class="cl-9a1047e6">Deaths (N)</span></p></th><th class="cl-9a123ceb"><p class="cl-9a121008"><span class="cl-9a1047e6">YLL (total)</span></p></th><th class="cl-9a123cf4"><p class="cl-9a121009"><span class="cl-9a1047e6">Mean YLL/death</span></p></th><th class="cl-9a123cf5"><p class="cl-9a121008"><span class="cl-9a1047e6">YLL (% of total)</span></p></th><th class="cl-9a123cf6"><p class="cl-9a121009"><span class="cl-9a1047e6">% missing age</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-9a123cfe"><p class="cl-9a121008"><span class="cl-9a1047e6">Other cause</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">5,946,420</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6">171,840,084</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">29.1</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">53.3%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">0.6</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d0a"><p class="cl-9a121008"><span class="cl-9a1047e6">Tuberculosis</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">1,200,263</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6"> 33,704,411</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">28.4</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">10.5%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">1.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d0b"><p class="cl-9a121008"><span class="cl-9a1047e6">Other external causes</span></p></td><td class="cl-9a123d12"><p class="cl-9a121008"><span class="cl-9a1047e6">  982,740</span></p></td><td class="cl-9a123d1c"><p class="cl-9a121008"><span class="cl-9a1047e6"> 30,945,158</span></p></td><td class="cl-9a123d1d"><p class="cl-9a121009"><span class="cl-9a1047e6">32.0</span></p></td><td class="cl-9a123d1e"><p class="cl-9a121008"><span class="cl-9a1047e6">9.6%</span></p></td><td class="cl-9a123d26"><p class="cl-9a121009"><span class="cl-9a1047e6">1.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123cfe"><p class="cl-9a121008"><span class="cl-9a1047e6">Cardiovascular disease</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">2,112,688</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6"> 28,122,649</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">13.3</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">8.7%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">0.3</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d27"><p class="cl-9a121008"><span class="cl-9a1047e6">Malignant neoplasms (cancer)</span></p></td><td class="cl-9a123d28"><p class="cl-9a121008"><span class="cl-9a1047e6">  941,865</span></p></td><td class="cl-9a123d29"><p class="cl-9a121008"><span class="cl-9a1047e6"> 14,391,996</span></p></td><td class="cl-9a123d30"><p class="cl-9a121009"><span class="cl-9a1047e6">15.3</span></p></td><td class="cl-9a123d31"><p class="cl-9a121008"><span class="cl-9a1047e6">4.5%</span></p></td><td class="cl-9a123d3a"><p class="cl-9a121009"><span class="cl-9a1047e6">0.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d0a"><p class="cl-9a121008"><span class="cl-9a1047e6">HIV/AIDS</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">  436,931</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6"> 13,562,239</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">31.2</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">4.2%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">0.6</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123cfe"><p class="cl-9a121008"><span class="cl-9a1047e6">Diabetes mellitus</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">  562,190</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6">  7,271,471</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">12.9</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">2.3%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">0.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d3b"><p class="cl-9a121008"><span class="cl-9a1047e6">Chronic respiratory disease</span></p></td><td class="cl-9a123d3c"><p class="cl-9a121008"><span class="cl-9a1047e6">  354,854</span></p></td><td class="cl-9a123d3d"><p class="cl-9a121008"><span class="cl-9a1047e6">  5,124,835</span></p></td><td class="cl-9a123d3e"><p class="cl-9a121009"><span class="cl-9a1047e6">14.5</span></p></td><td class="cl-9a123d44"><p class="cl-9a121008"><span class="cl-9a1047e6">1.6%</span></p></td><td class="cl-9a123d45"><p class="cl-9a121009"><span class="cl-9a1047e6">0.3</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d46"><p class="cl-9a121008"><span class="cl-9a1047e6">Road traffic injuries</span></p></td><td class="cl-9a123d4e"><p class="cl-9a121008"><span class="cl-9a1047e6">  138,018</span></p></td><td class="cl-9a123d4f"><p class="cl-9a121008"><span class="cl-9a1047e6">  4,536,314</span></p></td><td class="cl-9a123d50"><p class="cl-9a121009"><span class="cl-9a1047e6">33.2</span></p></td><td class="cl-9a123d58"><p class="cl-9a121008"><span class="cl-9a1047e6">1.4%</span></p></td><td class="cl-9a123d62"><p class="cl-9a121009"><span class="cl-9a1047e6">1.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d6c"><p class="cl-9a121008"><span class="cl-9a1047e6">Interpersonal violence</span></p></td><td class="cl-9a123d6d"><p class="cl-9a121008"><span class="cl-9a1047e6">  132,406</span></p></td><td class="cl-9a123d6e"><p class="cl-9a121008"><span class="cl-9a1047e6">  4,485,547</span></p></td><td class="cl-9a123d76"><p class="cl-9a121009"><span class="cl-9a1047e6">34.3</span></p></td><td class="cl-9a123d77"><p class="cl-9a121008"><span class="cl-9a1047e6">1.4%</span></p></td><td class="cl-9a123d78"><p class="cl-9a121009"><span class="cl-9a1047e6">1.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d0a"><p class="cl-9a121008"><span class="cl-9a1047e6">Other NMC communicable</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">  153,225</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6">  2,476,461</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">16.2</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">0.8%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">0.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d79"><p class="cl-9a121008"><span class="cl-9a1047e6">Poisoning (all intent)</span></p></td><td class="cl-9a123d28"><p class="cl-9a121008"><span class="cl-9a1047e6">   63,178</span></p></td><td class="cl-9a123d29"><p class="cl-9a121008"><span class="cl-9a1047e6">  2,381,529</span></p></td><td class="cl-9a123d30"><p class="cl-9a121009"><span class="cl-9a1047e6">38.0</span></p></td><td class="cl-9a123d31"><p class="cl-9a121008"><span class="cl-9a1047e6">0.7%</span></p></td><td class="cl-9a123d3a"><p class="cl-9a121009"><span class="cl-9a1047e6">0.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123cfe"><p class="cl-9a121008"><span class="cl-9a1047e6">Burns &amp; fire</span></p></td><td class="cl-9a123cff"><p class="cl-9a121008"><span class="cl-9a1047e6">   41,619</span></p></td><td class="cl-9a123d00"><p class="cl-9a121008"><span class="cl-9a1047e6">  1,365,264</span></p></td><td class="cl-9a123d01"><p class="cl-9a121009"><span class="cl-9a1047e6">33.2</span></p></td><td class="cl-9a123d08"><p class="cl-9a121008"><span class="cl-9a1047e6">0.4%</span></p></td><td class="cl-9a123d09"><p class="cl-9a121009"><span class="cl-9a1047e6">1.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d80"><p class="cl-9a121008"><span class="cl-9a1047e6">Drowning (unintentional)</span></p></td><td class="cl-9a123d28"><p class="cl-9a121008"><span class="cl-9a1047e6">   25,679</span></p></td><td class="cl-9a123d29"><p class="cl-9a121008"><span class="cl-9a1047e6">  1,067,114</span></p></td><td class="cl-9a123d30"><p class="cl-9a121009"><span class="cl-9a1047e6">42.1</span></p></td><td class="cl-9a123d31"><p class="cl-9a121008"><span class="cl-9a1047e6">0.3%</span></p></td><td class="cl-9a123d3a"><p class="cl-9a121009"><span class="cl-9a1047e6">1.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d81"><p class="cl-9a121008"><span class="cl-9a1047e6">Vaccine-preventable (excl TB/HIV)</span></p></td><td class="cl-9a123d8a"><p class="cl-9a121008"><span class="cl-9a1047e6">   25,898</span></p></td><td class="cl-9a123d8b"><p class="cl-9a121008"><span class="cl-9a1047e6">    718,829</span></p></td><td class="cl-9a123d8c"><p class="cl-9a121009"><span class="cl-9a1047e6">27.9</span></p></td><td class="cl-9a123d8d"><p class="cl-9a121008"><span class="cl-9a1047e6">0.2%</span></p></td><td class="cl-9a123d94"><p class="cl-9a121009"><span class="cl-9a1047e6">0.6</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123d95"><p class="cl-9a121008"><span class="cl-9a1047e6">Falls</span></p></td><td class="cl-9a123d96"><p class="cl-9a121008"><span class="cl-9a1047e6">    3,557</span></p></td><td class="cl-9a123d97"><p class="cl-9a121008"><span class="cl-9a1047e6">     73,173</span></p></td><td class="cl-9a123d9e"><p class="cl-9a121009"><span class="cl-9a1047e6">20.7</span></p></td><td class="cl-9a123d9f"><p class="cl-9a121008"><span class="cl-9a1047e6">0%</span></p></td><td class="cl-9a123da8"><p class="cl-9a121009"><span class="cl-9a1047e6">0.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a123da9"><p class="cl-9a121008"><span class="cl-9a1047e6">Self-harm (non-poisoning)</span></p></td><td class="cl-9a123db2"><p class="cl-9a121008"><span class="cl-9a1047e6">    1,639</span></p></td><td class="cl-9a123db3"><p class="cl-9a121008"><span class="cl-9a1047e6">     49,416</span></p></td><td class="cl-9a123db4"><p class="cl-9a121009"><span class="cl-9a1047e6">30.3</span></p></td><td class="cl-9a123db5"><p class="cl-9a121008"><span class="cl-9a1047e6">0%</span></p></td><td class="cl-9a123dbc"><p class="cl-9a121009"><span class="cl-9a1047e6">0.5</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="yll-summary-most-recent-year-2022" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="yll-summary-most-recent-year-2022"><span class="header-section-number">4</span> YLL Summary: Most Recent Year (2022)</h2>
+<div class="cell">
+<div id="tbl-yll-recent" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yll-recent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Table 3. Total YLL by cause group — 2022 only. SA 2022 national life table.
+</figcaption>
+<div aria-describedby="tbl-yll-recent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-9a26daec{}.cl-9a22b4c6{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9a243864{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9a24386e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9a244d4a{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d4b{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d54{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d55{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d5e{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d5f{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d68{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d69{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d6a{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d72{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d73{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d74{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d7c{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d7d{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d86{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d87{width:2.203in;background-color:rgba(239, 247, 255, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d90{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d91{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d92{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d9a{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244d9b{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244da4{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244da5{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244da6{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dae{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244daf{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244db8{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244db9{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dba{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dbb{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dc2{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dc3{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dc4{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dcc{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dcd{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dce{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dd6{width:2.203in;background-color:rgba(239, 247, 255, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dd7{width:2.203in;background-color:rgba(255, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dd8{width:2.203in;background-color:rgba(239, 247, 255, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244de0{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244de1{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244de2{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244de3{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dea{width:2.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244deb{width:0.889in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244dec{width:0.862in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244ded{width:1.203in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9a244df4{width:1.147in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-9a26daec"><thead><tr style="overflow-wrap:break-word;"><th class="cl-9a244d4a"><p class="cl-9a243864"><span class="cl-9a22b4c6">Cause group</span></p></th><th class="cl-9a244d4b"><p class="cl-9a243864"><span class="cl-9a22b4c6">Deaths (N)</span></p></th><th class="cl-9a244d54"><p class="cl-9a243864"><span class="cl-9a22b4c6">YLL (total)</span></p></th><th class="cl-9a244d55"><p class="cl-9a24386e"><span class="cl-9a22b4c6">Mean YLL/death</span></p></th><th class="cl-9a244d5e"><p class="cl-9a243864"><span class="cl-9a22b4c6">YLL (% of total)</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-9a244d5f"><p class="cl-9a243864"><span class="cl-9a22b4c6">Other cause</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6">201,236</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">5,406,385</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">26.9</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">48.5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d5f"><p class="cl-9a243864"><span class="cl-9a22b4c6">Other external causes</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 45,235</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">1,387,566</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">30.7</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">12.5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d5f"><p class="cl-9a243864"><span class="cl-9a22b4c6">Cardiovascular disease</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 98,969</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">1,286,246</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">13.0</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">11.5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d73"><p class="cl-9a243864"><span class="cl-9a22b4c6">Malignant neoplasms (cancer)</span></p></td><td class="cl-9a244d74"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 41,511</span></p></td><td class="cl-9a244d7c"><p class="cl-9a243864"><span class="cl-9a22b4c6">  610,878</span></p></td><td class="cl-9a244d7d"><p class="cl-9a24386e"><span class="cl-9a22b4c6">14.7</span></p></td><td class="cl-9a244d86"><p class="cl-9a243864"><span class="cl-9a22b4c6">5.5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d87"><p class="cl-9a243864"><span class="cl-9a22b4c6">HIV/AIDS</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 20,815</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">  563,573</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">27.1</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">5.1%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d87"><p class="cl-9a243864"><span class="cl-9a22b4c6">Tuberculosis</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 20,106</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">  485,463</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">24.1</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">4.4%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d90"><p class="cl-9a243864"><span class="cl-9a22b4c6">Diabetes mellitus</span></p></td><td class="cl-9a244d91"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 32,901</span></p></td><td class="cl-9a244d92"><p class="cl-9a243864"><span class="cl-9a22b4c6">  430,827</span></p></td><td class="cl-9a244d9a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">13.1</span></p></td><td class="cl-9a244d9b"><p class="cl-9a243864"><span class="cl-9a22b4c6">3.9%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244da4"><p class="cl-9a243864"><span class="cl-9a22b4c6">Interpersonal violence</span></p></td><td class="cl-9a244da5"><p class="cl-9a243864"><span class="cl-9a22b4c6">  5,815</span></p></td><td class="cl-9a244da6"><p class="cl-9a243864"><span class="cl-9a22b4c6">  192,139</span></p></td><td class="cl-9a244dae"><p class="cl-9a24386e"><span class="cl-9a22b4c6">33.0</span></p></td><td class="cl-9a244daf"><p class="cl-9a243864"><span class="cl-9a22b4c6">1.7%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244db8"><p class="cl-9a243864"><span class="cl-9a22b4c6">Chronic respiratory disease</span></p></td><td class="cl-9a244db9"><p class="cl-9a243864"><span class="cl-9a22b4c6"> 11,841</span></p></td><td class="cl-9a244dba"><p class="cl-9a243864"><span class="cl-9a22b4c6">  155,455</span></p></td><td class="cl-9a244dbb"><p class="cl-9a24386e"><span class="cl-9a22b4c6">13.1</span></p></td><td class="cl-9a244dc2"><p class="cl-9a243864"><span class="cl-9a22b4c6">1.4%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244dc3"><p class="cl-9a243864"><span class="cl-9a22b4c6">Road traffic injuries</span></p></td><td class="cl-9a244dc4"><p class="cl-9a243864"><span class="cl-9a22b4c6">  4,592</span></p></td><td class="cl-9a244dcc"><p class="cl-9a243864"><span class="cl-9a22b4c6">  143,724</span></p></td><td class="cl-9a244dcd"><p class="cl-9a24386e"><span class="cl-9a22b4c6">31.3</span></p></td><td class="cl-9a244dce"><p class="cl-9a243864"><span class="cl-9a22b4c6">1.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244dd6"><p class="cl-9a243864"><span class="cl-9a22b4c6">Other NMC communicable</span></p></td><td class="cl-9a244d91"><p class="cl-9a243864"><span class="cl-9a22b4c6">  8,582</span></p></td><td class="cl-9a244d92"><p class="cl-9a243864"><span class="cl-9a22b4c6">  143,549</span></p></td><td class="cl-9a244d9a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">16.7</span></p></td><td class="cl-9a244d9b"><p class="cl-9a243864"><span class="cl-9a22b4c6">1.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244dd7"><p class="cl-9a243864"><span class="cl-9a22b4c6">Poisoning (all intent)</span></p></td><td class="cl-9a244d74"><p class="cl-9a243864"><span class="cl-9a22b4c6">  3,981</span></p></td><td class="cl-9a244d7c"><p class="cl-9a243864"><span class="cl-9a22b4c6">  139,320</span></p></td><td class="cl-9a244d7d"><p class="cl-9a24386e"><span class="cl-9a22b4c6">35.0</span></p></td><td class="cl-9a244d86"><p class="cl-9a243864"><span class="cl-9a22b4c6">1.3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d90"><p class="cl-9a243864"><span class="cl-9a22b4c6">Burns &amp; fire</span></p></td><td class="cl-9a244d91"><p class="cl-9a243864"><span class="cl-9a22b4c6">  2,814</span></p></td><td class="cl-9a244d92"><p class="cl-9a243864"><span class="cl-9a22b4c6">   94,314</span></p></td><td class="cl-9a244d9a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">33.5</span></p></td><td class="cl-9a244d9b"><p class="cl-9a243864"><span class="cl-9a22b4c6">0.8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d73"><p class="cl-9a243864"><span class="cl-9a22b4c6">Drowning (unintentional)</span></p></td><td class="cl-9a244d74"><p class="cl-9a243864"><span class="cl-9a22b4c6">  1,972</span></p></td><td class="cl-9a244d7c"><p class="cl-9a243864"><span class="cl-9a22b4c6">   76,624</span></p></td><td class="cl-9a244d7d"><p class="cl-9a24386e"><span class="cl-9a22b4c6">38.9</span></p></td><td class="cl-9a244d86"><p class="cl-9a243864"><span class="cl-9a22b4c6">0.7%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244dd8"><p class="cl-9a243864"><span class="cl-9a22b4c6">Vaccine-preventable (excl TB/HIV)</span></p></td><td class="cl-9a244de0"><p class="cl-9a243864"><span class="cl-9a22b4c6">    845</span></p></td><td class="cl-9a244de1"><p class="cl-9a243864"><span class="cl-9a22b4c6">   21,629</span></p></td><td class="cl-9a244de2"><p class="cl-9a24386e"><span class="cl-9a22b4c6">25.6</span></p></td><td class="cl-9a244de3"><p class="cl-9a243864"><span class="cl-9a22b4c6">0.2%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244d5f"><p class="cl-9a243864"><span class="cl-9a22b4c6">Falls</span></p></td><td class="cl-9a244d68"><p class="cl-9a243864"><span class="cl-9a22b4c6">    156</span></p></td><td class="cl-9a244d69"><p class="cl-9a243864"><span class="cl-9a22b4c6">    2,671</span></p></td><td class="cl-9a244d6a"><p class="cl-9a24386e"><span class="cl-9a22b4c6">17.1</span></p></td><td class="cl-9a244d72"><p class="cl-9a243864"><span class="cl-9a22b4c6">0%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9a244dea"><p class="cl-9a243864"><span class="cl-9a22b4c6">Self-harm (non-poisoning)</span></p></td><td class="cl-9a244deb"><p class="cl-9a243864"><span class="cl-9a22b4c6">     52</span></p></td><td class="cl-9a244dec"><p class="cl-9a243864"><span class="cl-9a22b4c6">    1,643</span></p></td><td class="cl-9a244ded"><p class="cl-9a24386e"><span class="cl-9a22b4c6">31.6</span></p></td><td class="cl-9a244df4"><p class="cl-9a243864"><span class="cl-9a22b4c6">0%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="figures" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="figures"><span class="header-section-number">5</span> Figures</h2>
+<section id="total-yll-by-cause-group" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="total-yll-by-cause-group"><span class="header-section-number">5.1</span> Total YLL by cause group</h3>
+<p>Total YLL summed across all years. The length of each bar reflects both the number of deaths and how prematurely they occurred.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-total" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-total-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Fig. 1. Total YLL by cause group (1997 - 2022). SA 2022 national life table. ‘Other cause’ excluded.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mean-yll-per-death-prematurity" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="mean-yll-per-death-prematurity"><span class="header-section-number">5.2</span> Mean YLL per death (prematurity)</h3>
+<p>Mean YLL per death indicates how premature deaths are within each cause group. Groups at the top die youngest relative to the SA reference life table; groups at the bottom have deaths concentrated at older ages.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mean-yll" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mean-yll-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-mean-yll-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mean-yll-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Fig. 2. Mean YLL per death by cause group. Higher value = deaths occur at younger ages relative to the SA national life table. SA 2022 national life table (combined sex).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="share-of-total-yll" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="share-of-total-yll"><span class="header-section-number">5.3</span> Share of total YLL</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-share" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-share-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Fig. 3. Percentage share of total YLL by cause group (all years, ‘Other cause’ excluded). Red shading = NMC poisoning/toxic; blue shading = communicable/NMC; grey = non-NMC chronic.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="deaths-vs-mean-yll-positioning-causes-across-burden-dimensions" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="deaths-vs-mean-yll-positioning-causes-across-burden-dimensions"><span class="header-section-number">5.4</span> Deaths vs mean YLL: positioning causes across burden dimensions</h3>
+<p>The scatter plot places each cause group in a two-dimensional space. The x-axis measures total <em>volume</em> (deaths), the y-axis measures <em>prematurity</em> (mean YLL per death), and bubble area is proportional to <em>total YLL</em> — the product of both dimensions.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-scatter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-scatter-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Fig. 4. Positioning of cause groups by death volume (x), mean premature years (y), and total YLL (bubble size). Groups in the upper-left cause few but very premature deaths; groups in the lower-right cause many deaths that are less premature. SA 2022 national life table.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yll-trends-over-time" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="yll-trends-over-time"><span class="header-section-number">5.5</span> YLL trends over time</h3>
+<p>Annual YLL for selected cause groups. Years with incomplete registration or changes in coding practice will produce artefactual dips or spikes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-trend-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Fig. 5. Annual YLL trends for selected cause groups (1997 - 2022). SA 2022 national life table.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yll-rank-over-time-bump-chart" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="yll-rank-over-time-bump-chart"><span class="header-section-number">5.6</span> YLL rank over time (bump chart)</h3>
+<p>Each line tracks the <strong>YLL rank</strong> of a cause group from year to year (rank 1 = the group with the most YLL that year). A rising line means a group is losing relative burden; a falling line means it is gaining ground compared with other causes. This view is particularly useful for policymakers asking <em>“is this problem getting worse relative to other causes?”</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-rank-bump" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rank-bump-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-rank-bump-1.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rank-bump-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Fig. 5b. YLL rank by cause group, 1997 - 2022. Rank 1 = highest YLL that year. Lines connect consecutive annual ranks; right-hand labels show the final-year rank and cause name. ‘Other cause’ excluded. SA 2022 national life table.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yll-by-age-group" class="level3" data-number="5.7">
+<h3 data-number="5.7" class="anchored" data-anchor-id="yll-by-age-group"><span class="header-section-number">5.7</span> YLL by age group</h3>
+<p>The panel charts show the age distribution of YLL for each selected cause group. Because YLL weights young deaths more heavily, the peak of each panel will be shifted younger than the peak of the corresponding death count.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-age" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-age-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-age-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-age-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Fig. 6. YLL by age group for selected cause groups (all years). SA 2022 national life table. Y-axis scales differ between panels.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yll-by-sex-most-recent-year" class="level3" data-number="5.8">
+<h3 data-number="5.8" class="anchored" data-anchor-id="yll-by-sex-most-recent-year"><span class="header-section-number">5.8</span> YLL by sex (most recent year)</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-yll-sex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-yll-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-yll-sex-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yll-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Fig. 7. YLL by cause group and sex, 2022. SA 2022 sex-specific life table. Blue = male; red = female.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="poisoning-yll-breakdown-by-intent" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="poisoning-yll-breakdown-by-intent"><span class="header-section-number">6</span> Poisoning YLL breakdown by intent</h2>
+<div class="cell">
+<div id="tbl-poisoning-sub" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-poisoning-sub-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Table 4. YLL for poisoning deaths by intent category (all years). Caution: ‘Accidental/unspec.’ substantially inflated by ICD-10 coding default — see poisoning analysis.
+</figcaption>
+<div aria-describedby="tbl-poisoning-sub-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-9b37bca8{}.cl-9b33ff28{font-family:'Helvetica';font-size:9.5pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9b358000{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9b35800a{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9b359342{width:1.393in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359343{width:0.703in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359344{width:0.894in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35934c{width:1.254in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35934d{width:1.393in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359356{width:0.703in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359357{width:0.894in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359358{width:1.254in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359359{width:1.393in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359360{width:0.703in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359361{width:0.894in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359362{width:1.254in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35936a{width:1.393in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35936b{width:0.703in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359374{width:0.894in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359375{width:1.254in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35937e{width:1.393in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b35937f{width:0.703in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359380{width:0.894in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9b359381{width:1.254in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-9b37bca8"><thead><tr style="overflow-wrap:break-word;"><th class="cl-9b359342"><p class="cl-9b358000"><span class="cl-9b33ff28">Intent</span></p></th><th class="cl-9b359343"><p class="cl-9b358000"><span class="cl-9b33ff28">Deaths</span></p></th><th class="cl-9b359344"><p class="cl-9b358000"><span class="cl-9b33ff28">YLL (total)</span></p></th><th class="cl-9b35934c"><p class="cl-9b35800a"><span class="cl-9b33ff28">Mean YLL/death</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-9b35934d"><p class="cl-9b358000"><span class="cl-9b33ff28">Accidental/unspec.</span></p></td><td class="cl-9b359356"><p class="cl-9b358000"><span class="cl-9b33ff28">27,414</span></p></td><td class="cl-9b359357"><p class="cl-9b358000"><span class="cl-9b33ff28">1,163,081</span></p></td><td class="cl-9b359358"><p class="cl-9b35800a"><span class="cl-9b33ff28">42.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9b359359"><p class="cl-9b358000"><span class="cl-9b33ff28">Undetermined</span></p></td><td class="cl-9b359360"><p class="cl-9b358000"><span class="cl-9b33ff28">33,144</span></p></td><td class="cl-9b359361"><p class="cl-9b358000"><span class="cl-9b33ff28">1,129,207</span></p></td><td class="cl-9b359362"><p class="cl-9b35800a"><span class="cl-9b33ff28">34.3</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9b35936a"><p class="cl-9b358000"><span class="cl-9b33ff28">Self-harm</span></p></td><td class="cl-9b35936b"><p class="cl-9b358000"><span class="cl-9b33ff28"> 2,614</span></p></td><td class="cl-9b359374"><p class="cl-9b358000"><span class="cl-9b33ff28">   89,040</span></p></td><td class="cl-9b359375"><p class="cl-9b35800a"><span class="cl-9b33ff28">34.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9b35937e"><p class="cl-9b358000"><span class="cl-9b33ff28">Assault</span></p></td><td class="cl-9b35937f"><p class="cl-9b358000"><span class="cl-9b33ff28">     6</span></p></td><td class="cl-9b359380"><p class="cl-9b358000"><span class="cl-9b33ff28">      201</span></p></td><td class="cl-9b359381"><p class="cl-9b35800a"><span class="cl-9b33ff28">33.5</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="methods-note" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="methods-note"><span class="header-section-number">7</span> Methods note</h2>
+<section id="yll-formula" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="yll-formula"><span class="header-section-number">7.1</span> YLL formula</h3>
+<p>For each death <span class="math inline">\(i\)</span> at age <span class="math inline">\(a_i\)</span>:</p>
+<p><span class="math display">\[\text{YLL}_i = e(a_i)\]</span></p>
+<p>where <span class="math inline">\(e(a_i)\)</span> is the <strong>remaining life expectancy</strong> from the SA 2022 national life table at age <span class="math inline">\(a_i\)</span>. Total YLL for a cause group is <span class="math inline">\(\sum_i \text{YLL}_i\)</span>; mean YLL per death is <span class="math inline">\(\bar{\text{YLL}} = \text{Total YLL} / N\)</span>.</p>
+<p>This follows the standard WHO/GBD approach (Murray &amp; López 1996; GBD 2019), adapted to use a <strong>country-specific</strong> rather than frontier reference life table.</p>
+</section>
+<section id="cause-group-assignment" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="cause-group-assignment"><span class="header-section-number">7.2</span> Cause group assignment</h3>
+<p>Cause groups are assigned based on the 3-character ICD-10 underlying cause of death code using sequential prefix matching. Groups are <strong>mutually exclusive</strong> (first-match priority). Key boundary decisions:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Boundary point</th>
+<th style="text-align: left;">ICD-10 codes</th>
+<th style="text-align: left;">Assignment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Poisoning assault (X85)</td>
+<td style="text-align: left;">Counted with <em>poisoning</em>, not with interpersonal violence</td>
+<td style="text-align: left;"><code>Poisoning (all intent)</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Drowning — unintentional only</td>
+<td style="text-align: left;">W65-W74</td>
+<td style="text-align: left;"><code>Drowning (unintentional)</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Self-harm by drowning / hanging</td>
+<td style="text-align: left;">X71–X84</td>
+<td style="text-align: left;"><code>Self-harm (non-poisoning)</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Violence by firearm / sharp objects</td>
+<td style="text-align: left;">X86–Y09</td>
+<td style="text-align: left;"><code>Interpersonal violence</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">COVID-19</td>
+<td style="text-align: left;">U07–U08</td>
+<td style="text-align: left;"><code>Other NMC communicable</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TB meningitis (A17), TB of other organs</td>
+<td style="text-align: left;">A15–A19</td>
+<td style="text-align: left;"><code>Tuberculosis</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-limitations" class="level3" data-number="7.3">
+<h3 data-number="7.3" class="anchored" data-anchor-id="data-limitations"><span class="header-section-number">7.3</span> Data limitations</h3>
+<ol type="1">
+<li><strong>Intent misclassification</strong> (external causes): see poisoning analysis.</li>
+<li><strong>Age missingness</strong>: YLL cannot be calculated where age is unknown; the <code>% missing age</code> column in Table 2 shows the fraction excluded per group.</li>
+<li><strong>VR coverage</strong>: Stats SA vital registration is known to have incomplete coverage, particularly for younger age groups and provinces with weaker civil registration systems.</li>
+<li><strong>Life table provenance</strong>: values used here are provisional approximations. Replace with official Stats SA P0302.3 (2022 edition) for publication.</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="next-steps" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">8</span> Next steps</h2>
+<ul>
+<li>Add population denominators (StatsSA mid-year estimates) to compute <strong>YLL rates per 100,000</strong>.</li>
+<li>Apply <strong>age-standardisation</strong> to allow comparisons adjusted for South Africa’s age structure.</li>
+<li>Disaggregate by <strong>province</strong> and <strong>sex</strong> for the full time series.</li>
+<li><strong>Sensitivity analysis</strong> using the GBD 2019 global frontier life table (e₀ ≈ 88.9 years) for international comparability.</li>
+<li>Link to programmatic data: TB notifications, ART coverage, vaccination coverage, NCoDV forensic data for external causes.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

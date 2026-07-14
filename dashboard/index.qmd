@@ -1,0 +1,18 @@
+---
+title: "Methods Documentation"
+description: "Technical methods and statistical documentation for MRC VR analyses"
+listing:
+  contents: "*.qmd"
+  type: table
+  fields: [title, description, date, categories]
+  sort: "date desc"
+  categories: true
+---
+
+## Overview
+
+This section contains detailed technical documentation for the statistical methods used across the MRC Vital Registration analyses.
+
+## Available Documentation
+
+Browse the methods documentation below, or use the navigation menu to jump to specific topics.

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-03-09">
+<meta name="description" content="Excess all-cause deaths attributable to high heat stress during the extended austral summer (September–April), estimated using ERA5-Land apparent temperature and a Distributed Lag Non-linear Model applied to South African vital registration data.">
+
+<title>Heat Stress and Excess Mortality in South Africa – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Heat Stress and Excess Mortality in South Africa</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#key-metrics" id="toc-key-metrics" class="nav-link" data-scroll-target="#key-metrics"><span class="header-section-number">1.1</span> Key metrics</a></li>
+  <li><a href="#extended-austral-summer-window" id="toc-extended-austral-summer-window" class="nav-link" data-scroll-target="#extended-austral-summer-window"><span class="header-section-number">1.2</span> Extended austral summer window</a></li>
+  </ul></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">2</span> Data</a>
+  <ul class="collapse">
+  <li><a href="#era5-land-heat-stress-data" id="toc-era5-land-heat-stress-data" class="nav-link" data-scroll-target="#era5-land-heat-stress-data"><span class="header-section-number">2.1</span> ERA5-Land heat stress data</a></li>
+  <li><a href="#vital-registration-death-data" id="toc-vital-registration-death-data" class="nav-link" data-scroll-target="#vital-registration-death-data"><span class="header-section-number">2.2</span> Vital registration death data</a></li>
+  </ul></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#heat-stress-metric-calculation" id="toc-heat-stress-metric-calculation" class="nav-link" data-scroll-target="#heat-stress-metric-calculation"><span class="header-section-number">3.1</span> Heat stress metric calculation</a></li>
+  <li><a href="#excess-mortality-model-dlnm" id="toc-excess-mortality-model-dlnm" class="nav-link" data-scroll-target="#excess-mortality-model-dlnm"><span class="header-section-number">3.2</span> Excess mortality model — DLNM</a></li>
+  <li><a href="#threshold-based-excess-deaths" id="toc-threshold-based-excess-deaths" class="nav-link" data-scroll-target="#threshold-based-excess-deaths"><span class="header-section-number">3.3</span> Threshold-based excess deaths</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">4</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#seasonal-patterns-in-heat-stress" id="toc-seasonal-patterns-in-heat-stress" class="nav-link" data-scroll-target="#seasonal-patterns-in-heat-stress"><span class="header-section-number">4.1</span> Seasonal patterns in heat stress</a></li>
+  <li><a href="#annual-austral-summer-heat-and-deaths" id="toc-annual-austral-summer-heat-and-deaths" class="nav-link" data-scroll-target="#annual-austral-summer-heat-and-deaths"><span class="header-section-number">4.2</span> Annual austral-summer heat and deaths</a></li>
+  <li><a href="#heat-stress-vs-weekly-deaths-scatter" id="toc-heat-stress-vs-weekly-deaths-scatter" class="nav-link" data-scroll-target="#heat-stress-vs-weekly-deaths-scatter"><span class="header-section-number">4.3</span> Heat stress vs weekly deaths — Scatter</a></li>
+  <li><a href="#exposureresponse-dlnm" id="toc-exposureresponse-dlnm" class="nav-link" data-scroll-target="#exposureresponse-dlnm"><span class="header-section-number">4.4</span> Exposure–response: DLNM</a></li>
+  <li><a href="#attributable-and-threshold-based-excess-deaths" id="toc-attributable-and-threshold-based-excess-deaths" class="nav-link" data-scroll-target="#attributable-and-threshold-based-excess-deaths"><span class="header-section-number">4.5</span> Attributable and threshold-based excess deaths</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">5</span> Discussion</a>
+  <ul class="collapse">
+  <li><a href="#heatmortality-in-a-south-african-context" id="toc-heatmortality-in-a-south-african-context" class="nav-link" data-scroll-target="#heatmortality-in-a-south-african-context"><span class="header-section-number">5.1</span> Heat–mortality in a South African context</a></li>
+  <li><a href="#extended-austral-summer-rationale" id="toc-extended-austral-summer-rationale" class="nav-link" data-scroll-target="#extended-austral-summer-rationale"><span class="header-section-number">5.2</span> Extended austral summer rationale</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">5.3</span> Limitations</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps"><span class="header-section-number">5.4</span> Next steps</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Heat Stress and Excess Mortality in South Africa</h1>
+<p class="subtitle lead">Linking ERA5-Land heat stress metrics to vital registration mortality data, 2010–2022</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">heat-health</div>
+    <div class="quarto-category">excess-mortality</div>
+    <div class="quarto-category">climate</div>
+    <div class="quarto-category">ERA5</div>
+    <div class="quarto-category">DLNM</div>
+    <div class="quarto-category">South Africa</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Excess all-cause deaths attributable to high heat stress during the extended austral summer (September–April), estimated using ERA5-Land apparent temperature and a Distributed Lag Non-linear Model applied to South African vital registration data.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>High ambient temperatures are a recognised public health hazard. In South Africa — a low–middle income country with high burden of HIV, tuberculosis, cardiovascular disease, and diabetes — the physiological strain of heat stress is compounded by limited access to air conditioning, high outdoor labour exposure, and dense informal settlements with reduced albedo and ventilation.</p>
+<p>The recommended analytical approach uses <strong>heat stress</strong> as the primary metric, rather than discrete heatwave definitions, for two reasons:</p>
+<ol type="1">
+<li>Heat stress explicitly captures the combined effect of temperature and humidity on the human body, which is physiologically more meaningful than dry-bulb temperature alone.</li>
+<li>Continuous metrics support the exposure–response modelling required for attributable fraction estimation.</li>
+</ol>
+<section id="key-metrics" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="key-metrics"><span class="header-section-number">1.1</span> Key metrics</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 29%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Metric</th>
+<th style="text-align: center;">Symbol</th>
+<th style="text-align: left;">Formula</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Apparent Temperature</td>
+<td style="text-align: center;">AT</td>
+<td style="text-align: left;"><span class="math inline">\(AT = T + 0.33e - 0.70w - 4.0\)</span></td>
+<td style="text-align: left;">Steadman (1994); <span class="math inline">\(e\)</span> = vapour pressure (hPa), <span class="math inline">\(w\)</span> = wind speed (m/s)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Simplified WBGT</td>
+<td style="text-align: center;">WBGT<span class="math inline">\(_s\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0.567T + 0.393e + 3.94\)</span></td>
+<td style="text-align: left;">Shaded/indoor; no solar radiation component</td>
+</tr>
+</tbody>
+</table>
+<p>where <span class="math inline">\(T\)</span> is 2m air temperature (°C), <span class="math inline">\(e\)</span> is vapour pressure derived from 2m dew-point temperature, and <span class="math inline">\(w\)</span> is 10m wind speed (default 1.5 m/s when unavailable).</p>
+</section>
+<section id="extended-austral-summer-window" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="extended-austral-summer-window"><span class="header-section-number">1.2</span> Extended austral summer window</h3>
+<p>Following Brian’s recommendations, the analysis focuses on <strong>September–April</strong> (austral spring through early autumn), which captures the full range of heat stress variability, including the transitional shoulder seasons where heat-mortality interactions can be substantial.</p>
+</section>
+</section>
+<section id="data" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="data"><span class="header-section-number">2</span> Data</h2>
+<section id="era5-land-heat-stress-data" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="era5-land-heat-stress-data"><span class="header-section-number">2.1</span> ERA5-Land heat stress data</h3>
+<p>Heat stress data are derived from the <strong>ECMWF ERA5-Land</strong> reanalysis product <span class="citation" data-cites="era5land">(<a href="#ref-era5land" role="doc-biblioref">Muñoz-Sabater et al. 2021</a>)</span>, accessible at the <a href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview">Copernicus Climate Data Store</a>. ERA5-Land provides hourly land-surface variables at ~9 km horizontal resolution. Two variables are used:</p>
+<ul>
+<li><code>2m_temperature</code> (t2m): 2m air temperature [K]</li>
+<li><code>2m_dewpoint_temperature</code> (d2m): 2m dew-point temperature [K]</li>
+</ul>
+<p>Together, t2m and d2m allow derivation of relative humidity, vapour pressure, and hence apparent temperature and simplified WBGT without separate humidity data.</p>
+<blockquote class="blockquote">
+<p><strong>ERA5 Single-Level data</strong> (coarser global product; <a href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview">CDS link</a>) is an alternative for broader contextual analyses or multi-country comparisons where ERA5-Land land-only coverage is unnecessary.</p>
+</blockquote>
+<section id="data-acquisition-workflow" class="level4" data-number="2.1.1">
+<h4 data-number="2.1.1" class="anchored" data-anchor-id="data-acquisition-workflow"><span class="header-section-number">2.1.1</span> Data acquisition workflow</h4>
+<pre><code>Step 1: python projects/heat_excess_mortality/_download_era5.py
+         → Downloads ERA5-Land NetCDF files to data/era5/
+         → One file per austral summer season (Sep YYYY – Apr YYYY+1)
+
+Step 2: python projects/heat_excess_mortality/_calc_heat_stress.py
+         → Aggregates hourly ERA5 to daily max AT and WBGT per province
+         → Aggregates to epi-week level
+         → Writes: data/era5/heat_stress_weekly_prov.csv
+
+Step 3: Rscript projects/heat_excess_mortality/heat_wrangling.R
+         → Merges heat stress with VR death data
+         → Fits DLNM excess mortality model
+         → Writes: projects/heat_excess_mortality/heat_results.rda</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If ERA5 data have not yet been downloaded, <code>heat_wrangling.R</code> falls back to a <strong>climatological simulation</strong> based on known South African temperature seasonality patterns. All figures and models below will use the simulated data until real ERA5 data are available. The simulation label is shown in the plot subtitles.</p>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-data-info" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Table 1. Data source summary
+</figcaption>
+<div aria-describedby="tbl-data-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-6f245910{}.cl-6f1d28ac{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-6f1ed422{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-6f1ee7e6{width:2.2in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f1ee7f0{width:4.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f1ee7f1{width:2.2in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f1ee7f2{width:4.5in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f1ee7f3{width:2.2in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f1ee7fa{width:4.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-6f245910"><thead><tr style="overflow-wrap:break-word;"><th class="cl-6f1ee7e6"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Component</span></p></th><th class="cl-6f1ee7f0"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Details</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-6f1ee7f1"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Heat stress data</span></p></td><td class="cl-6f1ee7f2"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Simulated (ERA5 not yet downloaded)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-6f1ee7f1"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Mortality data</span></p></td><td class="cl-6f1ee7f2"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">SA VR data (MRC-processed Deaths2022_MRCversionFINAL.feather)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-6f1ee7f1"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Analysis period</span></p></td><td class="cl-6f1ee7f2"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">2010–2022 (13 austral summer seasons)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-6f1ee7f1"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Temporal resolution</span></p></td><td class="cl-6f1ee7f2"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Epidemiological week (ISO weeks 1–52)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-6f1ee7f3"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">Spatial resolution</span></p></td><td class="cl-6f1ee7fa"><p class="cl-6f1ed422"><span class="cl-6f1d28ac">National or provincial (if province variable available in VR data)</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="vital-registration-death-data" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="vital-registration-death-data"><span class="header-section-number">2.2</span> Vital registration death data</h3>
+<p>Weekly all-cause deaths are drawn from the South African vital registration file (1997–2022, MRC-processed). The analysis uses 2010–2022, matching the ERA5 availability window. No cause restriction is applied in the primary analysis — all-cause mortality is the recommended outcome for heat attribution studies because heat affects a broad range of underlying conditions.</p>
+<div class="cell">
+<div id="tbl-death-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-death-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Table 2. Weekly all-cause death counts — summary statistics by season type, 2010–2022
+</figcaption>
+<div aria-describedby="tbl-death-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-6f3f8fc8{}.cl-6f3bd7f2{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-6f3d66bc{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-6f3d66bd{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-6f3d7b3e{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f3d7b3f{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f3d7b48{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f3d7b49{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f3d7b4a{width:2.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-6f3d7b52{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-6f3f8fc8"><thead><tr style="overflow-wrap:break-word;"><th class="cl-6f3d7b3e"><p class="cl-6f3d66bc"><span class="cl-6f3bd7f2">Season</span></p></th><th class="cl-6f3d7b3f"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">Weeks</span></p></th><th class="cl-6f3d7b3f"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">Mean weekly deaths</span></p></th><th class="cl-6f3d7b3f"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">Median weekly deaths</span></p></th><th class="cl-6f3d7b3f"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">Max weekly deaths</span></p></th><th class="cl-6f3d7b3f"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">Mean AT (°C)</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-6f3d7b48"><p class="cl-6f3d66bc"><span class="cl-6f3bd7f2">Austral summer (Sep–Apr)</span></p></td><td class="cl-6f3d7b49"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">447</span></p></td><td class="cl-6f3d7b49"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">9,186</span></p></td><td class="cl-6f3d7b49"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">8,989</span></p></td><td class="cl-6f3d7b49"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">21,148</span></p></td><td class="cl-6f3d7b49"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">25.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-6f3d7b4a"><p class="cl-6f3d66bc"><span class="cl-6f3bd7f2">Austral winter (May–Aug)</span></p></td><td class="cl-6f3d7b52"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">229</span></p></td><td class="cl-6f3d7b52"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">10,465</span></p></td><td class="cl-6f3d7b52"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">10,131</span></p></td><td class="cl-6f3d7b52"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">19,063</span></p></td><td class="cl-6f3d7b52"><p class="cl-6f3d66bd"><span class="cl-6f3bd7f2">14.7</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="methods" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="methods"><span class="header-section-number">3</span> Methods</h2>
+<section id="heat-stress-metric-calculation" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="heat-stress-metric-calculation"><span class="header-section-number">3.1</span> Heat stress metric calculation</h3>
+<p>Vapour pressure (<span class="math inline">\(e\)</span>) is derived from 2m dew-point temperature (<span class="math inline">\(T_d\)</span>) using the Magnus formula:</p>
+<p><span class="math display">\[e = 6.112 \exp\!\left(\frac{17.67 \, T_d}{T_d + 243.5}\right) \text{ [hPa]}\]</span></p>
+<p>Apparent temperature (AT) then follows Steadman (1994):</p>
+<p><span class="math display">\[AT = T + 0.33e - 0.70 w_s - 4.0 \text{ [°C]}\]</span></p>
+<p>where <span class="math inline">\(w_s = 1.5\)</span> m/s (typical light wind) is assumed when ERA5 10m wind is unavailable. Sub-daily ERA5 values are reduced to <strong>daily maxima</strong> and then aggregated to <strong>weekly maxima and means</strong> aligned with ISO epidemiological weeks.</p>
+</section>
+<section id="excess-mortality-model-dlnm" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="excess-mortality-model-dlnm"><span class="header-section-number">3.2</span> Excess mortality model — DLNM</h3>
+<p>The primary analytical model is a <strong>Distributed Lag Non-linear Model (DLNM)</strong> <span class="citation" data-cites="gasparrini2010dlnm">(<a href="#ref-gasparrini2010dlnm" role="doc-biblioref">Gasparrini 2011</a>)</span>, implemented via the <code>dlnm</code> R package. A cross-basis matrix captures both the non-linear exposure–response shape and the delayed (lagged) mortality effect, with:</p>
+<ul>
+<li><strong>Exposure dimension</strong>: natural spline (4 df) over the range of weekly mean AT.</li>
+<li><strong>Lag dimension</strong>: natural spline (3 df), max lag = 3 weeks (29 days).</li>
+<li><strong>Statistical model</strong>: quasi-Poisson GLM to account for overdispersion.</li>
+<li><strong>Confounders</strong>: long-term trend (<span class="math inline">\(B\)</span>-spline of week index, 7 df) and annual seasonality (harmonic terms, <span class="math inline">\(\sin(2\pi t/52) + \cos(2\pi t/52)\)</span>).</li>
+</ul>
+<p>The <strong>reference value</strong> is set at the 10th percentile of weekly mean AT to represent the heat-specific effect (cold effects are not the focus here). Attributable death estimates are computed for weeks where AT <span class="math inline">\(\geq\)</span> the 75th percentile of the austral summer distribution.</p>
+</section>
+<section id="threshold-based-excess-deaths" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="threshold-based-excess-deaths"><span class="header-section-number">3.3</span> Threshold-based excess deaths</h3>
+<p>As a supplementary descriptive approach, <strong>threshold-based excess deaths</strong> are computed by comparing observed weekly deaths in hot weeks (AT <span class="math inline">\(\geq\)</span> p90 of the summer distribution) against the median deaths in the same epidemiological week across non-hot baseline years (2010–2019). This method requires no modelling assumptions and is useful as a non-parametric cross-check.</p>
+<hr>
+</section>
+</section>
+<section id="results" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="results"><span class="header-section-number">4</span> Results</h2>
+<section id="seasonal-patterns-in-heat-stress" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="seasonal-patterns-in-heat-stress"><span class="header-section-number">4.1</span> Seasonal patterns in heat stress</h3>
+<p><a href="#fig-heat-heatmap" class="quarto-xref">Figure&nbsp;1</a> shows the week-by-year apparent temperature for South Africa. A clear summer peak (weeks 1–17 and 36–52, i.e.&nbsp;Jan–Apr and Sep–Dec) is visible, with inter-annual variability in the intensity of hot weeks.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"fig_heat_heatmap"</span>)) fig_heat_heatmap <span class="cf">else</span> <span class="fu">message</span>(<span class="st">"Run heat_wrangling.R first."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-heat-heatmap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heat-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-heat-heatmap-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heat-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Fig. 1. Weekly mean apparent temperature (AT, °C) for South Africa, 2010–2022. Red shading = extended austral summer (Sep–Apr; epidemiological weeks 1–17 and 36–52). Data source shown in subtitle.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="annual-austral-summer-heat-and-deaths" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="annual-austral-summer-heat-and-deaths"><span class="header-section-number">4.2</span> Annual austral-summer heat and deaths</h3>
+<p><a href="#fig-annual-summer" class="quarto-xref">Figure&nbsp;2</a> shows the total all-cause deaths (bars) and mean summer apparent temperature (line) by year. If a heat–mortality relationship exists, years with higher mean AT should tend to show elevated summer deaths.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"fig_annual_summer"</span>)) fig_annual_summer <span class="cf">else</span> <span class="fu">message</span>(<span class="st">"Run heat_wrangling.R first."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-annual-summer" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-annual-summer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-annual-summer-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-summer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Fig. 2. Total all-cause deaths during the austral summer (Sep–Apr) per year (bars) and mean apparent temperature (blue line). Note that death totals are influenced by population growth, registration completeness, and COVID-19 (2020–2022).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="heat-stress-vs-weekly-deaths-scatter" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="heat-stress-vs-weekly-deaths-scatter"><span class="header-section-number">4.3</span> Heat stress vs weekly deaths — Scatter</h3>
+<p><a href="#fig-heat-scatter" class="quarto-xref">Figure&nbsp;3</a> shows the within-year relationship between weekly mean AT and all-cause death counts during austral summer weeks. The GAM smoother provides a flexible representation of the exposure–response shape.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"fig_heat_scatter"</span>)) fig_heat_scatter <span class="cf">else</span> <span class="fu">message</span>(<span class="st">"Run heat_wrangling.R first."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-heat-scatter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heat-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-heat-scatter-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heat-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Fig. 3. Weekly all-cause deaths vs mean apparent temperature (AT) during austral summer weeks, 2010–2022. Red smoother = GAM fit (95% CI). Dashed/dotted lines = p90/p95 of the summer AT distribution.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exposureresponse-dlnm" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="exposureresponse-dlnm"><span class="header-section-number">4.4</span> Exposure–response: DLNM</h3>
+<p><a href="#fig-dlnm-lag0" class="quarto-xref">Figure&nbsp;4</a> shows the relative risk (RR) of all-cause death for a given weekly mean AT at lag 0 (same-week effect), derived from the DLNM cross-basis prediction. An RR &gt; 1 above the reference indicates heat-attributable mortality.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"dlnm_available"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">isTRUE</span>(dlnm_available)) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"fig_dlnm_lag0"</span>) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(fig_dlnm_lag0)) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    fig_dlnm_lag0</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"DLNM result not available — run heat_wrangling.R first."</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DLNM not available. Install: install.packages('dlnm')</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"then re-run heat_wrangling.R."</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-dlnm-lag0" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dlnm-lag0-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-dlnm-lag0-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dlnm-lag0-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Fig. 4. DLNM exposure–response curve: relative risk of all-cause death per unit increase in weekly mean apparent temperature (AT). Lag 0 slice. Reference = 10th percentile of summer AT. Red band = 95% CI. Dashed vertical line = p90 threshold used for attributable fraction calculations.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="attributable-and-threshold-based-excess-deaths" class="level3" data-number="4.5">
+<h3 data-number="4.5" class="anchored" data-anchor-id="attributable-and-threshold-based-excess-deaths"><span class="header-section-number">4.5</span> Attributable and threshold-based excess deaths</h3>
+<div class="cell">
+<div id="tbl-excess-deaths" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Table 3. Threshold-based excess all-cause deaths during austral summer hot weeks (mean AT ≥ p90), 2010–2022. Excess = observed minus median baseline (same epidemiological week, 2010–2019, non-hot years).
+</figcaption>
+<div aria-describedby="tbl-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7002cb5a{}.cl-6fff3b8e{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7000ac4e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7000bf2c{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf2d{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf36{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf37{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf40{width:1.8in;background-color:rgba(255, 215, 215, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf41{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf42{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7000bf4a{width:1.8in;background-color:rgba(255, 215, 215, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7002cb5a"><thead><tr style="overflow-wrap:break-word;"><th class="cl-7000bf2c"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">Year</span></p></th><th class="cl-7000bf2d"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">Hot weeks (n)</span></p></th><th class="cl-7000bf2d"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">Total deaths (hot wks)</span></p></th><th class="cl-7000bf2d"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">Excess deaths vs baseline</span></p></th><th class="cl-7000bf2d"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">Mean excess per week</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,015</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">34,863</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">19</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,017</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">16,893</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">0</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">0.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,018</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">34,913</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">165</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">41.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,020</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">5</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">49,871</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">6,229</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">1,245.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,021</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">71,680</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">35,577</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">8,894.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,022</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">5</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">49,770</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4,624</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">924.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,010</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">3</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">29,523</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">3,348</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">1,116.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,011</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">18,995</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,041</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">1,020.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,012</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">17,828</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">904</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">452.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,013</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">17,938</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">612</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">306.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,014</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">34,718</span></p></td><td class="cl-7000bf40"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">724</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">181.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf36"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,016</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">32,721</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">0</span></p></td><td class="cl-7000bf37"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">0.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7000bf41"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">2,019</span></p></td><td class="cl-7000bf42"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">4</span></p></td><td class="cl-7000bf42"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">33,484</span></p></td><td class="cl-7000bf4a"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">257</span></p></td><td class="cl-7000bf42"><p class="cl-7000ac4e"><span class="cl-6fff3b8e">64.2</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-attrib-dlnm" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-attrib-dlnm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Table 4. DLNM-based attributable deaths during weeks with AT ≥ p75, 2010–2022. AF = 1 − 1/RR (cumulative over 4-week lag). Total attributable deaths = Σ(deaths × AF).
+</figcaption>
+<div aria-describedby="tbl-attrib-dlnm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-700dc7f8{}.cl-700a0488{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-700b8754{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-700b9be0{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-700b9bea{width:1.6in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-700b9beb{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-700b9bec{width:1.6in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-700b9bf4{width:0.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-700b9bf5{width:1.6in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-700dc7f8"><thead><tr style="overflow-wrap:break-word;"><th class="cl-700b9be0"><p class="cl-700b8754"><span class="cl-700a0488">Year</span></p></th><th class="cl-700b9bea"><p class="cl-700b8754"><span class="cl-700a0488">Hot weeks (n)</span></p></th><th class="cl-700b9bea"><p class="cl-700b8754"><span class="cl-700a0488">Observed deaths</span></p></th><th class="cl-700b9bea"><p class="cl-700b8754"><span class="cl-700a0488">Attributable deaths</span></p></th><th class="cl-700b9bea"><p class="cl-700b8754"><span class="cl-700a0488">Mean RR</span></p></th><th class="cl-700b9bea"><p class="cl-700b8754"><span class="cl-700a0488">Mean AF</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,010</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">12</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">121,094</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">16,878</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.162</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.139</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,011</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">14</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">132,774</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">17,310</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.151</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.130</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,012</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">120,021</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">16,254</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.157</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.135</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,013</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">115,818</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">15,811</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.158</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.136</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,014</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">12</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">105,979</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">14,954</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.165</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.141</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,015</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">114,781</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">16,324</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.167</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.142</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,016</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">111,812</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">15,545</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.163</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.139</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,017</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">110,067</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">15,147</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.160</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.138</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,018</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">111,575</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">15,738</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.165</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.141</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,019</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">111,391</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">15,827</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.166</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.142</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,020</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">125,879</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">17,650</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.164</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.140</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9beb"><p class="cl-700b8754"><span class="cl-700a0488">2,021</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">13</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">168,809</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">25,032</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">1.167</span></p></td><td class="cl-700b9bec"><p class="cl-700b8754"><span class="cl-700a0488">0.142</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-700b9bf4"><p class="cl-700b8754"><span class="cl-700a0488">2,022</span></p></td><td class="cl-700b9bf5"><p class="cl-700b8754"><span class="cl-700a0488">14</span></p></td><td class="cl-700b9bf5"><p class="cl-700b8754"><span class="cl-700a0488">130,443</span></p></td><td class="cl-700b9bf5"><p class="cl-700b8754"><span class="cl-700a0488">18,006</span></p></td><td class="cl-700b9bf5"><p class="cl-700b8754"><span class="cl-700a0488">1.160</span></p></td><td class="cl-700b9bf5"><p class="cl-700b8754"><span class="cl-700a0488">0.137</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="discussion" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="discussion"><span class="header-section-number">5</span> Discussion</h2>
+<section id="heatmortality-in-a-south-african-context" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="heatmortality-in-a-south-african-context"><span class="header-section-number">5.1</span> Heat–mortality in a South African context</h3>
+<p>South Africa’s heat–mortality relationship is expected to differ from temperate-country patterns in several ways:</p>
+<ol type="1">
+<li><strong>Acclimatisation</strong>: Populations in chronically hot provinces (Limpopo, Northern Cape) may show higher tolerance thresholds than those in cooler coastal cities (Cape Town, Durban). Provincial stratification is recommended once ERA5 provincial data are available.</li>
+<li><strong>Population vulnerability</strong>: High HIV/TB burden increases cardiovascular and respiratory fragility, potentially amplifying heat effects. Future analyses could stratify by cause of death (cardiovascular, respiratory, external) or link to prevalence estimates.</li>
+<li><strong>Year-on-year variability</strong>: COVID-19 (2020–2022) substantially elevated all-cause mortality. Where possible, the DLNM baseline should be restricted to pre-pandemic years (2010–2019), with post-pandemic years treated as a surveillance/validation period.</li>
+</ol>
+</section>
+<section id="extended-austral-summer-rationale" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="extended-austral-summer-rationale"><span class="header-section-number">5.2</span> Extended austral summer rationale</h3>
+<p>The September–April window (following Brian’s recommendation) captures:</p>
+<ul>
+<li><strong>Shoulder-season heat events</strong>: October–November “early summer” heat, which may be more dangerous because populations are not yet physiologically acclimatised.</li>
+<li><strong>Late-summer persistence</strong>: March–April events, when cumulative heat burden from January–February may have already elevated cardiovascular risk.</li>
+<li>This is consistent with the evidence base for southern Africa (e.g.&nbsp;Tompkins &amp; McCreesh 2016 <span class="citation" data-cites="tompkins2016">(<a href="#ref-tompkins2016" role="doc-biblioref">Tompkins and McCreesh 2016</a>)</span>).</li>
+</ul>
+</section>
+<section id="limitations" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="limitations"><span class="header-section-number">5.3</span> Limitations</h3>
+<ol type="1">
+<li><strong>Registration delay</strong>: VR deaths may be registered weeks after occurrence, attenuating real-time detection; aggregate seasonal estimates are less affected.</li>
+<li><strong>Spatial mismatch</strong>: ERA5-Land grid cells are aggregated to province-level means; this ecological aggregation may mask within-province heterogeneity (urban heat islands, informal settlements).</li>
+<li><strong>Simulated data caveat</strong>: Until ERA5 data are downloaded, all quantitative results use a climatological simulation. Re-run <code>heat_wrangling.R</code> after downloading real ERA5 data.</li>
+<li><strong>No cause-specific analysis in primary model</strong>: Disaggregating by ICD-10 chapter (circulatory, respiratory, external) would improve biological specificity but reduces statistical power at weekly resolution.</li>
+<li><strong>CDO multi-year processing</strong>: For the full 26-season dataset, CDO (<code>cdo mergetime</code>, <code>cdo daymax</code>) substantially reduces processing time over pure-xarray loops and is recommended for production runs.</li>
+</ol>
+</section>
+<section id="next-steps" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">5.4</span> Next steps</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Priority</th>
+<th style="text-align: left;">Task</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>High</strong></td>
+<td style="text-align: left;">Download ERA5-Land data (<code>_download_era5.py</code>) and recompute with real heat stress</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>High</strong></td>
+<td style="text-align: left;">Add provincial stratification once province column verified in VR data</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Medium</strong></td>
+<td style="text-align: left;">DLNM by cause of death (cardiovascular, respiratory)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Medium</strong></td>
+<td style="text-align: left;">Sensitivity analysis: ERA5 Single-Level vs ERA5-Land</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Low</strong></td>
+<td style="text-align: left;">Outdoor WBGT with solar radiation (requires ERA5 surface radiation variables)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Low</strong></td>
+<td style="text-align: left;">Incorporate population denominators for rate-based analysis</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="references" class="level2 unnumbered">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-gasparrini2010dlnm" class="csl-entry" role="listitem">
+Gasparrini, Antonio. 2011. <span>“Distributed Lag Linear and Non-Linear Models in <span>R</span>: The Package <span class="nocase">dlnm</span>.”</span> <em>Journal of Statistical Software</em> 43 (8): 1–20. <a href="https://doi.org/10.18637/jss.v043.i08">https://doi.org/10.18637/jss.v043.i08</a>.
+</div>
+<div id="ref-era5land" class="csl-entry" role="listitem">
+Muñoz-Sabater, Joaquín, Emanuel Dutra, Anna Agustí-Panareda, et al. 2021. <em><span>ERA5-Land</span> Hourly Data from 1950 to Present</em>. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). <a href="https://doi.org/10.24381/cds.e2161bac">https://doi.org/10.24381/cds.e2161bac</a>.
+</div>
+<div id="ref-tompkins2016" class="csl-entry" role="listitem">
+Tompkins, A. M., and N. McCreesh. 2016. <span>“A Regional-Scale, High Resolution Dynamical Malaria Model That Accounts for Population Density, Seasonal Crop-Land Changes and Passive Transmission.”</span> <em>Malaria Journal</em> 15 (1): 38. <a href="https://doi.org/10.1186/s12936-016-1066-x">https://doi.org/10.1186/s12936-016-1066-x</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

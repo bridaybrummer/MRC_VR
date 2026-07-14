@@ -1,0 +1,167 @@
+---
+title: "Methods Comparison"
+description: "Three approaches to estimating DHA office population coverage, side by side"
+date: "2026-01-20"
+categories: [access, spatial, DHA, methods]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(flextable)
+library(scales)
+load("../../outputs/ward_level_dha_access.RData")
+```
+
+# Background
+
+We evaluated **three progressively refined approaches** for estimating the share of the South African population within reach of a DHA office. The headline reporting on [death registration](death_registration.qmd) and [birth registration](birth_registration.qmd) uses **Method 3**. This page documents the trade-offs.
+
+# Shared data
+
+- DHA office locations — 2024 DHA offices dataset
+- Population — Stats SA mid-year estimates (2025)
+- Boundaries — Districts (Stats SA) and Wards (MDB 2020)
+
+# National overview
+
+::: panel-tabset
+
+## Population by district
+
+```{r}
+#| label: SA-pop-map
+SA_pop
+```
+
+## Number of offices by district
+
+```{r}
+#| label: SA-offices-map
+SA_N_off
+```
+
+## Office locations (interactive)
+
+```{r}
+#| label: office-locations-interactive
+plotly::ggplotly(p_with_buffers, tooltip = "text")
+```
+
+:::
+
+------------------------------------------------------------------------
+
+# Method 1 — District-level office-to-office distance
+
+For each district, take the median distance between each DHA office and its nearest neighbour. Halve it as a proxy for the typical one-way travel a resident must make. This single distance is applied to the entire district population.
+
+## Results
+
+```{r}
+#| label: method1-results
+m1_table
+```
+
+::: callout-important
+Coverage: **`r m1_national$pct_5km`%** within 5 km, **`r m1_national$pct_10km`%** within 10 km, **`r m1_national$pct_20km`%** within 20 km.
+:::
+
+::: callout-warning
+**Weakness** — one estimate per district ignores within-district variation. Underestimates coverage where most people live near one office.
+:::
+
+------------------------------------------------------------------------
+
+# Method 2 — District-level modelled population grid
+
+Build a 1 km grid across each district. Distribute the district population to grid points using an inverse-power decay around DHA offices ($w_i = 1/(d_i + 1)^{\alpha}$ with $\alpha = 1.5$). Distance is computed from each grid point to the nearest office.
+
+## Modelled population
+
+```{r}
+#| label: modelled-population-map
+if (exists("modelled_population_map")) modelled_population_map
+```
+
+## Coverage table
+
+```{r}
+#| label: method2-table
+dha_access_summary_table
+```
+
+::: callout-important
+Coverage: **`r m2_pct_5km`%** within 5 km, **`r m2_pct_10km`%** within 10 km, **`r m2_pct_20km`%** within 20 km.
+:::
+
+::: callout-warning
+**Weakness** — population is modelled, not observed. The decay assumption (people cluster near offices) is exactly what we're trying to evaluate, so the method is partly circular for the policy question.
+:::
+
+------------------------------------------------------------------------
+
+# Method 3 — Ward-level centroid distance (preferred) {#preferred}
+
+Use **observed ward-level population data** (Stats SA 2025) for 4,468 wards. Distance is computed from each ward centroid to the nearest DHA office.
+
+See [Methodology](methodology.qmd) for the full specification.
+
+## Coverage by distance band
+
+```{r}
+#| label: method3-coverage-table
+ward_access_ft
+```
+
+## Distance map
+
+```{r}
+#| label: method3-distance-map
+#| fig-width: 10
+#| fig-height: 8
+ward_distance_map
+```
+
+## Cumulative coverage
+
+```{r}
+#| label: method3-cumulative-plot
+#| fig-width: 10
+#| fig-height: 6
+coverage_curve_plot
+```
+
+::: callout-important
+Coverage: **`r m3_pct_5km`%** within 5 km, **`r m3_pct_10km`%** within 10 km, **`r m3_pct_20km`%** within 20 km.
+:::
+
+::: callout-warning
+**Weakness** — ward centroids are still a proxy. The [sensitivity check](sensitivity.qmd) tests how plausible the implied population distribution near DHA nodes is.
+:::
+
+------------------------------------------------------------------------
+
+# Side-by-side comparison
+
+```{r}
+#| label: comparison-table
+comparison_ft
+```
+
+```{r}
+#| label: comparison-results-table
+comparison_results_ft
+```
+
+::: callout-tip
+## Which method should I use?
+
+- **District-level dashboards**: Method 1 — simple and conservative.
+- **Sub-district modelled estimates**: Method 2 — but be aware the population distribution is itself modelled.
+- **National policy reporting**: **Method 3** — uses observed ward populations and provides the finest available spatial resolution.
+- **Maximum accuracy**: enumeration-area census population + road-network distances. Not currently available.
+:::

@@ -1,0 +1,343 @@
+---
+title: "Heat Stress and Excess Mortality in South Africa"
+subtitle: "Linking ERA5-Land heat stress metrics to vital registration mortality data, 2010–2022"
+description: "Excess all-cause deaths attributable to high heat stress during the extended austral summer (September–April), estimated using ERA5-Land apparent temperature and a Distributed Lag Non-linear Model applied to South African vital registration data."
+date: "2026-03-09"
+categories: [heat-health, excess-mortality, climate, ERA5, DLNM, South Africa]
+bibliography: ../../j_code_modelling.bib
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(scales)
+library(flextable)
+library(knitr)
+
+if (file.exists("heat_results.rda")) {
+  load("heat_results.rda")
+} else {
+  message(
+    "Results not found — run heat_wrangling.R first:\n",
+    "  Rscript projects/heat_excess_mortality/heat_wrangling.R"
+  )
+}
+```
+
+## Introduction
+
+High ambient temperatures are a recognised public health hazard. In South Africa — a low–middle income country with high burden of HIV, tuberculosis, cardiovascular disease, and diabetes — the physiological strain of heat stress is compounded by limited access to air conditioning, high outdoor labour exposure, and dense informal settlements with reduced albedo and ventilation.
+
+The recommended analytical approach uses **heat stress** as the primary metric, rather than discrete heatwave definitions, for two reasons:
+
+1. Heat stress explicitly captures the combined effect of temperature and humidity on the human body, which is physiologically more meaningful than dry-bulb temperature alone.
+2. Continuous metrics support the exposure–response modelling required for attributable fraction estimation.
+
+### Key metrics
+
+| Metric | Symbol | Formula | Notes |
+|:---|:---:|:---|:---|
+| Apparent Temperature | AT | $AT = T + 0.33e - 0.70w - 4.0$ | Steadman (1994); $e$ = vapour pressure (hPa), $w$ = wind speed (m/s) |
+| Simplified WBGT | WBGT$_s$ | $0.567T + 0.393e + 3.94$ | Shaded/indoor; no solar radiation component |
+
+where $T$ is 2m air temperature (°C), $e$ is vapour pressure derived from 2m dew-point temperature, and $w$ is 10m wind speed (default 1.5 m/s when unavailable).
+
+### Extended austral summer window
+
+Following Brian's recommendations, the analysis focuses on **September–April** (austral spring through early autumn), which captures the full range of heat stress variability, including the transitional shoulder seasons where heat-mortality interactions can be substantial.
+
+## Data
+
+### ERA5-Land heat stress data
+
+Heat stress data are derived from the **ECMWF ERA5-Land** reanalysis product [@era5land], accessible at the [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview). ERA5-Land provides hourly land-surface variables at ~9 km horizontal resolution. Two variables are used:
+
+- `2m_temperature` (t2m): 2m air temperature [K]
+- `2m_dewpoint_temperature` (d2m): 2m dew-point temperature [K]
+
+Together, t2m and d2m allow derivation of relative humidity, vapour pressure, and hence apparent temperature and simplified WBGT without separate humidity data.
+
+> **ERA5 Single-Level data** (coarser global product; [CDS link](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview)) is an alternative for broader contextual analyses or multi-country comparisons where ERA5-Land land-only coverage is unnecessary.
+
+#### Data acquisition workflow
+
+```
+Step 1: python projects/heat_excess_mortality/_download_era5.py
+         → Downloads ERA5-Land NetCDF files to data/era5/
+         → One file per austral summer season (Sep YYYY – Apr YYYY+1)
+
+Step 2: python projects/heat_excess_mortality/_calc_heat_stress.py
+         → Aggregates hourly ERA5 to daily max AT and WBGT per province
+         → Aggregates to epi-week level
+         → Writes: data/era5/heat_stress_weekly_prov.csv
+
+Step 3: Rscript projects/heat_excess_mortality/heat_wrangling.R
+         → Merges heat stress with VR death data
+         → Fits DLNM excess mortality model
+         → Writes: projects/heat_excess_mortality/heat_results.rda
+```
+
+::: {.callout-note}
+If ERA5 data have not yet been downloaded, `heat_wrangling.R` falls back to a **climatological simulation** based on known South African temperature seasonality patterns. All figures and models below will use the simulated data until real ERA5 data are available. The simulation label is shown in the plot subtitles.
+:::
+
+```{r}
+#| label: tbl-data-info
+#| tbl-cap: "Table 1. Data source summary"
+#| echo: false
+
+if (exists("data_source_label") && exists("analysis_dt")) {
+  src_tbl <- data.frame(
+    Component      = c("Heat stress data", "Mortality data", "Analysis period",
+                       "Temporal resolution", "Spatial resolution"),
+    Details        = c(
+      data_source_label,
+      "SA VR data (MRC-processed Deaths2022_MRCversionFINAL.feather)",
+      "2010–2022 (13 austral summer seasons)",
+      "Epidemiological week (ISO weeks 1–52)",
+      "National or provincial (if province variable available in VR data)"
+    ),
+    check.names = FALSE
+  )
+  flextable(src_tbl) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    width(j = 1, width = 2.2) |>
+    width(j = 2, width = 4.5)
+} else {
+  message("Load heat_results.rda first.")
+}
+```
+
+### Vital registration death data
+
+Weekly all-cause deaths are drawn from the South African vital registration file (1997–2022, MRC-processed). The analysis uses 2010–2022, matching the ERA5 availability window. No cause restriction is applied in the primary analysis — all-cause mortality is the recommended outcome for heat attribution studies because heat affects a broad range of underlying conditions.
+
+```{r}
+#| label: tbl-death-summary
+#| tbl-cap: "Table 2. Weekly all-cause death counts — summary statistics by season type, 2010–2022"
+#| echo: false
+
+if (exists("national_heat")) {
+  nh <- as.data.table(national_heat)
+  s1 <- nh[is_summer == TRUE,  .(
+    Season = "Austral summer (Sep–Apr)",
+    Weeks  = .N,
+    `Mean weekly deaths`   = round(mean(deaths,  na.rm = TRUE)),
+    `Median weekly deaths` = round(median(deaths, na.rm = TRUE)),
+    `Max weekly deaths`    = max(deaths, na.rm = TRUE),
+    `Mean AT (°C)` = round(mean(mean_at, na.rm = TRUE), 1)
+  )]
+  s2 <- nh[is_summer == FALSE, .(
+    Season = "Austral winter (May–Aug)",
+    Weeks  = .N,
+    `Mean weekly deaths`   = round(mean(deaths,  na.rm = TRUE)),
+    `Median weekly deaths` = round(median(deaths, na.rm = TRUE)),
+    `Max weekly deaths`    = max(deaths, na.rm = TRUE),
+    `Mean AT (°C)` = round(mean(mean_at, na.rm = TRUE), 1)
+  )]
+  summary_tbl <- rbind(s1, s2) |> as.data.frame()
+  flextable(summary_tbl) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    width(j = 1, width = 2.8) |>
+    width(j = 2:6, width = 1.5)
+} else {
+  message("Run heat_wrangling.R first.")
+}
+```
+
+---
+
+## Methods
+
+### Heat stress metric calculation
+
+Vapour pressure ($e$) is derived from 2m dew-point temperature ($T_d$) using the Magnus formula:
+
+$$e = 6.112 \exp\!\left(\frac{17.67 \, T_d}{T_d + 243.5}\right) \text{ [hPa]}$$
+
+Apparent temperature (AT) then follows Steadman (1994):
+
+$$AT = T + 0.33e - 0.70 w_s - 4.0 \text{ [°C]}$$
+
+where $w_s = 1.5$ m/s (typical light wind) is assumed when ERA5 10m wind is unavailable. Sub-daily ERA5 values are reduced to **daily maxima** and then aggregated to **weekly maxima and means** aligned with ISO epidemiological weeks.
+
+### Excess mortality model — DLNM
+
+The primary analytical model is a **Distributed Lag Non-linear Model (DLNM)** [@gasparrini2010dlnm], implemented via the `dlnm` R package. A cross-basis matrix captures both the non-linear exposure–response shape and the delayed (lagged) mortality effect, with:
+
+- **Exposure dimension**: natural spline (4 df) over the range of weekly mean AT.
+- **Lag dimension**: natural spline (3 df), max lag = 3 weeks (29 days).
+- **Statistical model**: quasi-Poisson GLM to account for overdispersion.
+- **Confounders**: long-term trend ($B$-spline of week index, 7 df) and annual seasonality (harmonic terms, $\sin(2\pi t/52) + \cos(2\pi t/52)$).
+
+The **reference value** is set at the 10th percentile of weekly mean AT to represent the heat-specific effect (cold effects are not the focus here). Attributable death estimates are computed for weeks where AT $\geq$ the 75th percentile of the austral summer distribution.
+
+### Threshold-based excess deaths
+
+As a supplementary descriptive approach, **threshold-based excess deaths** are computed by comparing observed weekly deaths in hot weeks (AT $\geq$ p90 of the summer distribution) against the median deaths in the same epidemiological week across non-hot baseline years (2010–2019). This method requires no modelling assumptions and is useful as a non-parametric cross-check.
+
+---
+
+## Results
+
+### Seasonal patterns in heat stress
+
+@fig-heat-heatmap shows the week-by-year apparent temperature for South Africa. A clear summer peak (weeks 1–17 and 36–52, i.e. Jan–Apr and Sep–Dec) is visible, with inter-annual variability in the intensity of hot weeks.
+
+```{r}
+#| label: fig-heat-heatmap
+#| fig-cap: "Fig. 1. Weekly mean apparent temperature (AT, °C) for South Africa, 2010–2022. Red shading = extended austral summer (Sep–Apr; epidemiological weeks 1–17 and 36–52). Data source shown in subtitle."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_heat_heatmap")) fig_heat_heatmap else message("Run heat_wrangling.R first.")
+```
+
+### Annual austral-summer heat and deaths
+
+@fig-annual-summer shows the total all-cause deaths (bars) and mean summer apparent temperature (line) by year. If a heat–mortality relationship exists, years with higher mean AT should tend to show elevated summer deaths.
+
+```{r}
+#| label: fig-annual-summer
+#| fig-cap: "Fig. 2. Total all-cause deaths during the austral summer (Sep–Apr) per year (bars) and mean apparent temperature (blue line). Note that death totals are influenced by population growth, registration completeness, and COVID-19 (2020–2022)."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("fig_annual_summer")) fig_annual_summer else message("Run heat_wrangling.R first.")
+```
+
+### Heat stress vs weekly deaths — Scatter
+
+@fig-heat-scatter shows the within-year relationship between weekly mean AT and all-cause death counts during austral summer weeks. The GAM smoother provides a flexible representation of the exposure–response shape.
+
+```{r}
+#| label: fig-heat-scatter
+#| fig-cap: "Fig. 3. Weekly all-cause deaths vs mean apparent temperature (AT) during austral summer weeks, 2010–2022. Red smoother = GAM fit (95% CI). Dashed/dotted lines = p90/p95 of the summer AT distribution."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("fig_heat_scatter")) fig_heat_scatter else message("Run heat_wrangling.R first.")
+```
+
+### Exposure–response: DLNM
+
+@fig-dlnm-lag0 shows the relative risk (RR) of all-cause death for a given weekly mean AT at lag 0 (same-week effect), derived from the DLNM cross-basis prediction. An RR > 1 above the reference indicates heat-attributable mortality.
+
+```{r}
+#| label: fig-dlnm-lag0
+#| fig-cap: "Fig. 4. DLNM exposure–response curve: relative risk of all-cause death per unit increase in weekly mean apparent temperature (AT). Lag 0 slice. Reference = 10th percentile of summer AT. Red band = 95% CI. Dashed vertical line = p90 threshold used for attributable fraction calculations."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("dlnm_available") && isTRUE(dlnm_available)) {
+  if (exists("fig_dlnm_lag0") && !is.null(fig_dlnm_lag0)) {
+    fig_dlnm_lag0
+  } else {
+    message("DLNM result not available — run heat_wrangling.R first.")
+  }
+} else {
+  message(
+    "DLNM not available. Install: install.packages('dlnm')\n",
+    "then re-run heat_wrangling.R."
+  )
+}
+```
+
+### Attributable and threshold-based excess deaths
+
+```{r}
+#| label: tbl-excess-deaths
+#| tbl-cap: "Table 3. Threshold-based excess all-cause deaths during austral summer hot weeks (mean AT ≥ p90), 2010–2022. Excess = observed minus median baseline (same epidemiological week, 2010–2019, non-hot years)."
+#| echo: false
+
+if (exists("excess_summary")) {
+  es <- as.data.frame(excess_summary)
+  names(es) <- c("Year", "Hot weeks (n)", "Total deaths (hot wks)",
+                 "Excess deaths vs baseline", "Mean excess per week")
+  es[, 5] <- round(es[, 5], 1)
+  flextable(es) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    bg(i = ~ `Excess deaths vs baseline` > 0, j = 4, bg = "#ffd7d7") |>
+    width(j = 1,   width = 0.8) |>
+    width(j = 2:5, width = 1.8)
+} else {
+  message("Run heat_wrangling.R first.")
+}
+```
+
+```{r}
+#| label: tbl-attrib-dlnm
+#| tbl-cap: "Table 4. DLNM-based attributable deaths during weeks with AT ≥ p75, 2010–2022. AF = 1 − 1/RR (cumulative over 4-week lag). Total attributable deaths = Σ(deaths × AF)."
+#| echo: false
+
+if (exists("attrib_dt") && !is.null(attrib_dt)) {
+  at_summary <- as.data.table(attrib_dt)[, .(
+    Hot_weeks       = .N,
+    Observed_deaths = sum(deaths,       na.rm = TRUE),
+    Attrib_deaths   = sum(attr_deaths,  na.rm = TRUE),
+    Mean_RR         = round(mean(rr,    na.rm = TRUE), 3),
+    Mean_AF         = round(mean(af,    na.rm = TRUE), 3)
+  ), by = epi_year]
+  names(at_summary) <- c("Year", "Hot weeks (n)", "Observed deaths",
+                          "Attributable deaths", "Mean RR", "Mean AF")
+  flextable(as.data.frame(at_summary)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    width(j = 1,   width = 0.8) |>
+    width(j = 2:6, width = 1.6)
+} else {
+  message("DLNM attributable fractions not available — install dlnm and re-run heat_wrangling.R.")
+}
+```
+
+---
+
+## Discussion
+
+### Heat–mortality in a South African context
+
+South Africa's heat–mortality relationship is expected to differ from temperate-country patterns in several ways:
+
+1. **Acclimatisation**: Populations in chronically hot provinces (Limpopo, Northern Cape) may show higher tolerance thresholds than those in cooler coastal cities (Cape Town, Durban). Provincial stratification is recommended once ERA5 provincial data are available.
+2. **Population vulnerability**: High HIV/TB burden increases cardiovascular and respiratory fragility, potentially amplifying heat effects. Future analyses could stratify by cause of death (cardiovascular, respiratory, external) or link to prevalence estimates.
+3. **Year-on-year variability**: COVID-19 (2020–2022) substantially elevated all-cause mortality. Where possible, the DLNM baseline should be restricted to pre-pandemic years (2010–2019), with post-pandemic years treated as a surveillance/validation period.
+
+### Extended austral summer rationale
+
+The September–April window (following Brian's recommendation) captures:
+
+- **Shoulder-season heat events**: October–November "early summer" heat, which may be more dangerous because populations are not yet physiologically acclimatised.
+- **Late-summer persistence**: March–April events, when cumulative heat burden from January–February may have already elevated cardiovascular risk.
+- This is consistent with the evidence base for southern Africa (e.g. Tompkins & McCreesh 2016 [@tompkins2016]).
+
+### Limitations
+
+1. **Registration delay**: VR deaths may be registered weeks after occurrence, attenuating real-time detection; aggregate seasonal estimates are less affected.
+2. **Spatial mismatch**: ERA5-Land grid cells are aggregated to province-level means; this ecological aggregation may mask within-province heterogeneity (urban heat islands, informal settlements).
+3. **Simulated data caveat**: Until ERA5 data are downloaded, all quantitative results use a climatological simulation. Re-run `heat_wrangling.R` after downloading real ERA5 data.
+4. **No cause-specific analysis in primary model**: Disaggregating by ICD-10 chapter (circulatory, respiratory, external) would improve biological specificity but reduces statistical power at weekly resolution.
+5. **CDO multi-year processing**: For the full 26-season dataset, CDO (`cdo mergetime`, `cdo daymax`) substantially reduces processing time over pure-xarray loops and is recommended for production runs.
+
+### Next steps
+
+| Priority | Task |
+|:---|:---|
+| **High** | Download ERA5-Land data (`_download_era5.py`) and recompute with real heat stress |
+| **High** | Add provincial stratification once province column verified in VR data |
+| **Medium** | DLNM by cause of death (cardiovascular, respiratory) |
+| **Medium** | Sensitivity analysis: ERA5 Single-Level vs ERA5-Land |
+| **Low** | Outdoor WBGT with solar radiation (requires ERA5 surface radiation variables) |
+| **Low** | Incorporate population denominators for rate-based analysis |
+
+## References {.unnumbered}

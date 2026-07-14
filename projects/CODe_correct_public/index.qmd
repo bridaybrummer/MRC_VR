@@ -1,0 +1,121 @@
+---
+title: "CODe Correct public facing app — Concept Note"
+description: "Uses and guardrails for a public facing CODe Correct app in South Africa"
+date: "2026-01-20"
+categories: [mccd, code-correct, concept-note]
+format:
+  html:
+    toc: true
+    format-links:
+      - pdf
+      - docx
+  pdf: default
+  docx: default
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+
+::: {.callout-note}
+**Purpose (discussion document):** Develop a **public-facing, mobile-first demonstration version** of CODe Correct to **show feasibility**, build stakeholder awareness, and support eventual adoption—**without ID linkage**.  
+**Estimated cost (order of magnitude):** ~R100,000 (scope-dependent)  
+**Non-negotiable:** Proceed **only with National Department of Health (NDoH) endorsement (“blessing”)** and agreed governance conditions.
+:::
+
+## Background
+
+A mobile medical cause of death certification (MCCD) app **CODe Correct**  funded through the **Pandemic Preparedness Fund** (PI: Pam Groenewald) has ben developed and plans to be piloted in 2026. CODe Correct has DORIS integration aswell as ID number validation architecture. It also applies **South Africa–specific validation checks** to improve the quality of MCCD data at the point of certification. Specifcally reducing ill-defined and unusable codes and reduce HIV/AIDS misclassification (increase the number of HIV/AIDS deaths reported)
+
+However, much of the capability remains **invisible to many stakeholders and end-users**. A lightweight, public-facing version would make CODe Correct **tangible and demonstrable**, creating a practical platform for engagement, awareness-building, and future scaling discussions.
+
+## Why this activity
+
+This is primarily a **demonstration and awareness initiative**, not a claim of immediate large-scale impact.
+
+In this format, the app is **not expected to materially shift certification quality at scale on its own**. Its near-term value is to:
+
+- **Demonstrate viability** and usability to NDoH and stakeholders
+- Enable “show-and-tell” at workshops, governance forums, and training engagements
+- **Create awareness among clinicians** regarding common quality issues in MCCD certification
+- Serve as a key component of the **D4H-sponsored MCCD training campaign**, creating a **reciprocal referral loop** where the app directs users to training resources and the course promotes the app as a practical job aid
+- Support NDoH and partners to **promote awareness** of CODe Correct and its intended role in improving data quality over time
+
+## Proposed activity (high level)
+
+Develop a **public-facing CODe Correct “lite” demo app** (mobile web or similar) that provides:
+
+- A small, representative set of **South Africa–specific validation checks and warnings**
+- **Supportive prompts** illustrating how errors can be identified and corrected
+- A simple interface designed for live demos and easy clinician interaction
+- Data collection on common queries on the app aswell as validation prompts that are suggested by users. 
+- A potential project is to link queries and validation checks to those who have and have not completed the D4H MCCD training course, a lighter version is for cliniciasn to self-report whether they have completed the MCCD course. 
+
+**Out of scope for the demo app:** patient identifiers, ID numbers, ID linkage, and any form of individual performance monitoring.
+
+## Intended use (primary)
+
+- **Demonstration tool** for NDoH and stakeholders (meetings, workshops, roadshows)
+- **Clinician engagement tool** to highlight quality issues and drive interest in best practices
+- **Companion resource** for the D4H-sponsored MCCD training course
+- **Awareness and uptake catalyst** alongside training and communications
+- Practical artefact to support governance discussions on broader certification quality initiatives
+
+## Potential extensions (for discussion only)
+
+Subject to NDoH preferences and governance approval, the demo app could later be extended to support:
+
+- **Training reinforcement / MCCD course linkage:** from self-declared completion to verified linkage (higher governance + integration effort)
+- **Campaign vehicle:** NDoH-led dissemination through professional bodies, facility channels, and training pathways (e.g., QR codes on job aids, circulars)
+- **Micro-learning “nudges”:** short guidance snippets triggered by common validation issues
+- **Community death job aid (cautious):** optional SOP-aligned checklists/prompts for DOA/community deaths—framed as consistency support, not a structural fix
+- **Aggregate learning loop (non-identifying):** summarise common warning types to refine training and job aids (only if approved)
+
+::: {.callout-warning}
+## Guardrails (conditions of work)
+
+This activity must proceed under explicit safeguards:
+
+1. **NDoH "blessing" required before build begins**
+   - Written endorsement of the **concept** and agreement to **promote the tool**
+   - Named NDoH focal point(s) for coordination (not technical oversight)
+
+2. **Privacy-by-design (non-negotiable)**
+   - **No patient identifiers** captured or stored
+   - **No ID linkage** in the public app
+   - Technical implementation ensures privacy compliance without requiring NDoH technical resources
+
+3. **No punitive monitoring**
+   - No individual-level reporting to managers or regulators
+   - Any reporting limited to **aggregate, non-identifying summaries** (or none in MVP)
+
+4. **Scope discipline**
+   - MVP is a **demonstration version**, not a full operational system
+   - Any expansion requires explicit governance sign-off and change control
+:::
+
+## Indicative outputs (MVP)
+
+- Public-facing mobile demo app illustrating SA-specific validation prompts
+- Optional: demo script / quick guide for stakeholder engagements
+
+## Cost and timeline (indicative)
+
+- **~R100,000 - R200,000** (order of magnitude; depends on hosting/security and feature set)
+- Rapid delivery of a standalone lite-app is feasible once governance and scope are agreed
+
+## Decision points (to unlock next steps)
+
+1. Does NDoH endorse the development of a public-facing **demonstration** app as a concept?
+2. Does NDoH agree to **promote** the app through agreed channels (e.g., circulars, training workshops, KnowledgeHub)?
+3. Can we do minimal linkage of users to MCCD course completion and store data on common queries. 
+
+*Note: Technical implementation, hosting, data security, and feature decisions will be managed entirely by the project team to minimize burden on NDoH.*
+
+---
+
+**Contacts / Owners (to complete):**  
+- D4H lead: `[Brian Brummer]`  
+- NDoH focal point(s): `[Tulani Mabose (Knowledge Hub), Mbhekiseni Khumalo, Milani Wolmarans]`  
+- Technical lead / CODe Correct team: `[Pierre Dane/App Consulting agency]`

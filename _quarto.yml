@@ -1,0 +1,103 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "projects/**/*.qmd"
+    - "!projects/**/_*.qmd"
+    - "!dashboard/**/*.qmd"
+    - "!ME_dashboard.qmd"
+    - "!Diabetes.qmd"
+    - "!ICC_for_eMCCD_pilot.qmd"
+    - "!j_code_modelling.qmd"
+    - "!ward_level_dha_access.qmd"
+
+website:
+  title: "MRC Vital Registration Analysis"
+  description: "Analysis of South African vital registration data quality and monitoring"
+  
+  navbar:
+    background: primary
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Projects"
+        menu:
+          - text: "---"
+          - text: "Monitoring & Evaluation"
+            href: projects/mortality_estimates/index.qmd
+          - text: "National Excess Mortality"
+            href: projects/national_overview/index.qmd
+          - text: "Cause Code Analysis"
+            href: projects/cause_codes/index.qmd
+          - text: "Free State Cause Quality"
+            href: projects/free_state_cause_quality/index.qmd
+          - text: "---"
+          - text: "DHA Access"
+            href: projects/dha_access/index.qmd
+          - text: "  ↳ Methodology (Method 3)"
+            href: projects/dha_access/methodology.qmd
+          - text: "  ↳ Methods comparison"
+            href: projects/dha_access/methods_comparison.qmd
+          - text: "  ↳ Sensitivity: 500 m density"
+            href: projects/dha_access/sensitivity.qmd
+          - text: "  ↳ Death registration"
+            href: projects/dha_access/death_registration.qmd
+          - text: "  ↳ Birth registration"
+            href: projects/dha_access/birth_registration.qmd
+          - text: "ICC for eMCCD"
+            href: projects/icc_analysis/index.qmd
+          - text: "J-Code Modelling"
+            href: projects/j_code_modelling/index.qmd
+          - text: "Signal Detection"
+            href: projects/signal_detection/index.qmd
+          - text: "Heat & Excess Mortality"
+            href: projects/heat_excess_mortality/index.qmd
+          - text: "Poisoning Deaths"
+            href: projects/poisoning_deaths/index.qmd
+          - text: "---"
+          - text: "CI Modelling Methods"
+            href: projects/ci_modelling/index.qmd
+          - text: "CODe Correct lite app — Concept Note"
+            href: projects/CODe_correct_public/index.qmd
+          # - text: "---"
+          # - text: "🌍 Africa CDC Workshop — Mortality Surveillance (Jul 2025)"
+          #   href: projects/africa_cdc_workshop/index.qmd
+          # - text: "  ↳ Draft 1 (17 Sep 2025)"
+          #   href: projects/africa_cdc_workshop/index.qmd
+          # - text: "  ↳ Draft 2 (9 Jun 2026 — reviewer feedback integrated)"
+          #   href: projects/africa_cdc_workshop/draft2.qmd
+          - text: "---"
+          - text: " DHIS2 Hospital Indicators"
+            href: projects/dhis_hospital_mortality/index.qmd
+          - text: "---"
+          - text: "🔍 Data Explorer (Shiny)"
+            href: projects/data_explorer/index.qmd
+      - text: "About"
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/bridaybrummer/MRC_VR
+        aria-label: GitHub
+  
+  sidebar:
+    style: floating
+    search: true
+  
+  page-footer:
+    center: "© 2026 MRC Vital Registration Analysis"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    highlight-style: github
+
+execute:
+  warning: false
+  message: false
+  freeze: auto

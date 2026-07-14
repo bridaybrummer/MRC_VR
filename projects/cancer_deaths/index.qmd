@@ -1,0 +1,326 @@
+---
+title: "Cancer Mortality in South Africa"
+subtitle: "Trends in cancer deaths with a focus on HIV-associated malignancies, 1997–2022"
+description: "Annual monitoring of cancer mortality from South African vital registration data. Special focus on HIV-associated cancers — cervical cancer, Kaposi's sarcoma, and non-Hodgkin lymphoma — and the top cancers by burden in the South African population."
+date: "2026-03-13"
+categories: [cancer, HIV, cervical-cancer, mortality, vital-registration, South Africa]
+bibliography: ../../j_code_modelling.bib
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(data.table)
+library(ggplot2)
+library(scales)
+library(flextable)
+library(knitr)
+
+if (file.exists("cancer_results.rda")) {
+  load("cancer_results.rda")
+} else {
+  message(
+    "Results not found — run the wrangling script first:\n",
+    "  Rscript projects/cancer_deaths/cancer_wrangling.R"
+  )
+}
+```
+
+## Introduction
+
+South Africa carries an exceptionally high burden of cancer, shaped by three intersecting forces:
+
+1. **The HIV epidemic.** South Africa has the largest HIV-positive population in the world (~7.8 million, UNAIDS 2023). Severe immunosuppression dramatically elevates the risk of infection-driven cancers — particularly cervical cancer (HPV), Kaposi's sarcoma (HHV-8), and non-Hodgkin lymphoma (EBV). The scale-up of antiretroviral therapy (ART) since 2004 has altered incidence trajectories, but cervical cancer remains the leading cause of cancer death in South African women.
+
+2. **The epidemiological transition.** Urbanisation, changing diets, tobacco use, and alcohol consumption have driven rising rates of colorectal, breast, lung, and oesophageal cancers — patterns seen across sub-Saharan Africa as it undergoes demographic and economic transition.
+
+3. **Late-stage diagnosis.** Limited access to cancer screening, diagnostic pathology services, and treatment facilities means that a high proportion of cancer deaths in South Africa reflect advanced or undiagnosed disease. Vital registration data therefore likely undercount the true burden.
+
+This analysis uses the MRC-processed South African vital registration file (1997–2022) to monitor trends and assess the relative burden of the top cancer groups.
+
+### HIV-associated malignancies
+
+Three cancers are classified as **AIDS-defining** or strongly HIV-associated:
+
+| Cancer | ICD-10 | HIV mechanism |
+|:---|:---:|:---|
+| Cervical cancer | C53 | HPV — persistent infection, impaired immune clearance |
+| Kaposi's sarcoma | C46 | HHV-8 — reactivation under immunosuppression |
+| Non-Hodgkin lymphoma | C82–C86, C96 | EBV and immune dysregulation |
+
+Cervical cancer is the most prevalent of the three and the single most common cancer death in South African women. Its trajectory is critical for evaluating the combined impact of HIV treatment, HPV vaccination, and cervical screening programmes.
+
+---
+
+## Data
+
+Cancer deaths are identified from the **underlying cause of death** field (`UnderlyingCause`) using ICD-10 three-character prefixes. Only natural, individual deaths with an underlying cause starting with `C` are included. Stillbirths and unnatural deaths are excluded.
+
+### Cancer groups monitored
+
+```{r}
+#| label: tbl-groups
+#| tbl-cap: "Table 1. Cancer groups monitored, ICD-10 codes, and HIV-association status."
+#| echo: false
+
+if (exists("cancer_map") && exists("hiv_cancers")) {
+  grp_tbl <- data.frame(
+    `Cancer group`      = names(cancer_map),
+    `ICD-10 prefixes`   = sapply(cancer_map, paste, collapse = ", "),
+    `HIV-associated`    = ifelse(names(cancer_map) %in% hiv_cancers, "Yes", "No"),
+    check.names         = FALSE
+  )
+  flextable(grp_tbl) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    bg(i = ~ `HIV-associated` == "Yes", bg = "#fff3cd") |>
+    width(j = 1, width = 2.8) |>
+    width(j = 2, width = 2.2) |>
+    width(j = 3, width = 1.5)
+} else {
+  message("Run cancer_wrangling.R first.")
+}
+```
+
+---
+
+## Results
+
+### Overall cancer burden
+
+@fig-cancer-trend shows annual cancer deaths as a count (bars) and as a percentage of all natural deaths (red line). An increase in both the absolute number and the proportional burden is expected as South Africa's population ages and cancer registration completeness improves.
+
+```{r}
+#| label: fig-cancer-trend
+#| fig-cap: "Fig. 1. Annual cancer deaths in South Africa, 2000–2022. Bars = total cancer deaths (underlying cause C00–C97); red line = % of all natural individual deaths. Data: MRC-processed vital registration."
+#| fig-width: 10
+#| fig-height: 5
+
+if (exists("fig_cancer_trend")) fig_cancer_trend else message("Run cancer_wrangling.R first.")
+```
+
+```{r}
+#| label: tbl-yr-compare
+#| tbl-cap: "Table 2. Cancer deaths in 2010 vs 2022 with % change, by group."
+#| echo: false
+
+if (exists("yr_compare")) {
+  yc <- as.data.frame(yr_compare)
+  names(yc) <- c("Cancer group", "Deaths 2010", "Deaths 2022", "% change")
+  flextable(yc) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    bg(i = ~ `% change` > 20,  j = 4, bg = "#ffe0cc") |>
+    bg(i = ~ `% change` > 50,  j = 4, bg = "#ffd7d7") |>
+    bg(i = ~ `% change` < -10, j = 4, bg = "#d4edda") |>
+    width(j = 1, width = 3.0) |>
+    width(j = 2:4, width = 1.5)
+} else {
+  message("Run cancer_wrangling.R first.")
+}
+```
+
+### Trends by cancer group
+
+@fig-group-trend shows annual deaths for each monitored group on a single panel. HIV-associated cancers (red/orange) are plotted alongside the other top cancers (blue/green) to contextualise their relative magnitude and trajectory.
+
+```{r}
+#| label: fig-group-trend
+#| fig-cap: "Fig. 2. Annual cancer deaths by group — South Africa, 2000–2022. HIV-associated cancers shown in red/orange (cervical = dark red, Kaposi's sarcoma = orange, non-Hodgkin lymphoma = lilac). Other top cancers in blue/green."
+#| fig-width: 11
+#| fig-height: 5.5
+
+if (exists("fig_group_trend")) fig_group_trend else message("Run cancer_wrangling.R first.")
+```
+
+@fig-group-facet presents the same data faceted by group with free y-axis scales, allowing the shape of each trend to be compared independently of absolute magnitude. Groups with a clear peak and decline (e.g. Kaposi's sarcoma) indicate ART roll-out effects; groups with sustained or rising trends may reflect epidemiological transition.
+
+```{r}
+#| label: fig-group-facet
+#| fig-cap: "Fig. 3. Annual cancer deaths by type, 2000–2022 — faceted (free y-axis). Allows trend-shape comparison across groups with very different total burdens."
+#| fig-width: 11
+#| fig-height: 10
+
+if (exists("fig_group_facet")) fig_group_facet else message("Run cancer_wrangling.R first.")
+```
+
+### Summary: top cancer groups, 2013–2022
+
+```{r}
+#| label: tbl-cancer-summary
+#| tbl-cap: "Table 3. Monitored cancer deaths, 2013–2022 — ranked by total deaths. HIV-associated groups highlighted."
+#| echo: false
+
+if (exists("cancer_summary")) {
+  cs <- as.data.frame(cancer_summary)[, c("cancer_group", "Deaths", "Pct_of_total", "HIV_associated")]
+  names(cs) <- c("Cancer group", "Deaths (2013–2022)", "% of monitored total", "HIV-associated")
+  cs[["HIV-associated"]] <- ifelse(cs[["HIV-associated"]], "Yes", "No")
+  flextable(cs) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    bg(i = ~ `HIV-associated` == "Yes", bg = "#fff3cd") |>
+    colformat_num(`Deaths (2013–2022)`, big.mark = ",") |>
+    width(j = 1, width = 3.0) |>
+    width(j = 2:4, width = 1.8)
+} else {
+  message("Run cancer_wrangling.R first.")
+}
+```
+
+---
+
+### HIV-associated cancers
+
+@fig-hiv-trend focuses on the three HIV-associated cancer groups. Key patterns to look for:
+
+- **Cervical cancer**: Whether the trend reflects the HIV epidemic wave or has plateaued / declined with ART and HPV vaccination (Gardasil introduced 2014 in SA school programmes).
+- **Kaposi's sarcoma**: Expected to peak around 2004–2008 (pre-ART peak) and decline thereafter; any sustained elevation suggests ART access failure.
+- **Non-Hodgkin lymphoma**: More gradual trajectory; should decline with sustained viral suppression.
+
+```{r}
+#| label: fig-hiv-trend
+#| fig-cap: "Fig. 4. HIV-associated cancer deaths — South Africa, 2000–2022. Cervical cancer (C53), Kaposi's sarcoma (C46), non-Hodgkin lymphoma (C82–C86, C96). Trend reflects combined effect of HIV epidemic trajectory, ART roll-out, and HPV vaccination."
+#| fig-width: 10
+#| fig-height: 5
+
+if (exists("fig_hiv_trend")) fig_hiv_trend else message("Run cancer_wrangling.R first.")
+```
+
+---
+
+### Cervical cancer deep-dive
+
+Cervical cancer (C53) is the priority indicator for HIV–HPV intersectionality in South Africa. It is preventable through vaccination and screening, so the vital registration trend reflects both disease burden and system performance.
+
+#### Annual trend
+
+```{r}
+#| label: fig-cervical-trend
+#| fig-cap: "Fig. 5. Cervical cancer deaths — South Africa, 2000–2022. Bars = annual deaths; dashed line = LOESS smoother. A rising trend indicates inadequate prevention uptake; a turning point may reflect ART expansion and/or HPV vaccination."
+#| fig-width: 10
+#| fig-height: 5
+
+if (exists("fig_cervical_trend")) fig_cervical_trend else message("Run cancer_wrangling.R first.")
+```
+
+#### Age distribution
+
+```{r}
+#| label: fig-cervical-age
+#| fig-cap: "Fig. 6. Cervical cancer deaths by age group (all available years). A shift towards older age groups over time would be consistent with younger cohorts gaining HPV vaccine protection."
+#| fig-width: 8
+#| fig-height: 4.5
+
+if (exists("fig_cervical_age")) fig_cervical_age else message("Run cancer_wrangling.R first.")
+```
+
+#### Provincial distribution
+
+```{r}
+#| label: fig-cervical-province
+#| fig-cap: "Fig. 7. Cervical cancer deaths by province, 2015–2022. Provinces with high HIV prevalence (KwaZulu-Natal, Eastern Cape, Limpopo) are expected to carry the highest burden."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("fig_cervical_province")) fig_cervical_province else message("Run cancer_wrangling.R first.")
+```
+
+---
+
+### Age-at-death distributions
+
+@fig-age-dist shows the age distribution of cancer deaths for each group, expressed as percentage within the group. HIV-associated cancers (cervical, Kaposi's sarcoma, NHL) should peak at younger ages (35–54) than lifestyle-driven cancers (colorectal, prostate, breast), reflecting the immunosuppression pathway.
+
+```{r}
+#| label: fig-age-dist
+#| fig-cap: "Fig. 8. Age distribution of cancer deaths by group, 2010–2022. % within each cancer group. HIV-associated cancers peak at ages 35–54; lifestyle-driven cancers shift towards 55+ years."
+#| fig-width: 11
+#| fig-height: 10
+
+if (exists("fig_age_dist")) fig_age_dist else message("Run cancer_wrangling.R first.")
+```
+
+### Sex distribution
+
+```{r}
+#| label: tbl-sex-split
+#| tbl-cap: "Table 4. Sex distribution of cancer deaths, 2013–2022. Cervical cancer = female only (biology); Kaposi's sarcoma is male-dominated in the general population but less so in the HIV epidemic context."
+#| echo: false
+
+if (exists("sex_split")) {
+  ss <- dcast(as.data.table(sex_split), cancer_group ~ sex_label, value.var = "pct")
+  ss[, cancer_group := factor(cancer_group)]
+  names(ss)[1] <- "Cancer group"
+  if ("Male"   %in% names(ss)) names(ss)[names(ss) == "Male"]   <- "Male (%)"
+  if ("Female" %in% names(ss)) names(ss)[names(ss) == "Female"] <- "Female (%)"
+  flextable(as.data.frame(ss)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    width(j = 1, width = 3.0) |>
+    width(j = 2:3, width = 1.5)
+} else {
+  message("Run cancer_wrangling.R first.")
+}
+```
+
+### Province distribution (top 5 groups)
+
+@fig-province shows total deaths for the five largest cancer groups by province over 2015–2022. Absolute counts reflect both disease burden and population size; rate-based comparisons require population denominators (available via census/projection data).
+
+```{r}
+#| label: fig-province
+#| fig-cap: "Fig. 9. Cancer deaths by province — top 5 cancer groups, 2015–2022 (stacked). Gauteng and KwaZulu-Natal usually dominate by count; Eastern Cape shows disproportionate oesophageal and cervical burden."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_province")) fig_province else message("Run cancer_wrangling.R first.")
+```
+
+---
+
+## Discussion
+
+### HIV–cancer intersection
+
+The most striking feature of cancer mortality in South Africa compared with other middle-income countries is the dominance of infection-driven cancers. Cervical cancer, driven by HPV in the context of HIV-mediated immune failure, accounts for the majority of female cancer deaths in many years. This reflects:
+
+- **High HIV prevalence** in women of reproductive age with inadequate viral suppression.
+- **Low screening coverage**: cytology-based screening has historically covered <30% of eligible women.
+- **Late presentation**: most women present at FIGO stage III–IV; treatment intent is palliative.
+
+The national HPV vaccination programme (Cervarix, then Gardasil — girls, grade 4, since 2014) will not be visible in VR mortality data until the vaccinated cohort enters peak cervical cancer risk ages (~40–60 years), i.e. approximately 2040+. However, trends in cervical precancer (CIN3) from colposcopy registries may show earlier signal.
+
+### ART roll-out and Kaposi's sarcoma
+
+Kaposi's sarcoma (C46) mortality should decline as ART coverage and viral suppression improve. A sustained plateau or rise in KS deaths signals either:
+- ART access failure or late treatment initiation.
+- HHV-8 reactivation despite ART in patients with incomplete immune reconstitution.
+
+### Oesophageal cancer
+
+South Africa, particularly the Eastern Cape (former Transkei), has one of the highest oesophageal squamous cell carcinoma (SCC) incidence rates in the world — estimated 10× global average. Risk factors include maize-based spirits (home-brewed), tobacco, nutritional deficiencies, and possibly HPV (a minority of cases). Monitoring this trend is important as a measure of poverty-linked cancer burden.
+
+### Limitations
+
+1. **Under-certification**: cancer as underlying cause may be under-recorded where cancer was diagnosed late or where another acute cause (sepsis, respiratory failure) was certified.
+2. **ICD-10 coding quality**: the VR data uses the 3-character block for underlying cause; sub-site specificity (e.g. C53.1 endocervical vs C53.0 exocervical) is not analysed here.
+3. **Population denominators**: counts only — age-standardised rates, incidence–fatality ratios, and comparative analyses require census-based denominators.
+4. **No staging or treatment data**: VR data cannot distinguish early-stage from late-stage diagnosis.
+
+### Next steps
+
+| Priority | Task |
+|:---|:---|
+| **High** | Add age-standardised mortality rates using StatsSA census projections |
+| **High** | Stratify cervical cancer by province × year to track geographic disparities |
+| **Medium** | Compute HIV-attributable fraction using population-attributable risk (HIV prevalence × RR) |
+| **Medium** | Compare VR cancer trends against NHLS pathology lab registry data |
+| **Low** | Oesophageal cancer: district-level analysis for Eastern Cape |
+| **Low** | Sex-specific analysis of NHL and KS by age and province |
+
+## References {.unnumbered}

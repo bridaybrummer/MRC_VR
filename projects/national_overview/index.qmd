@@ -1,0 +1,207 @@
+---
+title: "National Excess Mortality Overview"
+description: "National observed vs expected deaths analysis with provincial breakdowns"
+date: "2026-01-20"
+categories: [excess-mortality, national, provincial, modelling]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(arrow)
+library(knitr)
+pacman::p_load(
+    ggplot2, plotly, gtsummary, tidyverse, magrittr, conflicted,
+    htmlwidgets, knitr, webshot, rmapshaper, ggpubr, scales, here, tibble, glue,
+    data.table
+)
+
+knitr::opts_knit$set(root.dir = here::here())
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE, cache.compress = TRUE)
+
+conflicted::conflicts_prefer(
+    dplyr::filter,
+    dplyr::select,
+    flextable::compose
+)
+
+# Load pre-computed figures if available
+if (file.exists("../../figures/model_comparison_prov_nat_plots.rda")) {
+  load("../../figures/model_comparison_prov_nat_plots.rda")
+}
+```
+
+## Overview
+
+This analysis presents national and provincial excess mortality estimates for South Africa, comparing observed deaths against model-predicted expected deaths.
+
+Use the table of contents to navigate to cause-specific analyses, or see the detailed [Cause Code Analysis](../cause_codes/index.qmd) project.
+
+## National Picture
+
+### Observed vs Expected Deaths
+
+```{r}
+#| label: fig-national-model
+#| fig-cap: "National observed vs expected deaths, 2015-2022 (TM's National Negative Binomial Model converted from Stata to R)"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("national_model_plot_SA")) {
+  national_model_plot_SA
+} else {
+  message("Figure not available - run dashboard wrangling scripts to generate")
+}
+```
+
+### Observed vs Expected by ICD Code
+
+```{r}
+#| label: fig-national-icd-ove
+#| fig-cap: "National observed vs expected deaths 2019-2022 by ICD code"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("national_model_icd_O_vs_E_plot_SA")) {
+  national_model_icd_O_vs_E_plot_SA
+} else {
+  message("Figure not available")
+}
+```
+
+### Difference by ICD Code
+
+```{r}
+#| label: fig-national-diff
+#| fig-cap: "National observed vs expected deaths difference 2019-2022 by ICD code"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("national_model_icd_difference_plot_SA")) {
+  national_model_icd_difference_plot_SA
+} else {
+  message("Figure not available")
+}
+```
+
+### Cause Heatmap
+
+```{r}
+#| label: fig-heatmap
+#| fig-cap: "National observed vs expected deaths difference heatmap 2019-2022 by ICD code and year"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("national_model_cause_heatmap_SA")) {
+  national_model_cause_heatmap_SA
+} else {
+  message("Figure not available")
+}
+```
+
+## Provincial Level Modelling
+
+TM's NB model with interaction terms takes a relatively longer time and similar results can be achieved with no interaction terms but adding provincial terms. The models appear to do well at the national level compared to Tom's model.
+
+::: {.callout-note}
+## Model Specification
+The provincial simple model did not perform meaningfully better when adding:
+
+- Interaction terms
+- Population offsets
+- Fourier terms for seasonality
+:::
+
+### National vs Provincial Model Comparison
+
+```{r}
+#| label: fig-prov-diff
+#| fig-cap: "Difference between provincial simple model and national model"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("national_vs_provincial_model_diff_plot_SA")) {
+  national_vs_provincial_model_diff_plot_SA
+} else {
+  message("Figure not available")
+}
+```
+
+### Provincial Observed vs Expected
+
+```{r}
+#| label: fig-prov-ove
+#| fig-cap: "Provincial observed vs expected deaths 2015-2022 (Provincial Negative Binomial Model without interaction terms)"
+#| fig-width: 12
+#| fig-height: 8
+#| fig-align: "center"
+#| out-width: "75%"
+#| fig-dpi: 200
+
+if (exists("provincial_model_prov_O_vs_E_plot_SA")) {
+  provincial_model_prov_O_vs_E_plot_SA
+} else {
+  message("Figure not available")
+}
+```
+
+The provincial model doesn't appear to do well with ICD groupings at the provincial level; this can be viewed when inspecting the provincial model ICD observed vs expected plots in the [Cause Code Analysis](../cause_codes/index.qmd) project.
+
+## Methods
+
+### Data Sources
+
+- **Vital Registration**: Death records from 2015-2022
+- **Population**: Mid-year population estimates from Stats SA
+
+### Statistical Model
+
+We use a negative binomial generalized linear model:
+
+$$
+Y_t \sim \text{NegBin}(\mu_t, \theta)
+$$
+
+$$
+\log(\mu_t) = \beta_0 + \beta_{\text{week}} \cdot \text{week}_t + \beta_{\text{time}} \cdot t + \log(\text{pop}_t)
+$$
+
+See the [CI Modelling Methods](../ci_modelling/index.qmd) project for detailed methodology on confidence interval construction.
+
+## Key Findings
+
+::: {.callout-important}
+## Summary
+
+- Excess mortality peaked during COVID-19 waves (2020-2022)
+- Provincial patterns show significant heterogeneity
+- J-coded (respiratory) deaths show the largest excess
+:::
+
+## Related Projects
+
+- [Cause Code Analysis](../cause_codes/index.qmd) - Detailed ICD code-specific analyses by age group, province, and multiple cause sequences
+- [J-Code Modelling](../j_code_modelling/index.qmd) - In-depth analysis of respiratory (J-coded) mortality
+- [CI Modelling Methods](../ci_modelling/index.qmd) - Statistical methods for uncertainty quantification

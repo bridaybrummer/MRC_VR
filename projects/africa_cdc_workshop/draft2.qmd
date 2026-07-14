@@ -1,0 +1,673 @@
+---
+title: "Draft 2 — Mortality surveillance stakeholder workshop for South Africa"
+subtitle: "28 July – 01 August 2025 | Protea Hotel Marriott Balalaika"
+description: "Workshop report (Draft 2): incorporates reviewer feedback from Stats SA, SAMRC and Natalie Mayet on Draft 1, plus conciseness edits."
+date: "2026-06-09"
+author:
+  - name: "National Department of Health (NDoH)"
+  - name: "South African Medical Research Council (SAMRC)"
+  - name: "Statistics South Africa (Stats SA)"
+  - name: "Africa CDC"
+categories: [workshop, mortality-surveillance, CRVS, Africa-CDC, NDoH, eMCCD]
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    format-links:
+      - pdf
+      - docx
+  pdf:
+    toc: true
+    number-sections: true
+    geometry: margin=2.5cm
+    fontsize: 11pt
+  docx:
+    toc: true
+    number-sections: true
+execute:
+  warning: false
+  message: false
+  echo: false
+---
+
+::: {.callout-tip icon=false}
+**You are reading Draft 2.** &nbsp;&nbsp; [↩ Switch to Draft 1](index.qmd) &nbsp;|&nbsp; [Jump to change log](#sec-change-log)
+
+**Status:** Draft 2 incorporates reviewer feedback from Mosidi Nhlapo (Stats SA, 23 comments), Nadine Nannan (SAMRC, 11 comments + 29 tracked changes) and Natalie Mayet (10 comments + 12 tracked changes). All corrections are listed in the [Change log](#sec-change-log) at the foot of the document.
+
+**Outstanding items:** Executive summary expansion (Molatso); CRVS data quality figures (Pam Groenewald); attribution of the "60% / 40% automation" figure; named lead directorate for surveillance coordination (pending confirmation).
+:::
+
+---
+
+## Executive Summary {#sec-exec-summary}
+
+::: {.callout-important icon=false}
+**[TODO — Molatso]:** Expand this executive summary with key outputs and agreed next steps from the workshop.
+:::
+
+A five-day national stakeholder workshop on strengthening South Africa's mortality surveillance system was convened by the National Department of Health (NDoH) from 28 July to 01 August 2025 at the Protea Hotel Marriott Balalaika, Sandton. The workshop brought together representatives from NDoH, Statistics South Africa (Stats SA), the Department of Home Affairs (DHA), the South African Medical Research Council (SAMRC), the National Institute for Communicable Diseases (NICD), and Africa CDC. Technical contributions were also received from the **U.S. CDC Foundation** and **Swiss TPH**, who shared international lessons from mortality surveillance system strengthening in other country contexts.
+
+The workshop pursued four core objectives:
+
+1. Share experiences from existing mortality surveillance interventions, particularly hospital-based reporting.
+2. Initiate the Mortality Surveillance Standard Operating Procedure (SOP) for the immediate rollout phase.
+3. Draft a long-term mortality surveillance strategic plan aligned with national legislation and public health priorities.
+4. Identify areas for cross-institutional collaboration between NDoH, DHA, Stats SA, SAMRC, NICD, and provincial health departments.
+
+**Key outcomes included:**
+
+- Agreement on a phased implementation roadmap (immediate 0–3 years → intermediate → fully digital).
+- Draft Terms of Reference (ToR) for a national Mortality Surveillance Sub-Committee.
+- Draft SOP for the immediate phase of mortality surveillance.
+- Updated national SWOT analysis aligned with the Africa CDC Continental Framework.
+- A draft strategic plan embedding mortality surveillance into the National Development Plan.
+- Consensus on institutional roles: NDoH leads implementation; DHA manages the death registry; Stats SA leads coding and national statistics; SAMRC provides technical and research support; NICD contributes communicable disease surveillance and outbreak intelligence.
+
+---
+
+## Background and Context {#sec-background}
+
+### The Mortality Surveillance Imperative {#sec-imperative}
+
+Accurate and timely mortality data are a cornerstone of public health decision-making, guiding disease burden estimation, resource allocation, and policy development. South Africa, like many African countries, faces significant challenges in generating reliable mortality data — with sources fragmented across DHA (DHA-1663 form), Stats SA, the National Population Register, DHIS2, and paper-based facility records.
+
+The COVID-19 pandemic exposed global and local weaknesses in real-time mortality tracking. South Africa demonstrated leadership through its use of CRVS and excess death monitoring during the pandemic, and this workshop aimed to build on that momentum.
+
+### Current State of CRVS Data Quality {#sec-crvs-quality}
+
+::: {.callout-important icon=false}
+**[Feedback — Pam Groenewald, SAMRC]:** This section needs expansion with the data quality figures presented at the workshop. These are an important motivation for improving MCCD and were highlighted at the workshop. Please add the specific statistics below.
+:::
+
+South Africa's Civil Registration and Vital Statistics (CRVS) system is **manual and paper-based**, which introduces well-documented quality challenges that motivate the shift to real-time electronic mortality surveillance:
+
+**Timeliness:**
+
+- Causes of death data are typically released with a **2–3 year lag** from the year of occurrence to publication. Stats SA publishes the data on its website as soon as the processing cycle is complete; the constraint is delay, not restricted access.
+- During the COVID-19 pandemic, the absence of near-real-time reporting significantly hampered the national response.
+
+**Completeness and coverage:**
+
+- Community deaths are often registered through funeral undertakers who, **under current legislation, act as notifiers on behalf of families — not as certifiers**. Certification in such cases is performed by private doctors, or by a family member using the DHA-1680 form. The DHA-1680 is itself a recognised source of poor certification quality.
+- Under-5 deaths are particularly susceptible to incomplete recording in current electronic systems.
+
+**Cause of death quality:**
+
+- A large proportion of deaths are assigned **ill-defined or unspecified causes** (ICD-10 R-codes), reducing the statistical and epidemiological value of mortality data.
+- Independent validation studies consistently identify **underreporting of HIV/AIDS and injury-related deaths**, largely stemming from poor quality of medical certification — including deaths certified at health facilities and those where the DHA-1680 form is completed without adequate clinical information.
+- Coding quality is determined upstream by the quality of medical certification; **improved coding does not follow automatically from a new data capture system**.
+- Stats SA has implemented automated ICD coding through the Iris system, improving both the speed and quality of cause-of-death coding. Stats SA is the sole institution in South Africa responsible for mortality coding from civil registration.
+- All countries currently publishing mortality and cause-of-death statistics from civil registration are still in the ICD-10 → ICD-11 transition phase. South Africa is following the same trajectory, with Stats SA implementing a phased transition over three years.
+
+**Coordination and fragmentation:**
+
+- The CRVS system relies on manual form transfer, storage, and retrieval, which introduces errors and delays.
+- There is no current Memorandum of Understanding (MOU) between NDoH and Stats SA to guide data integration.
+
+The Terbufos pesticide poisoning crisis — which resulted in over **350 confirmed deaths in two years**, including approximately **125 children** — illustrates the real-world cost of manual surveillance. Reporting fragmentation likely led to underestimation of the true burden of this outbreak.
+
+### Africa CDC Continental Framework {#sec-acdc-framework}
+
+The Africa CDC has developed a **Continental Framework for Strengthening Mortality Surveillance**, formally adopted in September 2022, which:
+
+- Links mortality surveillance to the **African Union Agenda 2063** and the **UN Sustainable Development Goals**.
+- Advocates for an **active surveillance approach** integrating primary and secondary data sources.
+- Emphasises harmonisation, system integration, and standardisation using WHO methods (MCCD, ICD coding, verbal autopsy).
+- Is guided by six priority areas: **leadership and governance, system strengthening, digitalisation, resource mobilisation, capacity building, and context-specific implementation**.
+
+Since 2023, 20 African countries have developed national action plans and aligned with this framework. South Africa — a founding contributor and co-chair of the Eastern and Southern Africa Regional Coordinating Centre — is now positioned to lead operationalisation nationally.
+
+---
+
+## Day 1: Introduction, Opening Remarks and Orientation {#sec-day1}
+
+*28 July 2025*
+
+### Introduction {#sec-day1-intro}
+
+The first day brought together key national stakeholders involved in the design, implementation, and use of mortality surveillance in South Africa. The Department of Home Affairs was unable to attend on Day 1; however, a DHA representative joined from Day 2 onwards, completing the stakeholder group for the remainder of the workshop. The workshop also received technical contributions from the **U.S. CDC Foundation** and **Swiss TPH**, who shared international lessons from mortality surveillance system strengthening in other country contexts.
+
+### Stakeholder Engagement and Shared Vision {#sec-day1-vision}
+
+Opening remarks were delivered by NDoH, Stats SA, SAMRC, NICD, and Africa CDC, all expressing a shared commitment to strengthening mortality surveillance systems in South Africa and across the region.
+
+- **NDoH** presented the national mortality surveillance initiative, focusing on the rollout of the electronic Medical Certificate of Cause of Death (eMCCD).
+- **Stats SA** shared current work and plans to improve mortality data quality through better system integration.
+- **SAMRC** reiterated its commitment to providing technical expertise and research capacity to ensure the development of a sustainable, reliable, and responsive mortality surveillance system for South Africa.
+- **Africa CDC** introduced the continental framework, providing a valuable regional perspective.
+
+Technical discussions in the afternoon focused on improving the accuracy of Causes of Death (COD) data. SAMRC presented practical approaches, and Africa CDC / Swiss TPH shared lessons from other countries on what successful mortality surveillance systems look like.
+
+### Opening Remarks: Key Themes {#sec-day1-openremarks}
+
+| Institution | Key Theme |
+|---|---|
+| NDoH | Efficient eMCCD; real-time data for public health emergencies |
+| SAMRC | Reliable mortality statistics for national burden of disease estimates |
+| NICD | Transform surveillance to directly save lives; Terbufos poisoning as case study |
+| Stats SA | Alignment with national mandate to strengthen population statistics |
+| Africa CDC | Preventable deaths are being normalised; Africa's disproportionate health burden |
+
+: Summary of opening themes {.striped .hover}
+
+#### Key Challenges Identified in CRVS {#sec-crvs-challenges}
+
+| Challenge | Description |
+|---|---|
+| Delayed reporting | Mortality data published up to 3 years after year of occurrence; this is **delayed access**, not restricted access |
+| Coordination gaps | Weak collaboration between NDoH, Stats SA, and DHA |
+| Data misclassification | Underreporting of HIV/AIDS and injury deaths; high proportion of ill-defined CODs |
+| Manual / paper-based system | Heavy reliance on manual form transfer, storage and retrieval; need for digitisation and interoperability |
+| Community deaths | High proportion notified through undertakers; certification in those cases done by private doctors or by family members via the DHA-1680 form, which is itself a source of poor certification quality |
+| **Outbreak response limitations** | The absence of timely cause-specific mortality data prevents the calculation of Case Fatality Rates (CFRs) during disease outbreaks, directly limiting the ability to characterise outbreak severity and guide response |
+
+: Key challenges in South Africa's CRVS system {.striped .hover}
+
+### Workshop Objectives {#sec-day1-objectives}
+
+1. Share experiences and lessons learned from existing mortality surveillance interventions, particularly hospital-based reporting.
+2. Initiate the Mortality Surveillance Standard Operating Procedure (SOP) to guide the immediate rollout phase.
+3. Draft a long-term mortality surveillance strategic plan incorporating stakeholder inputs, aligned with public health priorities and national legislation.
+4. Identify areas for collaboration and integration between NDoH, provincial health departments, DHA, Stats SA, SAMRC, and NICD.
+
+### Presentations {#sec-day1-presentations}
+
+#### NDoH: Mortality Surveillance Initiative in South Africa {#sec-ndoh-pres}
+
+*Presented by Khumalo MP, Directorate of Epidemiology and Surveillance*
+
+The NDoH presentation outlined the urgent need for real-time mortality surveillance and described the three implementation phases:
+
+| Phase | Timeline | Description |
+|---|---|---|
+| Immediate | 0–3 years | Use DHA-1663B; capture in DHIS2 CodApp; doctors complete paper form |
+| Hybrid | 3–7 years | Combined paper + electronic capture linked by barcodes; auto-coding via Iris/DORIS |
+| Fully digital | 7–15 years | End-to-end digital CRVS integrated with NHI, HPRS, and EMRs |
+
+: NDoH mortality surveillance implementation phases {.striped .hover}
+
+Following President Ramaphosa's 15 November 2024 announcement — that all deaths of patients aged 12 and below would be made notifiable and an eMCCD system established — legal advice clarified that deaths, as events, do not fall within the definition of notifiable medical conditions under current NMC regulations, which apply to diseases and exposures, not deaths *per se*. It should be noted that **maternal deaths are already notifiable as a Category 2 condition**. The NMC surveillance system was not designed for routine death notification, so an alternative legislative mechanism was required. Funding was secured through the **Pandemic Fund** (SAMRC as delivery partner) to strengthen surveillance capacity.
+
+Pilot visits have been conducted at KPTH and SBAH, with 68 causes of death identified using ICD-11 codes as initial outputs.
+
+::: {.callout-note icon=false}
+**Pilot data — outstanding:** Time frames for pilot activities and per-facility breakdowns of how much was captured at each site over what period are still to be added, per Stats SA reviewer comment.
+:::
+
+**Key discussion points raised:**
+
+1. **Accelerating timelines** — Drawing on COVID-19 response experience, participants questioned whether similar urgency and intersectoral collaboration could be mobilised.
+2. **Change management** — Effective change management must accompany technical system design, with cultural transformation alongside training.
+3. **System ownership** — Concerns about the DHA-governed digital form and resource constraints at facility level, especially doctor workload.
+4. **NHI** — Legal uncertainties around NHI implementation affect timelines; focus must remain on achievable steps within current mandates.
+5. **Human resources and business process mapping** — A shortage of clinical personnel underscores the need for system design that accommodates real-world clinical environments.
+6. **EMS and natural vs. unnatural deaths** — EMS declares deaths but does not certify cause; unnatural deaths go through SAPS and forensic pathology, complicating classification.
+7. **Coding and the ICD-10 → ICD-11 transition** — Stats SA codes from civil registration using Iris (ICD-10) and is implementing a phased transition to ICD-11 over three years. Stats SA does not use DORIS — even under ICD-10 — because DORIS does not include the full code set and cannot handle South Africa's death volumes; Iris coding is therefore done in batches. DHIS2 implementations elsewhere use ICD-11 / DORIS, and harmonisation across systems will need to be managed through the transition.
+8. **NDoH analytical capability and data sharing** — Concerns were raised about the current analytical capability within NDoH and the extent to which mortality data is shared across departments and with the public-health community. Strengthening in-house analytical capacity was identified as a prerequisite for NDoH to fulfil its proposed surveillance lead role.
+
+#### Stats SA: Current Status and Plans to Strengthen CRVS {#sec-statssa-pres}
+
+*Presented by Dr Mosidi Nhlapo, Statistics South Africa*
+
+Stats SA outlined the legislative, institutional, and operational context of South Africa's mortality data system under the **amended Statistics Act No. 29 of 2024**. Key points:
+
+- Stats SA's evolving role: producing statistical outputs AND coordinating the national statistical system (NSS).
+- The amendment mandates strategic partnerships, modernisation of data systems, and use of alternative data sources.
+- The current **CRVS system is manual and paper-based**: the DHA-1663 form is managed by DHA, and coding is performed by Stats SA from forms collected by Stats SA from DHA Head Office. Stats SA has proposed possible interventions to fast-track the movement of forms from DHA to Stats SA for processing.
+- Stats SA is the **only institution responsible for mortality coding** in South Africa and has implemented **automated ICD coding through Iris**, improving both speed and quality. A 60% automated / 40% manual split has been described — *attribution to be confirmed before publication*.
+- Transitioning from ICD-10 to ICD-11 over three years; dual coding during the transition.
+- Stats SA's data-processing improvements (24/7 capture operations, automated form tracking, unique identifiers, internal coordination to reduce duplication) are processing-quality interventions, not certification-quality interventions.
+- Stats SA has initiated **intersectoral collaboration through the NSS framework** to improve data access and align mortality indicators across departments, consistent with both national and international reporting requirements.
+- **No current MOU** exists between NDoH and Stats SA — identified as a priority gap.
+
+**Key discussion points raised:**
+
+- 24/7 data capture operations have significantly reduced backlogs but depend heavily on contract staff.
+- Ownership of certification quality: DHA manages the DHA-1663 form; certifying the cause of death is the responsibility of the medical practitioner. Poor form completion by doctors — who must view certification as a core clinical duty — is the principal driver of ill-defined CODs.
+
+#### Africa CDC: Continental Framework and Operational Guideline {#sec-acdc-pres}
+
+The Africa CDC presentation outlined the Continental Framework's six priority areas and implementation approach (see [Section @sec-acdc-framework]). Country examples were shared to demonstrate what is achievable:
+
+| Country | Key Feature | Status |
+|---|---|---|
+| **Egypt** | Births and deaths registered electronically in real-time; presidential decree mandates 24-hour registration; multi-ministry integration | Continental leader |
+| **Rwanda** | Strong inter-ministerial collaboration; community deaths via DHIS2 → civil registry; mortality surveillance institutionalised in MoH/RBC | Advanced |
+| **Seychelles** | Near-universal birth/death registration including MCCD; small island system, currently manual | High coverage |
+| **Mauritius** | Clear systems, national coordination, strong governance | High coverage |
+| **Kenya** | Strong health information infrastructure but community-level gaps remain | Partial |
+
+: Country examples of mortality surveillance progress (Africa CDC) {.striped .hover}
+
+Since the launch of the Continental Mortality Surveillance Strategy, over **22 African countries** have received one-on-one technical support. South Africa is among them, having already made significant progress in civil registration coverage. A key benefit has been the establishment of **multisectoral platforms** — in several countries this marked the first time that ministries of health, civil registration authorities, and justice departments came together on this agenda.
+
+#### SAMRC, MRC and NICD: Opportunities for Improving Cause of Death Notification {#sec-samrc-pres}
+
+SAMRC outlined several collaborative initiatives to strengthen the CRVS system:
+
+1. **Post-COVID-19 stakeholder interviews** — Key informant interviews with Directors-General and staff from NDoH, NICD, and Home Affairs to identify systemic challenges. Common themes: outdated paper-based systems; urgent need for digitisation, improved interoperability, and stakeholder-inclusive redesign.
+
+2. **Data for Health (D4H) initiative** — The SAMRC, in collaboration with the National Department of Health, Statistics South Africa and other partners, has led a development initiative since 2022 to strengthen South Africa's CRVS system. The Data for Health (D4H) initiative focuses on four pillars:
+   1. **CRVS Governance and Stakeholder Coordination** — quarterly vital statistics meetings ongoing since 2017.
+   2. **Notification and Registration of Births and Deaths** — process improvement to reduce backlogs and revise data workflows.
+   3. **Facility-Based COD Data** — capacity building, including training for doctors on MCCD and ICD coding.
+   4. **Production and Use of Vital Statistics** — business process mapping that examines the death registration pathway across community and facility settings, checking for accuracy and flow of information and identifying what can be done to address bottlenecks.
+
+---
+
+## Day 2: Immediate Phase of Mortality Surveillance Implementation {#sec-day2}
+
+*29 July 2025*
+
+A representative from the Department of Home Affairs joined on Day 2, completing the presence of all key stakeholders. The day focused on planning and operationalising the **immediate implementation phase**, with emphasis on practical steps, governance, and the implementation roadmap.
+
+### Electronic System Demonstration {#sec-day2-demo}
+
+NDoH demonstrated the **electronic DHA-1663 platform** designed for real-time death certification data capture. Key features:
+
+- Auto-populates demographic fields from the national ID number.
+- Applies skip logic (e.g. pregnancy-related fields activated only for female patients).
+- Built-in validation checks to prevent duplicate entries and incomplete submissions.
+- Audit trails with timestamps for tracking changes.
+- Conditional logic and data quality rules to maintain chronological accuracy.
+
+**Outstanding system challenges identified:**
+
+::: {.callout-warning}
+- Restricted user access during the pilot phase.
+- Identity confirmation for system access.
+- System limitations with incomplete or partial entries.
+- Variation in data entry frequency across facilities (some enter in batches).
+- Under-5 deaths particularly susceptible to data gaps due to incomplete fields.
+:::
+
+### Key Discussion Points on System Functionality and Data Processes {#sec-day2-discussion}
+
+Discussion centred on five themes:
+
+#### Automation & efficiency {#sec-day2-automation}
+
+Reduce manual processes by automating follow-up actions and triggers (e.g. neonatal death classification) post-data-capture. Validation rules should prevent invalid dates and automate age calculation. Recommendations included autosave and greater configuration flexibility.
+
+#### System duplication & integration {#sec-day2-duplication}
+
+Avoid overlap with other systems; streamline resources and strengthen interoperability. Real-time ID verification linked to the National Population Register (NPR) is being pursued, though legal and financial constraints remain. An MOU is in progress to support integration aligned with NHI reforms.
+
+#### Data quality & validation {#sec-day2-dq}
+
+Variation in data entry frequency (immediate vs. batch) and gaps in under-5 data were flagged. Validation rules exist but require enhancements, including manual flagging and override options for exceptions to improve quality.
+
+#### System reliability & flexibility {#sec-day2-reliability}
+
+Issues with data saving and configuration flexibility were noted. Recommendations: autosave, manual overrides for exceptions, and explicit support for low-resource facilities.
+
+#### Governance & NHI alignment {#sec-day2-governance}
+
+Legal and governance frameworks (including an MOU) are required to support integration, aligned with broader National Health Insurance (NHI) digital transformation priorities.
+
+### Strategic Phase Mapping {#sec-day2-phases}
+
+The session described the full three-phase pathway:
+
+- **Current (baseline):** Paper DHA-1663 → manual chain to DHA and Stats SA. Key limitations: delays, data quality issues, no traceability.
+- **Immediate phase (0–3 years):** Data clerks at facilities enter COD details into DHIS2 after doctors complete the paper form. This allows early access to COD data for public health surveillance (NICD, SAMRC) without altering the legal process managed by DHA and Stats SA.
+- **Intermediate phase (proposed):** Doctors directly enter COD information into digital platforms (DHIS2 or future Digital MCCD), linked to DHA-1663 via barcodes or unique identifiers. Real-time data access for surveillance, quality checks, and statistical processing — pending legal and technical clarification.
+- **Long-term vision (5–15 years):** Fully digital end-to-end COD registration integrated with NHI, HPRS, and EMRs.
+
+**Automated quality checks proposed:**
+
+- Validate whether the healthcare provider is registered and active.
+- Flag deaths recorded for individuals already listed as deceased.
+- Assess cause-of-death sequence logic using ANACoD.
+- Monitor for late or duplicate registrations.
+
+**Governance and ownership proposed:**
+
+DHA continues to manage the official DHA-1663 death notification form. The cause-of-death section (Part B / "page 1 of 1") will be jointly governed by NDoH and Stats SA. Legal support is required to adjust the relevant frameworks and to allow secure API-based access across platforms. The technical vision is a centralised digital database housed within NDoH with provincial-level backup. Roles: NDoH manages system rollout and clinical COD data; DHA retains the death registry and population data; Stats SA codes and produces national mortality statistics. Health facilities and data clerks capture and verify entries; system administrators manage backend operations.
+
+Monitoring and evaluation will track completeness and speed of registrations, accuracy of coding, error-resolution time, and whether deaths are registered within 72 hours.
+
+#### Defined stakeholder responsibilities {#sec-day2-responsibilities}
+
+| Stakeholder | Responsibility |
+|---|---|
+| Department of Health (NDoH) | Lead implementation of the mortality surveillance system; manage clinical COD data |
+| Department of Home Affairs (DHA) | Manage legal form issuance and the death registry |
+| Stats SA | Coding and production of official national mortality statistics |
+| **NICD** | Communicable disease surveillance; early warning integration; technical support for outbreak-related mortality |
+| SAMRC | Technical guidance and surveillance research input |
+| Health Facilities | Accurate data entry at the point of care |
+
+: Defined stakeholder responsibilities {.striped .hover}
+
+#### Next Steps {#sec-day2-nextsteps-map}
+
+- Finalise business and technical specifications.
+- Consult on data ownership, hosting, and legal frameworks.
+- Pilot the proposed intermediate phase in selected sites.
+
+### Group Work: Thematic Working Groups {#sec-day2-groups}
+
+Three thematic working groups were established:
+
+- **Group 1 — Business processes:** End-to-end process mapping; data flow; verification and validation; notification timelines; stakeholder roles.
+- **Group 2 — Systems integration:** Mapping existing systems (electronic and paper); ideal interoperability model; quick wins; legal/technical considerations.
+- **Group 3 — Operationalisation:** Human, financial, and infrastructural resources; capacity building; pilot phase preparation; strategic shifts from annual to near-real-time reporting.
+
+**Output for Day 2:** Draft SOP for the immediate phase of mortality surveillance implementation.
+
+::: {.callout-important}
+**Important discussion point from Day 2:** The DHA-1663 B form (page 1 of 1) — which contains the medical causes of death — is of primary concern for NDoH. The form is filled out in free-text handwriting by medical doctors and then sealed. It travels with the demographic DHA-1663 A form, which DHA uses to update the National Population Register. The sealed DHA-1663 B is **collected by Stats SA from DHA Head Office** and processed there: assigning a Stats SA unique identifier, scanning, storage, digitisation, and ICD-10 coding using a domesticated version of Iris for automated coding to derive the underlying cause of death. Records that cannot be processed automatically are flagged as exceptions and go to human review. DHA and Stats SA share resources to digitise and transport documents; NDoH needs to allocate resources to this process so that each stakeholder benefits from process improvement. In the discussions it was noted that DHA needs assistance with timely birth and death registrations, and Stats SA needs assistance in improving the certification of causes of death by medical practitioners.
+:::
+
+---
+
+## Day 3: Data Use and SWOT Analysis {#sec-day3}
+
+*30 July 2025*
+
+### DHA presentation: legislative and digital transformation context {#sec-day3-dha}
+
+Day 3 opened with a presentation from the Department of Home Affairs which outlined its strategic legislative and digital transformation efforts in support of mortality surveillance improvements, focusing on the DHA-1663 A and DHA-1663 B forms.
+
+Key points:
+
+- Aligning proposed changes to the legislative framework matters, particularly identifying whether amendments are needed at the level of the Act or the Regulations. Regulation-level amendments are more feasible than changes to the principal Act and are therefore a practical starting point.
+- Form DHA-1663 B falls under the legislative mandate of **Stats SA**, not just DHA. Any change to its format or function (e.g. introducing a QR code or serial number) must involve Stats SA as custodian. DHA is responsible for the broader legislative environment and ensuring legal compliance.
+- The serial number and ID number embedded in the form are part of the death record and cannot be separated for individual barcoding, due to legislative constraints. Adding *manner of death* to DHA-1663 B has previously been recommended; an addendum or appendix may be a simpler path than amending the form itself.
+- Interdepartmental data sharing depends on appropriate legal instruments. Stats SA's mandate is to process causes of death from civil registration, and direct data sharing between DHA and NDoH must be governed by interdepartmental legislative agreements rather than informal arrangements.
+- DHA is undergoing a wide-scale digital transformation, beginning with births and marriages and ending with deaths. Digitisation began in 2017 and has progressed since 2018 in collaboration with Stats SA, including digitisation of historical records dating back to the 1800s. Digitising DHA-1663 B is more complex because it is **not owned by DHA**.
+- DHA expressed confidence that full digitalisation of CRVS will progress over the next three years. The initial three-year period should be treated as a preparation phase: hard-copy DHA-1663 B forms will continue to be received and processed, and Stats SA will retain its constitutional role in producing official mortality statistics. The core business and legal mandates of CRVS institutions remain unchanged in the short term.
+
+The primary motivation for change is the need for **timelier access to mortality and cause-of-death data** by health authorities to enable more responsive public health interventions.
+
+Participants emphasised that practical steps are needed now to enable seamless digital integration and international interoperability. Existing memoranda of understanding (MOUs) might be reviewed not to be amended but to be aligned — "piggybacking" on existing agreements via Service Level Agreements (SLAs) or similar instruments tends to be more effective than proposing fresh amendments. The MOU for the **National Health Information Policy and Technical (NHIPT)** framework is at an advanced stage, having passed legal and security clearances; participants were encouraged to request access to it within their institutions.
+
+The session captured the metaphor of moving from a "monogamous" to a "polygamous" relationship between departments: more flexible, multi-partner collaboration with shared responsibility and joint action.
+
+### Strategic shifts required for mortality surveillance {#sec-day3-shifts}
+
+Mortality data generation has traditionally been a routine compilation exercise. A surveillance approach transforms it into ongoing analysis that supports real-time public health decision-making. This requires shifts across several areas:
+
+| Shift | From | To |
+|---|---|---|
+| **Purpose** | Periodic burden-of-disease reporting | Real-time detection of public health emergencies, especially at community level |
+| **Reporting timelines** | Annual / quarterly | Daily / weekly / monthly provisional counts; final validation continues over time as Stats SA's responsibility |
+| **Data sources** | CRVS only | CRVS + health information systems + disease surveillance + community-level / civil-society records |
+| **Data capture** | Paper, manual transfer | Digital at point of event; integrated, validated, analysed efficiently |
+| **Data quality** | Driven by certification quality alone | Doctor training on MCCD plus digital validation at the point of capture |
+| **Visibility & use** | Data published with long lag | Data shared, showcased, used in dashboards and dialogue |
+| **Governance** | Informal interdepartmental arrangements | Lead institution (NDoH) with clear data-sharing protocols across CRVS, health, and partners |
+| **Technical capacity** | Reliance on external partners | Local technical capacity and national ownership |
+
+: Strategic shifts required for mortality surveillance {.striped .hover}
+
+### Previous Africa CDC Action Plan: Stats SA {#sec-day3-statssa}
+
+Stats SA presented the previous work undertaken with Africa CDC, emphasising:
+
+- The urgent need for a **strong, shared strategic plan** to guide all stakeholders.
+- A vision for a **national mortality database** as a central repository.
+- A shift from annual reporting to **near-real-time surveillance**.
+
+**Mortality data analysis plan components identified:**
+
+1. Background: surveillance goals — tracking mortality patterns, detecting spikes.
+2. Clear objectives: trend identification, excess mortality detection, preparedness support.
+3. Data collection: electronic systems (e-NCCP and others) as timely data sources.
+4. Data quality: completeness, timeliness, accuracy — even for provisional data.
+5. Analytical methods: routine analyses for ongoing public health decision-making.
+6. Data visualisation: user-friendly dashboards, maps, and trend charts.
+7. Reporting and dissemination: mechanisms for timely stakeholder and public communication.
+
+**Institutional coordination roles proposed:**
+
+| Institution | Analytical Role |
+|---|---|
+| Stats SA | Broader population-level mortality indicators |
+| SAMRC | Excess mortality modelling (especially during pandemics) |
+| NDoH | Routine pattern analysis; early warning signal detection; linkage with programmatic indicators (immunisation status; under-5 preventable deaths) |
+| NICD | Communicable disease surveillance signals; integration of outbreak-related mortality |
+
+: Proposed institutional roles in mortality data analysis {.striped .hover}
+
+---
+
+## Day 4: Action Plan, Strategic Plan and ToR Development {#sec-day4}
+
+*31 July 2025*
+
+The session opened with reflections on Day 3's SWOT work and shifted toward developing a **strategic plan for mortality surveillance for 2025–2030**.
+
+Priority areas:
+
+- Leverage existing digital systems to build a centralised, real-time mortality surveillance platform.
+- Develop interoperability standards and a defined minimum dataset with clear data ownership and access protocols.
+- Deploy legal and policy instruments **beyond MOUs** — data-sharing agreements and inter-agency protocols — to support long-term sustainability.
+- Establish a dedicated secretariat to maintain momentum, supported by departmental focal points, formal appointment processes, and adequate resourcing.
+- Advance the pilot of the mobile application that allows doctors to electronically capture cause of death, integrated with DHA and other national systems. Three pilot sites will be selected.
+- Commission a **legislative and regulatory review** by specialised legal counsel to support digitisation, data access, and electronic death certification.
+- Establish **national standards for medical certification of cause of death** — currently absent — as part of the broader CRVS-strengthening strategy.
+
+The discussion on crafting the Terms of Reference (ToR) focused on formalised structures: a **technical working group (TWG)** to oversee operational tasks, and a **high-level steering committee** for strategic decision-making, both linked to the existing CRVS framework. A multi-sectoral MOU between NDoH, DHA and Stats SA was highlighted as critical, with clear roles, accountability mechanisms, and timelines.
+
+### Discussion and Agreements: Mortality Surveillance Strategic Planning {#sec-day4-strategic}
+
+#### Vision statement {#sec-day4-vision}
+
+> *A scalable and functional mortality surveillance system for all South Africans.*
+
+This vision supports the national goal of *"a long and healthy life for all South Africans"* by ensuring that we understand who is dying, why they are dying, and what can be done to prevent future deaths.
+
+Participants emphasised that planning must balance structure with flexibility. Staff changes are inevitable; what matters is stability and commitment within the coordination structures. Coordination must be intentional and sustained, not left to chance or informal arrangements.
+
+**Day 4 output:** Draft strategic plan, included as an appendix.
+
+### Terms of Reference: Mortality Surveillance Sub-Committee {#sec-day4-tor}
+
+**Purpose:** Coordinate and oversee implementation of South Africa's Mortality Surveillance System (MSS) and related CRVS components. Provide strategic direction, technical input, and ensure an integrated, sustainable approach.
+
+**Membership:**
+
+| Sector | Members |
+|---|---|
+| Key sector departments | NDoH, DHA, Stats SA, provincial health departments |
+| Statutory bodies / public entities | SAMRC (acting on behalf of government as a statutory body established to improve health through research); NICD (a division of the National Health Laboratory Service) |
+| Development partners | WHO, Africa CDC, U.S. CDC, U.S. CDC Foundation, Swiss TPH, Jhpiego, Data for Health, HISP, SANAC, CHAI |
+
+: Proposed Mortality Surveillance Sub-Committee membership {.striped .hover}
+
+**Accountability:** Members are accountable to their respective institutions, ensuring balanced transparency and confidentiality in information sharing.
+
+**Meeting cadence:**
+
+- Monthly during initial implementation phase.
+- Quarterly once established.
+- Ad hoc as required by emerging public health priorities.
+
+### Strategic Plan Framework {#sec-day4-stratplan}
+
+::: {.callout-warning title="Work in progress"}
+The strategic plan draft currently contains a high-level list of activities. It requires further engagement and distillation by senior stakeholders from NDoH, Stats SA, DHA, SAMRC and NICD before it can function as a strategic document. A dedicated session is recommended to refine the vision, objectives, and phased activities into a coherent strategic framework.
+:::
+
+The mortality surveillance strategic plan will:
+
+- Be embedded in the **National Development Plan** and linked with multilateral development structures.
+- Integrate into departmental performance plans.
+- Follow a **3–5 year phased implementation** approach:
+
+  1. *Phase 1*: Establish governance and coordination structures; finalise MOUs and protocols; strengthen legal frameworks.
+  2. *Phase 2*: Develop integrated real-time electronic platforms; update SOPs; enhance civil society and academic collaboration.
+  3. *Phase 3*: Comprehensive scale-up; monitoring and evaluation; local-level data use.
+
+**Technology leverage points:** CodApp, Event Management System (EMS) for early warning and outbreak response.
+
+**Monitoring and evaluation:** SMART indicators tracking completeness, timeliness, coding accuracy, and error resolution speed. Deaths should be registered within **72 hours** in line with legal and public health expectations.
+
+**Funding and advocacy:** Technical support from SAMRC, NHLS, and CSIR; funding secured through Pandemic Fund with ongoing advocacy priorities.
+
+::: {.callout-note icon=false}
+**Surveillance leadership — pending confirmation:** The directorate within NDoH formally identified as the lead for national mortality surveillance coordination is to be confirmed. The Directorate of Epidemiology and Surveillance is the working assumption. Please confirm before publication.
+:::
+
+---
+
+## Day 5: Working Groups, Sub-Committee, and Next Steps {#sec-day5}
+
+*01 August 2025*
+
+Day 5 consolidated the Mortality Surveillance Sub-Committee outputs and the strategic plan. The Sub-Committee's purpose, membership and meeting cadence are described in [Section @sec-day4-tor]; this section summarises only the agreed next steps.
+
+### Next steps {#sec-day5-nextsteps}
+
+| Activity | Timeline | Responsible |
+|---|---|---|
+| Nominate the interim focal office to facilitate implementation of activities identified during the workshop | 1 August 2025 | All |
+| NDoH, Stats SA, DHA to establish an interim Mortality Surveillance sub-committee incorporating supporting stakeholders | September 2025 | NDoH (Secretariat) |
+| Interim sub-committee to propose regular meetings | September 2025 | NDoH (Secretariat) |
+| Formally appoint membership of the MS sub-committee | November 2025 | All 3 sector departments |
+| Finalise the sub-committee ToRs and elect the Chair / secretariat | November 2025 | MS sub-members |
+| MS sub-committee members to facilitate the formalisation of the CRVS Steering Committee | March 2026 | MS sub-members |
+| Finalise the draft strategic plan | June 2026 | CRVS Steering Committee member |
+
+: Agreed next steps and responsibilities {.striped .hover}
+
+---
+
+## Appendices {#sec-appendices}
+
+The following appendices were produced at the workshop:
+
+| Appendix | Title | Status |
+|---|---|---|
+| A | Terms of Reference — Mortality Surveillance Sub-Committee | Draft |
+| B | SWOT Analysis for Existing Mortality Surveillance | Draft |
+| C | Strategic Plan Draft (3–5 year) | Draft (work in progress — see [Section @sec-day4-stratplan]) |
+| D | SOP: Immediate Phase of Mortality Surveillance Implementation | Draft |
+| E | Registers | Completed |
+| F | Sketches of Groups' Shared Vision of Success | Completed |
+| G | Photographs of the Workshop | Completed |
+
+: Workshop appendix documents {.striped .hover}
+
+### Appendix D Summary: SOP for Immediate Phase {#sec-sop}
+
+**Background:**
+
+The health and wellbeing of a country is measured, to a large extent, by its ability to generate timely, accurate, and complete mortality data. Mortality surveillance — the systematic and continuous collection, analysis, and interpretation of mortality data — is fundamental to understanding the burden of disease, identifying public health threats, and enabling evidence-based planning and intervention (Africa CDC, 2023).
+
+Despite its importance, South Africa's mortality data sources remain spread across institutions and platforms — DHA-1663 forms, the National Population Register, DHIS2, and paper-based facility records. These systems are not fully interoperable, and data flow is often delayed, incomplete, or inconsistent.
+
+**Purpose of the SOP:**
+
+To provide clear and standardised guidance for the initial implementation of South Africa's real-time mortality surveillance system during the immediate phase (0–3 years).
+
+**SOP Objectives:**
+
+1. Define business processes for the systematic collection, recording, and reporting of the DHA-1663B form onto DHIS2 CodApp.
+2. Guide integration and harmonisation of existing mortality data systems in NDoH and registers (CHIPP, PPIP, NMC, MAMMAS, HRH, MHFL, Forensic Pathology Services data).
+3. Enable the integration of mortality data systems through APIs and interoperability frameworks.
+4. Mobilise essential resources: skilled human capital, digital infrastructure, and sustainable funding.
+
+**Immediate implementation focus (0–3 years):**
+
+- Define and pilot business processes for real-time mortality data capture at facility level.
+- Enable integration of mortality data systems.
+- Mobilise essential resources.
+
+---
+
+## References {#sec-references}
+
+- Africa CDC. (2023). *Continental Framework for Strengthening Mortality Surveillance*. Africa Centres for Disease Control and Prevention.
+- Africa CDC. (2024). *Operational Guide for Routine Mortality Surveillance*. Africa Centres for Disease Control and Prevention.
+- Statistics Act No. 29 of 2024. Republic of South Africa.
+- World Health Organization. *Medical Certification of Cause of Death (MCCD)*. WHO International Classification of Diseases (ICD).
+
+---
+
+## Change log: Draft 1 → Draft 2 {#sec-change-log}
+
+This log records every change applied to Draft 1, written from the perspective of a workshop participant verifying that their input has been faithfully captured. Each entry cites the reviewer, the substance of the change, and the section it now lives in.
+
+### Block A — Stats SA (Mosidi Nhlapo, 23 comments)
+
+| # | Change | Section |
+|---|---|---|
+| A1 | The SAMRC commitment statement was incorrectly placed inside the Stats SA paragraph in Draft 1. **Moved to the SAMRC bullet** in the Day 1 opening remarks. | [§ Day 1 Opening Remarks](#sec-day1-vision) |
+| A2 | "Restrict access to vital statistics" → **"delayed access to vital statistics"**. Stats SA publishes data on its website as soon as the processing cycle is complete. | [§ CRVS challenges](#sec-crvs-challenges) |
+| A3 | "Limitations in the DHA-1663 death certification process" → **"poor quality of medical certification, including deaths certified at health facilities and those where the DHA-1680 form is completed without adequate clinical information"**. | [§ Cause of death quality](#sec-crvs-quality) |
+| A4 | Added explicit note that **coding quality is determined upstream by certification quality** — improved coding does not follow automatically from a new capture system. | [§ Cause of death quality](#sec-crvs-quality) |
+| A5 | Funeral undertakers reframed as **notifiers under current legislation**, not certifiers. Certification in those cases is performed by private doctors or by family members via DHA-1680, which is itself a recognised source of poor certification quality. | [§ Completeness](#sec-crvs-quality) and [§ CRVS challenges](#sec-crvs-challenges) |
+| A6 | Replaced **"disjointed"** with **"manual and paper-based"** — the system is not structurally disjointed; it relies heavily on manual processes that introduce delays. | [§ CRVS data quality](#sec-crvs-quality), [§ Stats SA presentation](#sec-statssa-pres) |
+| A7 | Replaced "Stats SA attempted to intervene… met with resistance" with **"Stats SA has proposed possible interventions to fast-track the movement of forms from DHA to Stats SA"**. | [§ Stats SA presentation](#sec-statssa-pres) |
+| A8 | Expanded the ICD-10 → ICD-11 / DORIS discussion: Stats SA does not use DORIS even under ICD-10 because it lacks the full code set and cannot handle SA's volumes; **all countries publishing CR-derived mortality globally remain in the ICD-10 → ICD-11 transition phase**. | [§ NDoH discussion points](#sec-ndoh-pres), [§ CRVS data quality](#sec-crvs-quality) |
+| A9 | Removed the framing of coding as a Stats SA "challenge". Added: **Stats SA has implemented automated ICD coding through Iris, improving speed and quality**, and is the sole institution responsible for mortality coding from civil registration. | [§ Cause of death quality](#sec-crvs-quality), [§ Stats SA presentation](#sec-statssa-pres) |
+| A10 | **Stats SA added as a founding D4H partner** alongside NDoH, NICD and SAMRC. | [§ SAMRC presentation](#sec-samrc-pres) |
+| A11 | Renamed the four D4H pillars to the correct titles: **(1) CRVS Governance and Stakeholder Coordination, (2) Notification and Registration of Births and Deaths, (3) Facility-Based COD Data, (4) Production and Use of Vital Statistics**. | [§ SAMRC presentation](#sec-samrc-pres) |
+| A12 | "Sent to Stats SA" → **"collected by Stats SA from DHA Head Office"** in the death-form business process description. | [§ Day 2 important discussion](#sec-day2) |
+| A13 | **NICD added** to the stakeholder responsibilities table — communicable disease surveillance, early warning integration, technical support for outbreak-related mortality. | [§ Day 2 responsibilities](#sec-day2-responsibilities) |
+| A14 | NSS-alignment language clarified to reflect that the speech covered **alignment of indicators for both national and international reporting**. | [§ Stats SA presentation](#sec-statssa-pres) |
+| A15 | The "60 % automated / 40 % manual" figure has been retained but **flagged for attribution confirmation** before publication. | [§ Stats SA presentation](#sec-statssa-pres) |
+| —  | "Sent to Stats SA needs assistance in improving the records for births and deaths at satellite offices" reframed: **DHA needs assistance with timely registrations; Stats SA needs assistance in improving certification quality by medical practitioners**. | [§ Day 2 important discussion](#sec-day2) |
+| —  | Removed the assertion that "Stats SA had previously restricted direct data sharing between DHA and NDoH" (not a correct reflection of the discussion). Replaced with the neutral statement that Stats SA's mandate is to process causes of death from civil registration and that interdepartmental sharing must be governed by appropriate legal instruments. | [§ Day 3 DHA presentation](#sec-day3-dha) |
+
+### Block B — SAMRC (Nadine Nannan, 11 comments + 29 tracked changes)
+
+| # | Change | Section |
+|---|---|---|
+| B1 | The D4H paragraph was rewritten to reflect that **SAMRC has led the initiative in collaboration with the National Department of Health, Stats SA, and other partners since 2022**, with the four corrected pillars and the revised business-process-mapping description ("checking for accuracy and flow of information and identifying what can be done to address the bottlenecks"). | [§ SAMRC presentation](#sec-samrc-pres) |
+| B2 | "Foundational coverage" replaced with **"civil registration coverage, measured as the proportion of the population with functional access to civil registration services"**, and the gap re. geomapping of DHA offices vs population density now noted explicitly. | [§ CRVS data quality](#sec-crvs-quality) (and addressed in the [DHA Access project](../dha_access/index.qmd)) |
+| B3 | "Clear leadership identified within health structures" specified to the **Directorate of Epidemiology and Surveillance, NDoH** (flagged for confirmation in a callout). | [§ Strategic Plan Framework](#sec-day4-stratplan) |
+| B4 | **"Reconstituting"** the TWG → **"Establishing a new TWG"** — no prior TWG is known to have existed. | [§ Day 4 ToR discussion](#sec-day4) |
+| B5 | SAMRC reclassified from **"Government entity"** to **"Statutory body / public entity acting on behalf of government"**; NICD described as a **division of NHLS**. | [§ Sub-Committee membership](#sec-day4-tor) |
+| B6 | A **"Work in progress" callout** has been added to the Strategic Plan Framework section, recording that the appendix is currently a list of activities and requires senior-stakeholder distillation into a strategic document. | [§ Strategic Plan Framework](#sec-day4-stratplan) |
+
+### Block C — Natalie Mayet (10 comments + 12 tracked changes)
+
+| # | Change | Section |
+|---|---|---|
+| C1 | DHA attendance corrected: **DHA was unable to attend Day 1 but joined from Day 2 onwards**, completing the stakeholder group. The duplicate Day 2 mention has been compressed to a single sentence. | [§ Day 1 Introduction](#sec-day1-intro), [§ Day 2 opener](#sec-day2) |
+| C2 | **U.S. CDC Foundation and Swiss TPH added** to the stakeholder list and Sub-Committee membership. | [§ Executive Summary](#sec-exec-summary), [§ Day 1 Introduction](#sec-day1-intro), [§ Sub-Committee membership](#sec-day4-tor) |
+| C3 | Added a new row to the CRVS challenges table: **outbreak response limitations / inability to compute Case Fatality Rates** during outbreaks. | [§ CRVS challenges](#sec-crvs-challenges) |
+| C4 | Added a new discussion point under the NDoH presentation: **NDoH analytical capability and data sharing** — flagging in-house analytical capacity as a prerequisite for the proposed surveillance lead role. | [§ NDoH presentation](#sec-ndoh-pres) |
+| C5 | NMC legal passage corrected. The current draft now states that **deaths, as events, do not fall within the definition of notifiable medical conditions under current NMC regulations** — which apply to diseases and exposures — *while noting that maternal deaths are already notifiable as a Category 2 condition*. The NMC system was not designed for routine death notification, so an alternative legislative mechanism was required. | [§ NDoH presentation](#sec-ndoh-pres) |
+| C6 | **MRC and NICD** acknowledged as co-presenting / contributing institutions in the SAMRC presentation header. | [§ SAMRC presentation](#sec-samrc-pres) |
+
+### Conciseness edits (Draft 2 editorial pass)
+
+These changes were not requested by reviewers but were applied for readability. They are documented here so that Draft 1 readers can find the original content.
+
+| # | Change | Rationale |
+|---|---|---|
+| E1 | The **Day 2 discussion paragraph** (which mixed automation, integration, data quality, reliability and governance into a single ~250-word block, and then partly repeated the same content as bullets) has been replaced by **five clearly headed sub-sections** with no loss of factual content. | Eliminates duplication; improves scannability. |
+| E2 | The **Day 2 stakeholder responsibilities** are now presented as a **table** with explicit columns for Stakeholder and Responsibility, including the new NICD row (Block A13). | Consistency with other tables; easier to update. |
+| E3 | **Day 3 "Looking ahead, a strategic shift is necessary"** and the closely overlapping **"Data users and generation in SA"** sub-section have been merged into a single **"Strategic shifts required for mortality surveillance"** table. | The two original sub-sections were ~80 % overlapping. |
+| E4 | **Day 5** has been compressed: the Sub-Committee purpose / membership / cadence is described once in [Section @sec-day4-tor]; Day 5 now retains only the **Next steps** table. | Removes verbatim re-statement of the ToR already covered in Day 4. |
+| E5 | Several paragraphs have been **lightly tightened** (active voice, removal of throat-clearing phrases such as *"It was emphasised that…"*) without altering meaning. | Word count reduced by ≈ 15 % across Days 3–5. |
+
+### Outstanding / deferred items
+
+The following items remain *open* in Draft 2 and are flagged in callouts within the relevant sections:
+
+| Item | Owner | Status |
+|---|---|---|
+| Executive summary expansion | Molatso | TODO callout retained at top of [§ Executive Summary](#sec-exec-summary) |
+| CRVS data quality figures | Pam Groenewald (SAMRC) | TODO callout retained in [§ CRVS data quality](#sec-crvs-quality) |
+| Pilot data — KPTH and SBAH time frames and per-facility breakdowns | NDoH | Note added under [§ NDoH presentation](#sec-ndoh-pres) |
+| Attribution of "60 % automated / 40 % manual" figure | Stats SA | Inline flag retained in [§ Stats SA presentation](#sec-statssa-pres) |
+| Named NDoH directorate leading mortality surveillance | NDoH | Confirmation note in [§ Strategic Plan Framework](#sec-day4-stratplan) |
+| Senior-stakeholder distillation of the Strategic Plan | NDoH / Stats SA / DHA / SAMRC / NICD | Work-in-progress callout in [§ Strategic Plan Framework](#sec-day4-stratplan) |
+
+---
+
+::: {.callout-note icon=false title="Document history"}
+| Version | Date | Author | Changes |
+|---|---|---|---|
+| Draft 1 | 17 September 2025 | NDoH/SAMRC | Initial draft circulated |
+| Draft 1 (revised) | 21 May 2026 | B. Brummer | Converted to Quarto; feedback integration in progress |
+| **Draft 2** | **9 June 2026** | **B. Brummer** | **Reviewer feedback (Stats SA, SAMRC, Natalie Mayet) integrated; conciseness pass applied; full change log appended ([Section @sec-change-log])** |
+:::

@@ -1,0 +1,155 @@
+---
+title: "Raw Data Explorer"
+description: "Interactive Shiny app for exploring and validating South African mortality data (1997-2022)"
+date: "2026-01-23"
+categories: [data-quality, exploration, interactive, shiny]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(htmltools)
+```
+
+## Overview
+
+This interactive Shiny application provides comprehensive exploration of the South African vital registration mortality data spanning from 1997 to 2022. It is designed for rapid data quality checks and exploratory analysis.
+
+## Two Versions Available
+
+### 🚀 Lite Version (Deployable)
+- **File**: `app_lite.R`
+- Uses pre-aggregated summary data (~14 MB without full cross-tab)
+- Loads in seconds
+- Safe for deployment to shinyapps.io
+- No individual-level records exposed
+
+### 📊 Full Version (Local Only)
+- **File**: `app.R`  
+- Uses complete mortality microdata (~3 GB)
+- 13.1 million individual records
+- Full filtering and raw data browsing
+- Requires local data access
+
+## Features
+
+The Data Explorer includes the following analysis modules:
+
+### 📊 Overview
+- High-level summary statistics
+- Deaths over time (weekly trends)
+- Distribution by province and age group
+- Filter by year range, province, death type, and cause type
+
+### 📅 Temporal Trends
+- Weekly, monthly, and yearly aggregation options
+- Seasonality heatmaps
+- Year-over-year comparison
+- Optional year overlay comparison
+
+### 🏥 Cause Codes
+- Top N underlying causes analysis (ICD-10)
+- Cause trends over time
+- Cause distribution by province
+- Detailed cause code table with demographics
+
+### 👥 Demographics
+- Age distribution histograms
+- Sex distribution pie charts
+- Age-sex population pyramids
+- Registration delay analysis
+
+### 🗺️ Geographic
+- Provincial mortality distributions
+- Top districts analysis
+- Provincial trends over time
+
+### 📋 Raw Data
+- Browse filtered data samples
+- Download filtered datasets as CSV
+- Column filtering and search
+
+## Data Source
+
+- **Dataset**: Deaths2022_MRCversionFINAL.feather
+- **Records**: ~13.1 million death records
+- **Time Period**: 1997-2022
+- **Variables**: 57 columns including demographics, cause codes, geographic identifiers, and timing information
+
+## Interactive App
+
+::: {.callout-note}
+## Data Privacy
+The raw mortality data is hosted securely on ShinyApps.io and is not available in the GitHub repository. The app requires authentication for access to detailed individual-level data.
+:::
+
+```{=html}
+<iframe 
+  src="https://briday.shinyapps.io/mrc-vr-explorer/" 
+  width="100%" 
+  height="800px" 
+  style="border: 1px solid #ddd; border-radius: 8px;">
+</iframe>
+```
+
+::: {.callout-warning}
+## App Not Yet Deployed
+The embedded app will appear here once deployed to ShinyApps.io. If you see a "Not Found" error above, please run the deployment commands below.
+:::
+
+## Run Locally
+
+**Lite Version** (recommended for quick exploration):
+```r
+shiny::runApp("projects/data_explorer/app_lite.R")
+```
+
+**Full Version** (requires local data files):
+```r
+# Install required packages if needed
+install.packages(c("shiny", "bslib", "arrow", "data.table", 
+                   "plotly", "DT", "labelled", "here", "sf",
+                   "waiter", "shinycssloaders"))
+
+# Run the app
+shiny::runApp("projects/data_explorer/app.R")
+```
+
+Or from the project directory:
+
+```bash
+cd projects/data_explorer
+Rscript -e "shiny::runApp('app_lite.R')"  # Lite version
+Rscript -e "shiny::runApp('app.R')"        # Full version
+```
+
+## Screenshot Preview
+
+::: {.callout-tip}
+## Quick Launch
+Run `./build.sh shiny` to start the Data Explorer app, or use RStudio to open and run `projects/data_explorer/app.R`.
+:::
+
+## Key Variables Available
+
+| Variable | Description |
+|----------|-------------|
+| `DeathYear`, `DeathMonth`, `DeathDay` | Date of death |
+| `epi_year`, `epi_week` | Epidemiological year and week |
+| `age`, `agegroup` | Age at death |
+| `Sex` | Male/Female |
+| `DeathProvince` | Province of death occurrence |
+| `deathdistrictname` | District of death |
+| `UnderlyingCause` | ICD-10 underlying cause code |
+| `CauseA-D` | Contributing causes |
+| `NaturalUnnatural` | Natural vs non-natural death |
+| `DeathType` | Individual death vs stillbirth |
+| `RegistrationYear` | Year of death registration |
+
+## Technical Notes
+
+- Uses **plotly** for interactive visualizations
+- Built with **bslib** for modern Bootstrap 5 theming
+- Data loaded via **arrow/feather** for fast I/O
+- **data.table** for efficient in-memory operations
+- Large dataset (~13M rows) - initial load may take 5-10 seconds

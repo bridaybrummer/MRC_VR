@@ -1,0 +1,329 @@
+---
+title: "Why the underlying cause of death matters: a poisoning case study"
+description: "Comparing four approaches to identifying poisoning deaths — Line 1, Line 4, last reported line, and UCOD — in Gauteng and KwaZulu-Natal vital registration data, 1997–2022"
+date: "2026-06-24"
+categories: [poisoning, UCOD, data-quality, vital-registration, icd10, methodology]
+bibliography: ../../j_code_modelling.bib
+csl: ../../vancouver.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(data.table)
+library(ggplot2)
+library(flextable)
+library(scales)
+
+if (file.exists("ucod_results.rda")) {
+  load("ucod_results.rda")
+} else {
+  stop("Run wrangling.R first:\n  Rscript projects/poisoning_ucod/wrangling.R")
+}
+
+s <- summary_stats  # shorthand for inline stats
+```
+
+## Background
+
+The South African death notification form (DNF) records the **sequence of conditions** leading to death in **Part I**, which provides up to four lines (a–d):
+
+| Position | Field | Meaning |
+|:---|:---|:---|
+| Line 1 (1a) | `CauseA` | Immediate cause — the final condition before death |
+| Line 2 (1b) | `CauseB` | Due to / antecedent cause of Line 1 |
+| Line 3 (1c) | `CauseC` | Due to / antecedent cause of Line 2 |
+| Line 4 (1d) | `CauseD` | Due to / most distal antecedent cause |
+
+The **underlying cause of death (UCOD)** is derived by Stats SA by applying ICD-10 Volume 2 selection and modification rules to the complete certificate, starting from the lowest reported line and working back up the causal chain. This is the condition that initiated the train of morbid events, or the external circumstances of injury.
+
+When a researcher wants to identify poisoning deaths from the LGH data, they face a practical choice: **which field to search for the ICD-10 poisoning code?** This case study uses `r format(s$n_gk, big.mark = ",")` death records from **Gauteng** and **KwaZulu-Natal**, `r s$yr_range[1]`–`r s$yr_range[2]`, to show the consequences of each option.
+
+::: {.callout-note}
+## Poisoning definition applied in all options
+
+| ICD-10 block | Category |
+|:---|:---|
+| X40–X49 | Accidental / unspecified |
+| X60–X69 | Intentional self-poisoning |
+| X85 | Assault by poisoning |
+| Y10–Y19 | Poisoning, undetermined intent |
+
+The same pattern is applied identically to every field.
+:::
+
+---
+
+## The decision: which field to use?
+
+There are four candidate approaches for identifying poisoning deaths in the raw LGH data. Here is what each one does and what it produces.
+
+### Option 1 — Line 1 only (`CauseA`)
+
+Search `CauseA` (the immediate cause field) for a poisoning ICD-10 code.
+
+**When this would be right:** The certifier has written the external cause (e.g. `X49`) directly on Line 1 as the immediate cause of death, with nothing below it.
+
+**When this fails:** The certifier correctly records a terminal physiological event on Line 1 — e.g. *cardiac arrest* or *hepatic failure* — and writes the actual poisoning code on a lower line. This is the **intended** structure of a causal chain; it is not a certifier error. Line 1 scanning would silently drop the entire death from the poisoning count.
+
+**Also:** Line 1 can carry a poisoning code that is *not* ultimately selected as the UCOD — for example when a certifier places an external cause on Line 1 but an underlying chronic disease sits below it. Those records become **false positives**.
+
+---
+
+### Option 2 — Line 4 only (`CauseD`)
+
+Search `CauseD` (the most distal / antecedent cause field) for a poisoning code.
+
+**When this would be right:** The certifier has recorded the external cause at the bottom of a four-line chain.
+
+**When this fails:** Most South African certifiers fill **one or two lines** and leave Line 4 blank. An approach anchored to `CauseD` will therefore find almost nothing — not because the deaths are absent but because the field is empty.
+
+---
+
+### Option 3 — Last reported line
+
+Identify the last non-empty line in the Part I chain for each certificate, then search that field.
+
+**When this would be right:** The certifier uses the bottom-most filled line for the root cause, following the standard instruction to proceed from the immediate cause down to its origin.
+
+**When this fails:** Some certifiers record an underlying chronic disease on the last line (e.g. *diabetes mellitus* on Line 3) while the poisoning code sits on an intermediate line (e.g. `X48 — pesticides` on Line 2). The last-line approach picks up the chronic disease, not the poisoning.
+
+---
+
+### Option 4 — UCOD (`UnderlyingCause`) — the reference standard
+
+Use the `UnderlyingCause` field, which contains the UCOD assigned by Stats SA after applying ICD-10 Volume 2 rules to the full certificate.
+
+**Why this is correct:** The UCOD algorithm is specifically designed to resolve the ambiguities that defeat Options 1–3: it reads the entire certificate, handles terminal-event immediacy in Line 1, applies modification rules that can shift the assigned cause, and uses Part II (contributing conditions) where relevant.
+
+**Trade-off:** The UCOD field is only populated in processed extracts. Raw DNF data or early extracts may not have it. However, for any analytic purpose — surveillance, trend analysis, burden estimation — UCOD is the appropriate and internationally mandated denominator.
+
+---
+
+## Decision summary: Gauteng and KwaZulu-Natal poisoning deaths, `r s$yr_range[1]`–`r s$yr_range[2]`
+
+The table below shows exactly what each option produces when applied to the `r format(s$n_gk, big.mark = ",")` GP + KZN death records. **UCOD total (`r format(s$n_ucod_pois, big.mark = ",")` deaths) is the reference.**
+
+```{r}
+#| label: tbl-decision
+#| tbl-cap: "Decision summary: poisoning deaths identified by each approach in GP + KZN, with sensitivity and false-positive rate against the UCOD reference. Green row = recommended approach."
+
+if (exists("tbl_decision")) {
+  disp <- as.data.frame(tbl_decision)
+  disp[["GP (n)"]]         <- format(disp[["GP (n)"]],         big.mark = ",")
+  disp[["KZN (n)"]]        <- format(disp[["KZN (n)"]],        big.mark = ",")
+  disp[["GP + KZN total"]] <- format(disp[["GP + KZN total"]], big.mark = ",")
+  disp[["False positives"]]<- format(disp[["False positives"]], big.mark = ",")
+  disp[["% of UCOD total"]]<- paste0(disp[["% of UCOD total"]], "%")
+  disp[["Sensitivity (%)"]]<- paste0(disp[["Sensitivity (%)"]], "%")
+  disp[["Specificity (%)"]]<- paste0(disp[["Specificity (%)"]], "%")
+
+  flextable(disp) |>
+    bold(part = "header") |>
+    bold(i = ~ Option == "Option 4") |>
+    bg(i = ~ Option == "Option 4", bg = "#e8f5e9") |>
+    bg(i = ~ Option == "Option 1", bg = "#fff3e0") |>
+    bg(i = ~ Option == "Option 2", bg = "#fce4ec") |>
+    bg(i = ~ Option == "Option 3", bg = "#fff8e1") |>
+    theme_booktabs() |>
+    fontsize(size = 9.5, part = "all") |>
+    width(j = "Consequence", width = 3.2) |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+```{r}
+#| label: fig-capture
+#| fig-cap: "Fig. 1. Poisoning deaths identified by each option, by province. The UCOD bar (Option 4, green) is the reference total."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("fig_capture")) fig_capture else message("Run wrangling.R")
+```
+
+---
+
+## Why options 1–3 fall short: supporting evidence
+
+### How many Part I lines do certifiers actually fill?
+
+If every certifier filled all four lines, Option 2 (Line 4) might recover most cases. The chart below shows the reality.
+
+```{r}
+#| label: fig-lines-filled
+#| fig-cap: "Fig. 2. Distribution of the number of Part I cause lines filled per death certificate in GP and KZN."
+#| fig-width: 8
+#| fig-height: 4.5
+
+if (exists("fig_lines_filled")) fig_lines_filled else message("Run wrangling.R")
+```
+
+### Where in the chain is the poisoning code recorded?
+
+Among all UCOD-poisoning records, this shows which line the certifier used for the X/Y external cause code — and therefore which option can see it.
+
+```{r}
+#| label: fig-chain-pos
+#| fig-cap: "Fig. 3. Position of the poisoning code in the Part I chain for UCOD-identified poisoning deaths."
+#| fig-width: 7
+#| fig-height: 5
+
+if (exists("fig_chain_pos")) fig_chain_pos else message("Run wrangling.R")
+```
+
+```{r}
+#| label: tbl-chain-wide
+#| tbl-cap: "Table 2. UCOD-poisoning records by position of poisoning code in Part I chain."
+
+if (exists("tbl_chain_wide")) {
+  flextable(as.data.frame(tbl_chain_wide)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+### Sensitivity and specificity against the UCOD reference
+
+For each option, sensitivity = proportion of UCOD-poisoning deaths correctly captured; specificity = proportion of non-poisoning deaths correctly excluded.
+
+```{r}
+#| label: fig-disc
+#| fig-cap: "Fig. 4. Sensitivity and specificity of each option against the UCOD reference standard."
+#| fig-width: 9
+#| fig-height: 4
+
+if (exists("fig_disc")) fig_disc else message("Run wrangling.R")
+```
+
+```{r}
+#| label: tbl-discordance
+#| tbl-cap: "Table 3. Sensitivity, specificity, and error counts for each option against the UCOD reference. TP = true positive; FP = false positive (flagged as poisoning but UCOD is not); FN = false negative (not flagged but UCOD is poisoning)."
+
+if (exists("tbl_discordance")) {
+  flextable(as.data.frame(tbl_discordance)) |>
+    bold(part = "header") |>
+    bold(i = ~ Approach == "UCOD") |>
+    bg(i = ~ Approach == "UCOD", bg = "#e8f5e9") |>
+    theme_booktabs() |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+::: {.callout-important}
+## What the numbers mean for a poisoning analyst
+
+Of the **`r format(s$n_ucod_pois, big.mark = ",")` poisoning deaths** (UCOD) in GP + KZN:
+
+- **Option 1 (Line 1)** misses **`r s$pct_miss_line1`%** (`r format(s$n_ucod_miss_line1, big.mark = ",")` records) and also adds **`r format(s$n_fp_line1, big.mark = ",")` false positives** (`r s$pct_fp_line1`% of its identifications).
+- **Option 3 (last reported line)** still misses **`r s$pct_miss_last`%** (`r format(s$n_ucod_miss_last, big.mark = ",")` records) — the cases where the poisoning code sits on an intermediate line.
+- **`r format(s$n_ucod_no_part1, big.mark = ",")` UCOD-poisoning records** (`r s$pct_ucod_no_part1`%) carry **no X/Y code anywhere in Part I** — invisible to any line-scanning approach and only recoverable via the UCOD.
+:::
+
+---
+
+## Illustrative examples
+
+### Type 1 — Missed by Option 1: poisoning buried in the chain
+
+Line 1 carries a terminal physiological event; the poisoning code appears lower. Line 1 scanning misses the death entirely.
+
+```{r}
+#| label: tbl-examples-miss
+#| tbl-cap: "Table 4. Records where UCOD = poisoning but Line 1 (CauseA) is not a poisoning code. Green column = UCOD; '—' = line not filled."
+
+if (exists("examples_miss") && nrow(examples_miss) > 0) {
+  flextable(as.data.frame(examples_miss)) |>
+    bold(part = "header") |>
+    bg(j = "UnderlyingCause", bg = "#e8f5e9") |>
+    theme_booktabs() |>
+    fontsize(size = 9, part = "all") |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+### Type 2 — False positive for Option 1: poisoning code on Line 1 but UCOD differs
+
+The certifier placed the external cause on Line 1; the ICD-10 selection rules selected a different condition as the true UCOD. Option 1 would count these as poisoning deaths in error.
+
+```{r}
+#| label: tbl-examples-fp
+#| tbl-cap: "Table 5. Records where Line 1 (CauseA) = poisoning code but UCOD is not poisoning. Orange column = CauseA."
+
+if (exists("examples_fp") && nrow(examples_fp) > 0) {
+  flextable(as.data.frame(examples_fp)) |>
+    bold(part = "header") |>
+    bg(j = "CauseA", bg = "#fff3e0") |>
+    theme_booktabs() |>
+    fontsize(size = 9, part = "all") |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+### Type 3 — Buried on Line 3: missed by Options 1 and 3
+
+The poisoning code sits on Line 3 with a different condition below it. Option 3 (last reported line) picks up the non-poisoning Line 4 or the non-poisoning last line, not the poisoning on Line 3.
+
+```{r}
+#| label: tbl-examples-buried
+#| tbl-cap: "Table 6. Records where UCOD = poisoning but the poisoning code is on Line 3 (CauseC), with a different condition as the most distal line. Blue column = CauseC."
+
+if (exists("examples_buried") && nrow(examples_buried) > 0) {
+  flextable(as.data.frame(examples_buried)) |>
+    bold(part = "header") |>
+    bg(j = "CauseC", bg = "#e3f2fd") |>
+    theme_booktabs() |>
+    fontsize(size = 9, part = "all") |>
+    autofit()
+} else {
+  message("Run wrangling.R")
+}
+```
+
+---
+
+## Trend over time: what each option gives you year by year
+
+The gap between the UCOD line (Option 4, solid green) and the other lines represents poisoning deaths that would be lost or added in error in every year of the study.
+
+```{r}
+#| label: fig-annual
+#| fig-cap: "Fig. 5. Annual poisoning deaths identified by each option, GP + KZN combined. The gap between Option 4 (UCOD, green solid) and the other options shows the persistent annual cost of not using the UCOD."
+#| fig-width: 10
+#| fig-height: 4.5
+
+if (exists("fig_annual")) fig_annual else message("Run wrangling.R")
+```
+
+---
+
+## Recommendation
+
+Use **Option 4 — UCOD** for any analysis of cause-specific mortality.
+
+Options 1–3 produce systematically biased counts because they assume the cause of interest will appear at a predictable position in the Part I chain. South African certifiers do not write certificates in a standardised position order; the UCOD algorithm exists precisely to handle this variation.
+
+Specific failure mechanisms:
+
+- **Option 1** loses all deaths where the certifier correctly records a terminal event (cardiac arrest, respiratory failure) on Line 1 and places the causal agent lower — the most common certificate structure for poisoning.
+- **Option 2** loses almost all poisoning deaths because the majority of certificates are single-line entries.
+- **Option 3** improves on Option 1 but fails on certificates with a chronic disease recorded below an intermediate-line poisoning code — the "buried" pattern shown in Type 3 above.
+- All three options are also **incomparable across years and settings** because they are sensitive to certifier behaviour and coding conventions that shift over time; UCOD processing normalises this variation.
+
+## References
+

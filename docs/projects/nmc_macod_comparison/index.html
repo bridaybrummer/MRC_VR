@@ -1,0 +1,3634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-06-22">
+<meta name="description" content="Annual counts of notifiable medical condition notifications and deaths from NMC surveillance versus MACOD (vital registration) data">
+
+<title>NMC &amp; MACOD Comparison – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">NMC &amp; MACOD Comparison</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link active" data-scroll-target="#data-sources"><span class="header-section-number">1</span> Data sources</a></li>
+  <li><a href="#nmc-surveillance-annual-notifications" id="toc-nmc-surveillance-annual-notifications" class="nav-link" data-scroll-target="#nmc-surveillance-annual-notifications"><span class="header-section-number">2</span> NMC Surveillance — Annual Notifications</a></li>
+  <li><a href="#nmc-surveillance-deaths-deceased-cases" id="toc-nmc-surveillance-deaths-deceased-cases" class="nav-link" data-scroll-target="#nmc-surveillance-deaths-deceased-cases"><span class="header-section-number">3</span> NMC Surveillance — Deaths (Deceased Cases)</a></li>
+  <li><a href="#macod-vital-registration-deaths-coded-to-nmc-icd-10-groups" id="toc-macod-vital-registration-deaths-coded-to-nmc-icd-10-groups" class="nav-link" data-scroll-target="#macod-vital-registration-deaths-coded-to-nmc-icd-10-groups"><span class="header-section-number">4</span> MACOD (Vital Registration) — Deaths Coded to NMC ICD-10 Groups</a></li>
+  <li><a href="#summary-totals" id="toc-summary-totals" class="nav-link" data-scroll-target="#summary-totals"><span class="header-section-number">5</span> Summary Totals</a></li>
+  <li><a href="#sensitivity-of-macod-in-detecting-nmc-deaths" id="toc-sensitivity-of-macod-in-detecting-nmc-deaths" class="nav-link" data-scroll-target="#sensitivity-of-macod-in-detecting-nmc-deaths"><span class="header-section-number">6</span> Sensitivity of MACOD in Detecting NMC Deaths</a>
+  <ul class="collapse">
+  <li><a href="#year-by-year-capture-ratio" id="toc-year-by-year-capture-ratio" class="nav-link" data-scroll-target="#year-by-year-capture-ratio"><span class="header-section-number">6.1</span> Year-by-year capture ratio</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">NMC &amp; MACOD Comparison</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">NMC</div>
+    <div class="quarto-category">MACOD</div>
+    <div class="quarto-category">surveillance</div>
+    <div class="quarto-category">vital-registration</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Annual counts of notifiable medical condition notifications and deaths from NMC surveillance versus MACOD (vital registration) data
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 22, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="data-sources" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="data-sources"><span class="header-section-number">1</span> Data sources</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Description</th>
+<th>Years available</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>NMC surveillance</strong></td>
+<td>Notifiable Medical Conditions master database — all notifications, with patient vital status (<code>Alive</code> / <code>Deceased</code> / <code>Unknown</code>)</td>
+<td>2016 – 2026</td>
+</tr>
+<tr class="even">
+<td><strong>MACOD (LGH)</strong></td>
+<td>South African vital registration (Medical Certificate of Cause of Death) underlying-cause ICD-10 codes, filtered to NMC-mapped codes</td>
+<td>2016 – 2022</td>
+</tr>
+</tbody>
+</table>
+<p>ICD-10 codes for each NMC condition are sourced from the verified SA NMC ICD Reference (v3, June 2026). Matching to MACOD uses the 3-character ICD-10 prefix (e.g.&nbsp;<code>A15</code> covers all TB pulmonary subtypes). Run <code>nmc_macod_wrangling.R</code> to rebuild these tables from source.</p>
+<hr>
+</section>
+<section id="nmc-surveillance-annual-notifications" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="nmc-surveillance-annual-notifications"><span class="header-section-number">2</span> NMC Surveillance — Annual Notifications</h2>
+<p>Total NMC case notifications per condition per year (duplicates excluded). The <strong>Deceased</strong> sub-row shows cases where patient vital status was recorded as <code>Deceased</code> at point of notification.</p>
+<div class="cell">
+<div id="tbl-nmc-notifications" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nmc-notifications-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: NMC notifications per condition per year (all non-duplicate cases)
+</figcaption>
+<div aria-describedby="tbl-nmc-notifications-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:520px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">NMC Condition</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ICD-10</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2016</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2017</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2018</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2019</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2020</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2022</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2023</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2024</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2025</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2026</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute flaccid paralysis</td>
+<td style="text-align: left;">G83.9</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">341</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">302</td>
+<td style="text-align: right;">302</td>
+<td style="text-align: right;">57</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Acute rheumatic fever</td>
+<td style="text-align: left;">I00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Agricultural/stock remedy poisoning</td>
+<td style="text-align: left;">T65.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">539</td>
+<td style="text-align: right;">652</td>
+<td style="text-align: right;">439</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">760</td>
+<td style="text-align: right;">1,003</td>
+<td style="text-align: right;">1,032</td>
+<td style="text-align: right;">1,292</td>
+<td style="text-align: right;">285</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Anthrax</td>
+<td style="text-align: left;">A22.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Bilharzia (schistosomiasis)</td>
+<td style="text-align: left;">B65.9</td>
+<td style="text-align: right;">5,409</td>
+<td style="text-align: right;">15,312</td>
+<td style="text-align: right;">13,690</td>
+<td style="text-align: right;">14,589</td>
+<td style="text-align: right;">11,062</td>
+<td style="text-align: right;">7,680</td>
+<td style="text-align: right;">13,563</td>
+<td style="text-align: right;">11,351</td>
+<td style="text-align: right;">11,398</td>
+<td style="text-align: right;">9,246</td>
+<td style="text-align: right;">1,513</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Botulism</td>
+<td style="text-align: left;">A05.1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Brucellosis</td>
+<td style="text-align: left;">A23.9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Cholera</td>
+<td style="text-align: left;">A00.9</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1,222</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Congenital rubella syndrome</td>
+<td style="text-align: left;">P35.0</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">242</td>
+<td style="text-align: right;">247</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Congenital syphilis</td>
+<td style="text-align: left;">A50.9</td>
+<td style="text-align: right;">588</td>
+<td style="text-align: right;">2,014</td>
+<td style="text-align: right;">2,556</td>
+<td style="text-align: right;">3,281</td>
+<td style="text-align: right;">3,484</td>
+<td style="text-align: right;">3,438</td>
+<td style="text-align: right;">5,287</td>
+<td style="text-align: right;">6,124</td>
+<td style="text-align: right;">5,332</td>
+<td style="text-align: right;">4,831</td>
+<td style="text-align: right;">715</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Coronavirus disease (COVID-19)</td>
+<td style="text-align: left;">U07.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">202,290</td>
+<td style="text-align: right;">21,849</td>
+<td style="text-align: right;">9,091</td>
+<td style="text-align: right;">3,205</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Diphtheria</td>
+<td style="text-align: left;">A36.9</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">323</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Endemic arboviral diseases (West Nile/Sindbis/Chikungunya)</td>
+<td style="text-align: left;">A92.9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Enteric fever (typhoid / paratyphoid)</td>
+<td style="text-align: left;">A01.0</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">298</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">79</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Food-borne disease outbreak</td>
+<td style="text-align: left;">A05.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">602</td>
+<td style="text-align: right;">541</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">559</td>
+<td style="text-align: right;">779</td>
+<td style="text-align: right;">1,272</td>
+<td style="text-align: right;">719</td>
+<td style="text-align: right;">195</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemolytic uraemic syndrome (HUS)</td>
+<td style="text-align: left;">D59.3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Haemophilus influenzae type B</td>
+<td style="text-align: left;">G00.0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis A</td>
+<td style="text-align: left;">B15.9</td>
+<td style="text-align: right;">1,432</td>
+<td style="text-align: right;">5,372</td>
+<td style="text-align: right;">5,778</td>
+<td style="text-align: right;">6,523</td>
+<td style="text-align: right;">2,352</td>
+<td style="text-align: right;">770</td>
+<td style="text-align: right;">1,737</td>
+<td style="text-align: right;">5,046</td>
+<td style="text-align: right;">6,346</td>
+<td style="text-align: right;">3,554</td>
+<td style="text-align: right;">512</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis B</td>
+<td style="text-align: left;">B16.9</td>
+<td style="text-align: right;">18,743</td>
+<td style="text-align: right;">45,928</td>
+<td style="text-align: right;">39,209</td>
+<td style="text-align: right;">39,094</td>
+<td style="text-align: right;">8,281</td>
+<td style="text-align: right;">5,588</td>
+<td style="text-align: right;">12,308</td>
+<td style="text-align: right;">12,077</td>
+<td style="text-align: right;">10,811</td>
+<td style="text-align: right;">11,435</td>
+<td style="text-align: right;">2,317</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis C</td>
+<td style="text-align: left;">B17.1</td>
+<td style="text-align: right;">397</td>
+<td style="text-align: right;">255</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">645</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">355</td>
+<td style="text-align: right;">187</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis E</td>
+<td style="text-align: left;">B17.2</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Lead poisoning</td>
+<td style="text-align: left;">T56.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Legionellosis</td>
+<td style="text-align: left;">A48.1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Leprosy</td>
+<td style="text-align: left;">A30.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">816</td>
+<td style="text-align: right;">464</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Listeriosis</td>
+<td style="text-align: left;">A32.9</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">543</td>
+<td style="text-align: right;">584</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Malaria</td>
+<td style="text-align: left;">B54</td>
+<td style="text-align: right;">1,439</td>
+<td style="text-align: right;">23,465</td>
+<td style="text-align: right;">13,237</td>
+<td style="text-align: right;">7,918</td>
+<td style="text-align: right;">4,875</td>
+<td style="text-align: right;">2,129</td>
+<td style="text-align: right;">4,786</td>
+<td style="text-align: right;">6,442</td>
+<td style="text-align: right;">4,608</td>
+<td style="text-align: right;">4,154</td>
+<td style="text-align: right;">2,145</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Maternal death</td>
+<td style="text-align: left;">O95</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Measles</td>
+<td style="text-align: left;">B05.9</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">469</td>
+<td style="text-align: right;">908</td>
+<td style="text-align: right;">1,558</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">1,235</td>
+<td style="text-align: right;">3,013</td>
+<td style="text-align: right;">11,226</td>
+<td style="text-align: right;">6,553</td>
+<td style="text-align: right;">1,568</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Meningococcal disease</td>
+<td style="text-align: left;">A39.9</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Mercury poisoning</td>
+<td style="text-align: left;">T56.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Mpox</td>
+<td style="text-align: left;">B04</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">352</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Non-typhoidal Salmonellosis (NTS)</td>
+<td style="text-align: left;">A02.9</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">444</td>
+<td style="text-align: right;">465</td>
+<td style="text-align: right;">417</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">629</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: right;">101</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Pertussis</td>
+<td style="text-align: left;">A37.9</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">248</td>
+<td style="text-align: right;">872</td>
+<td style="text-align: right;">795</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">712</td>
+<td style="text-align: right;">2,833</td>
+<td style="text-align: right;">740</td>
+<td style="text-align: right;">906</td>
+<td style="text-align: right;">305</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Plague</td>
+<td style="text-align: left;">A20.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Poliomyelitis</td>
+<td style="text-align: left;">A80.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rabies (human)</td>
+<td style="text-align: left;">A82.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Respiratory disease — novel pathogen</td>
+<td style="text-align: left;">U07.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">479</td>
+<td style="text-align: right;">1,376</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rift Valley fever (human)</td>
+<td style="text-align: left;">A92.4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Rubella</td>
+<td style="text-align: left;">B06.9</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">261</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">239</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">1,083</td>
+<td style="text-align: right;">14,240</td>
+<td style="text-align: right;">2,283</td>
+<td style="text-align: right;">190</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Shiga toxin-producing E.coli (STEC)</td>
+<td style="text-align: left;">A04.3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Shigellosis</td>
+<td style="text-align: left;">A03.9</td>
+<td style="text-align: right;">325</td>
+<td style="text-align: right;">882</td>
+<td style="text-align: right;">1,013</td>
+<td style="text-align: right;">1,171</td>
+<td style="text-align: right;">722</td>
+<td style="text-align: right;">389</td>
+<td style="text-align: right;">1,010</td>
+<td style="text-align: right;">974</td>
+<td style="text-align: right;">984</td>
+<td style="text-align: right;">799</td>
+<td style="text-align: right;">165</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Smallpox</td>
+<td style="text-align: left;">B03</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Soil-transmitted helminths</td>
+<td style="text-align: left;">B82.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tetanus</td>
+<td style="text-align: left;">A35</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: MDR-TB</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">442</td>
+<td style="text-align: right;">524</td>
+<td style="text-align: right;">1,323</td>
+<td style="text-align: right;">2,237</td>
+<td style="text-align: right;">1,949</td>
+<td style="text-align: right;">1,990</td>
+<td style="text-align: right;">422</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: XDR-TB</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: extra-pulmonary</td>
+<td style="text-align: left;">A18.9</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">1,001</td>
+<td style="text-align: right;">3,457</td>
+<td style="text-align: right;">2,528</td>
+<td style="text-align: right;">3,020</td>
+<td style="text-align: right;">10,420</td>
+<td style="text-align: right;">16,786</td>
+<td style="text-align: right;">17,159</td>
+<td style="text-align: right;">17,631</td>
+<td style="text-align: right;">3,178</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: pulmonary</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">6,389</td>
+<td style="text-align: right;">17,341</td>
+<td style="text-align: right;">11,083</td>
+<td style="text-align: right;">16,080</td>
+<td style="text-align: right;">47,258</td>
+<td style="text-align: right;">68,618</td>
+<td style="text-align: right;">78,569</td>
+<td style="text-align: right;">80,332</td>
+<td style="text-align: right;">15,832</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Viral haemorrhagic fever diseases</td>
+<td style="text-align: left;">A99</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Yellow fever</td>
+<td style="text-align: left;">A95.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="nmc-surveillance-deaths-deceased-cases" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="nmc-surveillance-deaths-deceased-cases"><span class="header-section-number">3</span> NMC Surveillance — Deaths (Deceased Cases)</h2>
+<p>Cases where <code>patient_vital_status == "Deceased"</code> at notification. This reflects deaths <strong>captured within the NMC surveillance system</strong> and is likely an undercount of true condition-specific mortality.</p>
+<div class="cell">
+<div id="tbl-nmc-deaths" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nmc-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: NMC-notified deaths (patient vital status = Deceased) per condition per year
+</figcaption>
+<div aria-describedby="tbl-nmc-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:520px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">NMC Condition</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ICD-10</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2016</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2017</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2018</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2019</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2020</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2022</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2023</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2024</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2025</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2026</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute flaccid paralysis</td>
+<td style="text-align: left;">G83.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Acute rheumatic fever</td>
+<td style="text-align: left;">I00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Agricultural/stock remedy poisoning</td>
+<td style="text-align: left;">T65.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Anthrax</td>
+<td style="text-align: left;">A22.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Bilharzia (schistosomiasis)</td>
+<td style="text-align: left;">B65.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Botulism</td>
+<td style="text-align: left;">A05.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Brucellosis</td>
+<td style="text-align: left;">A23.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Cholera</td>
+<td style="text-align: left;">A00.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Congenital rubella syndrome</td>
+<td style="text-align: left;">P35.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Congenital syphilis</td>
+<td style="text-align: left;">A50.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Coronavirus disease (COVID-19)</td>
+<td style="text-align: left;">U07.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Diphtheria</td>
+<td style="text-align: left;">A36.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Enteric fever (typhoid / paratyphoid)</td>
+<td style="text-align: left;">A01.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Food-borne disease outbreak</td>
+<td style="text-align: left;">A05.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Haemolytic uraemic syndrome (HUS)</td>
+<td style="text-align: left;">D59.3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemophilus influenzae type B</td>
+<td style="text-align: left;">G00.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis A</td>
+<td style="text-align: left;">B15.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis B</td>
+<td style="text-align: left;">B16.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis C</td>
+<td style="text-align: left;">B17.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Legionellosis</td>
+<td style="text-align: left;">A48.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Leprosy</td>
+<td style="text-align: left;">A30.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Listeriosis</td>
+<td style="text-align: left;">A32.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Malaria</td>
+<td style="text-align: left;">B54</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Maternal death</td>
+<td style="text-align: left;">O95</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Measles</td>
+<td style="text-align: left;">B05.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Meningococcal disease</td>
+<td style="text-align: left;">A39.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Mpox</td>
+<td style="text-align: left;">B04</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Non-typhoidal Salmonellosis (NTS)</td>
+<td style="text-align: left;">A02.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Pertussis</td>
+<td style="text-align: left;">A37.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rabies (human)</td>
+<td style="text-align: left;">A82.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Respiratory disease — novel pathogen</td>
+<td style="text-align: left;">U07.1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rubella</td>
+<td style="text-align: left;">B06.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Shigellosis</td>
+<td style="text-align: left;">A03.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tetanus</td>
+<td style="text-align: left;">A35</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: MDR-TB</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: XDR-TB</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: extra-pulmonary</td>
+<td style="text-align: left;">A18.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: pulmonary</td>
+<td style="text-align: left;">A15.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">567</td>
+<td style="text-align: right;">722</td>
+<td style="text-align: right;">841</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">108</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Viral haemorrhagic fever diseases</td>
+<td style="text-align: left;">A99</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="macod-vital-registration-deaths-coded-to-nmc-icd-10-groups" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="macod-vital-registration-deaths-coded-to-nmc-icd-10-groups"><span class="header-section-number">4</span> MACOD (Vital Registration) — Deaths Coded to NMC ICD-10 Groups</h2>
+<p>Deaths in the South African vital registration system where the <strong>underlying cause of death</strong> was coded to an ICD-10 code that maps to a notifiable medical condition. Matching uses the 3-character ICD-10 prefix. Conditions that share a 3-character prefix are grouped together (e.g.&nbsp;<code>U07</code> covers COVID-19 and Respiratory disease — novel pathogen).</p>
+<div class="cell">
+<div id="tbl-macod-deaths" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-macod-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: MACOD deaths coded to NMC ICD-10 groups per year (2016–2022)
+</figcaption>
+<div aria-describedby="tbl-macod-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:520px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">NMC Condition(s)</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ICD-10 (3-char)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2016</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2017</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2018</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2019</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2020</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute flaccid paralysis</td>
+<td style="text-align: left;">G83</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Acute rheumatic fever</td>
+<td style="text-align: left;">I00</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Anthrax</td>
+<td style="text-align: left;">A22</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Bilharzia (schistosomiasis)</td>
+<td style="text-align: left;">B65</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Botulism / Food-borne disease outbreak</td>
+<td style="text-align: left;">A05</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Brucellosis</td>
+<td style="text-align: left;">A23</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Cholera</td>
+<td style="text-align: left;">A00</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Congenital rubella syndrome</td>
+<td style="text-align: left;">P35</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Congenital syphilis</td>
+<td style="text-align: left;">A50</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Coronavirus disease (COVID-19) / Respiratory disease — novel pathogen</td>
+<td style="text-align: left;">U07</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">36,339</td>
+<td style="text-align: right;">92,958</td>
+<td style="text-align: right;">8,407</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Diphtheria</td>
+<td style="text-align: left;">A36</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Enteric fever (typhoid / paratyphoid)</td>
+<td style="text-align: left;">A01</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Gonorrhoea (ceftriaxone-resistant N.gonorrhoeae)</td>
+<td style="text-align: left;">A54</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Clostridioides difficile (CDI) / Shiga toxin-producing E.coli (STEC)</td>
+<td style="text-align: left;">A04</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">57</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Colistin-resistant Acinetobacter baumannii / HCAI/MDRO — Colistin-resistant Pseudomonas aeruginosa / HCAI/MDRO — CPE (Carbapenemase-producing Enterobacteriaceae) / HCAI/MDRO — S.aureus (MRSA/hGISA/GISA) / HCAI/MDRO — VRE (Vancomycin-resistant enterococci)</td>
+<td style="text-align: left;">A41</td>
+<td style="text-align: right;">5,488</td>
+<td style="text-align: right;">5,537</td>
+<td style="text-align: right;">5,668</td>
+<td style="text-align: right;">6,326</td>
+<td style="text-align: right;">6,627</td>
+<td style="text-align: right;">5,589</td>
+<td style="text-align: right;">7,109</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemolytic uraemic syndrome (HUS)</td>
+<td style="text-align: left;">D59</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Haemophilus influenzae type B</td>
+<td style="text-align: left;">G00</td>
+<td style="text-align: right;">321</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">139</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis A</td>
+<td style="text-align: left;">B15</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis B</td>
+<td style="text-align: left;">B16</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis C / Hepatitis E</td>
+<td style="text-align: left;">B17</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Legionellosis</td>
+<td style="text-align: left;">A48</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Leprosy</td>
+<td style="text-align: left;">A30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Listeriosis</td>
+<td style="text-align: left;">A32</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Malaria</td>
+<td style="text-align: left;">B54</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">491</td>
+<td style="text-align: right;">247</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">93</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Maternal death</td>
+<td style="text-align: left;">O95</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Measles</td>
+<td style="text-align: left;">B05</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Meningococcal disease</td>
+<td style="text-align: left;">A39</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Non-typhoidal Salmonellosis (NTS)</td>
+<td style="text-align: left;">A02</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Pertussis</td>
+<td style="text-align: left;">A37</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Plague</td>
+<td style="text-align: left;">A20</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Poliomyelitis</td>
+<td style="text-align: left;">A80</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rabies (human)</td>
+<td style="text-align: left;">A82</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Rubella</td>
+<td style="text-align: left;">B06</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Shigellosis</td>
+<td style="text-align: left;">A03</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Soil-transmitted helminths</td>
+<td style="text-align: left;">B82</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tetanus</td>
+<td style="text-align: left;">A35</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: MDR-TB / Tuberculosis: pulmonary / Tuberculosis: XDR-TB</td>
+<td style="text-align: left;">A15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: extra-pulmonary</td>
+<td style="text-align: left;">A18</td>
+<td style="text-align: right;">1,067</td>
+<td style="text-align: right;">1,124</td>
+<td style="text-align: right;">1,010</td>
+<td style="text-align: right;">907</td>
+<td style="text-align: right;">666</td>
+<td style="text-align: right;">569</td>
+<td style="text-align: right;">567</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Viral haemorrhagic fever diseases</td>
+<td style="text-align: left;">A99</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Yellow fever</td>
+<td style="text-align: left;">A95</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="summary-totals" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="summary-totals"><span class="header-section-number">5</span> Summary Totals</h2>
+<div class="cell">
+<div id="tbl-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Total counts by year across both data sources (overlapping years 2016–2022)
+</figcaption>
+<div aria-describedby="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Year</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NMC notifications</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NMC deaths</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">MACOD NMC-coded deaths</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2,016</td>
+<td style="text-align: right;">28,943</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7,382</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2,017</td>
+<td style="text-align: right;">97,236</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">7,761</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2,018</td>
+<td style="text-align: right;">88,651</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">7,541</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2,019</td>
+<td style="text-align: right;">100,455</td>
+<td style="text-align: right;">531</td>
+<td style="text-align: right;">7,901</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2,020</td>
+<td style="text-align: right;">47,907</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">44,080</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2,021</td>
+<td style="text-align: right;">42,638</td>
+<td style="text-align: right;">403</td>
+<td style="text-align: right;">99,681</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2,022</td>
+<td style="text-align: right;">305,870</td>
+<td style="text-align: right;">1,153</td>
+<td style="text-align: right;">16,710</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>MACOD counts include all deaths with a matching ICD-10 underlying cause</strong>, not only cases that were formally notified to the NMC system. The 2020–2021 spike in MACOD deaths reflects COVID-19 (<code>U07.1</code>) mortality — now mapped to the NMC as <em>Coronavirus disease (COVID-19)</em> and <em>Respiratory disease — novel pathogen</em>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="sensitivity-of-macod-in-detecting-nmc-deaths" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="sensitivity-of-macod-in-detecting-nmc-deaths"><span class="header-section-number">6</span> Sensitivity of MACOD in Detecting NMC Deaths</h2>
+<p>This section estimates how well vital registration (MACOD) captures deaths from notifiable medical conditions, using NMC surveillance deaths as the reference standard.</p>
+<p><span class="math display">\[\text{Capture ratio (\%)} = \frac{\text{MACOD deaths (vital registration)}}{\text{NMC-notified deaths (surveillance)}} \times 100\]</span></p>
+<p>The join uses the 3-character ICD-10 prefix on both sides, restricted to overlapping years 2016–2022. NMC deaths are cases where <code>patient_vital_status == "Deceased"</code> was recorded in the surveillance system.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Interpretation:</strong> A capture ratio &gt; 100 % means MACOD recorded more deaths than NMC surveillance flagged as deceased — expected because NMC death recording is incomplete. A ratio &lt; 100 % indicates MACOD may be undercoding that condition (e.g.&nbsp;vague underlying-cause coding, miscoding to a non-NMC ICD). <code>NA</code> indicates no NMC deaths were recorded for that condition in the reference period.</p>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-sensitivity-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sensitivity-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: MACOD capture of NMC deaths by condition, 2016–2022 (aggregate)
+</figcaption>
+<div aria-describedby="tbl-sensitivity-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:480px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">NMC Condition(s)</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ICD-10 (3-char)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">NMC notifications</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">NMC deaths (surv.)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">MACOD deaths (VR)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Capture ratio (%)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">NMC case-fatality (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Coronavirus disease (COVID-19) / Respiratory disease — novel pathogen</td>
+<td style="text-align: left;">U07</td>
+<td style="text-align: right;">204,304</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">137,704</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">724,757.9</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Colistin-resistant Acinetobacter baumannii / HCAI/MDRO — Colistin-resistant Pseudomonas aeruginosa / HCAI/MDRO — CPE (Carbapenemase-producing Enterobacteriaceae) / HCAI/MDRO — S.aureus (MRSA/hGISA/GISA) / HCAI/MDRO — VRE (Vancomycin-resistant enterococci)</td>
+<td style="text-align: left;">A41</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">42,344</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: extra-pulmonary</td>
+<td style="text-align: left;">A18</td>
+<td style="text-align: right;">20,598</td>
+<td style="text-align: right;">422</td>
+<td style="text-align: right;">5,910</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">1,400.5</td>
+<td style="text-align: right;">2.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemophilus influenzae type B</td>
+<td style="text-align: left;">G00</td>
+<td style="text-align: right;">334</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">1,481</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">9,873.3</td>
+<td style="text-align: right;">4.49</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Malaria</td>
+<td style="text-align: left;">B54</td>
+<td style="text-align: right;">57,849</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">1,222</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">809.3</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis B</td>
+<td style="text-align: left;">B16</td>
+<td style="text-align: right;">169,151</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">428</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">353.7</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis C / Hepatitis E</td>
+<td style="text-align: left;">B17</td>
+<td style="text-align: right;">2,173</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">2,591.7</td>
+<td style="text-align: right;">0.55</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Clostridioides difficile (CDI) / Shiga toxin-producing E.coli (STEC)</td>
+<td style="text-align: left;">A04</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute flaccid paralysis</td>
+<td style="text-align: left;">G83</td>
+<td style="text-align: right;">1,145</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">2,036.4</td>
+<td style="text-align: right;">0.96</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Meningococcal disease</td>
+<td style="text-align: left;">A39</td>
+<td style="text-align: right;">865</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">146</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">247.5</td>
+<td style="text-align: right;">6.82</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis A</td>
+<td style="text-align: left;">B15</td>
+<td style="text-align: right;">23,964</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">448.1</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemolytic uraemic syndrome (HUS)</td>
+<td style="text-align: left;">D59</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">11,200.0</td>
+<td style="text-align: right;">16.67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Congenital syphilis</td>
+<td style="text-align: left;">A50</td>
+<td style="text-align: right;">20,648</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">200.0</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Maternal death</td>
+<td style="text-align: left;">O95</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">146</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right; font-weight: bold; color: rgba(217, 83, 79, 255) !important;">61.0</td>
+<td style="text-align: right;">97.99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Non-typhoidal Salmonellosis (NTS)</td>
+<td style="text-align: left;">A02</td>
+<td style="text-align: right;">2,775</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">1,257.1</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Congenital rubella syndrome</td>
+<td style="text-align: left;">P35</td>
+<td style="text-align: right;">652</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">2,433.3</td>
+<td style="text-align: right;">0.46</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tetanus</td>
+<td style="text-align: left;">A35</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">1,066.7</td>
+<td style="text-align: right;">13.64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rabies (human)</td>
+<td style="text-align: left;">A82</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">179.3</td>
+<td style="text-align: right;">12.66</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Bilharzia (schistosomiasis)</td>
+<td style="text-align: left;">B65</td>
+<td style="text-align: right;">81,305</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">512.5</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: MDR-TB / Tuberculosis: pulmonary / Tuberculosis: XDR-TB</td>
+<td style="text-align: left;">A15</td>
+<td style="text-align: right;">102,676</td>
+<td style="text-align: right;">1,326</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right; font-weight: bold; color: rgba(217, 83, 79, 255) !important;">2.5</td>
+<td style="text-align: right;">1.29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Legionellosis</td>
+<td style="text-align: left;">A48</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">640.0</td>
+<td style="text-align: right;">3.60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Pertussis</td>
+<td style="text-align: left;">A37</td>
+<td style="text-align: right;">2,827</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">145.5</td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute rheumatic fever</td>
+<td style="text-align: left;">I00</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">3,000.0</td>
+<td style="text-align: right;">1.22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Listeriosis</td>
+<td style="text-align: left;">A32</td>
+<td style="text-align: right;">1,505</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right; font-weight: bold; color: rgba(217, 83, 79, 255) !important;">65.1</td>
+<td style="text-align: right;">2.86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Botulism / Food-borne disease outbreak</td>
+<td style="text-align: left;">A05</td>
+<td style="text-align: right;">2,253</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">109.1</td>
+<td style="text-align: right;">0.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Shigellosis</td>
+<td style="text-align: left;">A03</td>
+<td style="text-align: right;">5,123</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">700.0</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Enteric fever (typhoid / paratyphoid)</td>
+<td style="text-align: left;">A01</td>
+<td style="text-align: right;">767</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">106.2</td>
+<td style="text-align: right;">2.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Viral haemorrhagic fever diseases</td>
+<td style="text-align: left;">A99</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">1,600.0</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Cholera</td>
+<td style="text-align: left;">A00</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Measles</td>
+<td style="text-align: left;">B05</td>
+<td style="text-align: right;">2,697</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">1,100.0</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Leprosy</td>
+<td style="text-align: left;">A30</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">166.7</td>
+<td style="text-align: right;">16.67</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Poliomyelitis</td>
+<td style="text-align: left;">A80</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Gonorrhoea (ceftriaxone-resistant N.gonorrhoeae)</td>
+<td style="text-align: left;">A54</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rubella</td>
+<td style="text-align: left;">B06</td>
+<td style="text-align: right;">818</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Soil-transmitted helminths</td>
+<td style="text-align: left;">B82</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Diphtheria</td>
+<td style="text-align: left;">A36</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">100.0</td>
+<td style="text-align: right;">8.62</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Brucellosis</td>
+<td style="text-align: left;">A23</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Anthrax</td>
+<td style="text-align: left;">A22</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right; font-weight: bold; color: rgba(26, 122, 191, 255) !important;">300.0</td>
+<td style="text-align: right;">100.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Plague</td>
+<td style="text-align: left;">A20</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Yellow fever</td>
+<td style="text-align: left;">A95</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right; font-weight: bold; color: grey !important;">NA</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<section id="year-by-year-capture-ratio" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="year-by-year-capture-ratio"><span class="header-section-number">6.1</span> Year-by-year capture ratio</h3>
+<div class="cell">
+<div id="tbl-sensitivity-annual" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sensitivity-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: MACOD capture ratio (%) by condition and year, 2016–2022
+</figcaption>
+<div aria-describedby="tbl-sensitivity-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:420px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed cell caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">NMC Condition(s)</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ICD-10</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2016</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2017</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2018</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2019</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2020</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Acute flaccid paralysis</td>
+<td style="text-align: left;">G83</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4,000.0</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">1,400.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,600.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Acute rheumatic fever</td>
+<td style="text-align: left;">I00</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Anthrax</td>
+<td style="text-align: left;">A22</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Bilharzia (schistosomiasis)</td>
+<td style="text-align: left;">B65</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">150.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">700.0</td>
+<td style="text-align: right;">200.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Botulism / Food-borne disease outbreak</td>
+<td style="text-align: left;">A05</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">133.3</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">66.7</td>
+<td style="text-align: right;">150.0</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">50.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Brucellosis</td>
+<td style="text-align: left;">A23</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Cholera</td>
+<td style="text-align: left;">A00</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Congenital rubella syndrome</td>
+<td style="text-align: left;">P35</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">500.0</td>
+<td style="text-align: right;">700.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">800.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Congenital syphilis</td>
+<td style="text-align: left;">A50</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">44.4</td>
+<td style="text-align: right;">388.9</td>
+<td style="text-align: right;">112.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Coronavirus disease (COVID-19) / Respiratory disease — novel pathogen</td>
+<td style="text-align: left;">U07</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">519,128.6</td>
+<td style="text-align: right;">845,072.7</td>
+<td style="text-align: right;">840,700.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Diphtheria</td>
+<td style="text-align: left;">A36</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">50.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Enteric fever (typhoid / paratyphoid)</td>
+<td style="text-align: left;">A01</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">33.3</td>
+<td style="text-align: right;">66.7</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">25.0</td>
+<td style="text-align: right;">66.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Gonorrhoea (ceftriaxone-resistant N.gonorrhoeae)</td>
+<td style="text-align: left;">A54</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Clostridioides difficile (CDI) / Shiga toxin-producing E.coli (STEC)</td>
+<td style="text-align: left;">A04</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">HCAI/MDRO — Colistin-resistant Acinetobacter baumannii / HCAI/MDRO — Colistin-resistant Pseudomonas aeruginosa / HCAI/MDRO — CPE (Carbapenemase-producing Enterobacteriaceae) / HCAI/MDRO — S.aureus (MRSA/hGISA/GISA) / HCAI/MDRO — VRE (Vancomycin-resistant enterococci)</td>
+<td style="text-align: left;">A41</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Haemolytic uraemic syndrome (HUS)</td>
+<td style="text-align: left;">D59</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,000.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Haemophilus influenzae type B</td>
+<td style="text-align: left;">G00</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3,471.4</td>
+<td style="text-align: right;">3,816.7</td>
+<td style="text-align: right;">17,500.0</td>
+<td style="text-align: right;">12,900.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis A</td>
+<td style="text-align: left;">B15</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,300.0</td>
+<td style="text-align: right;">333.3</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">700.0</td>
+<td style="text-align: right;">325.0</td>
+<td style="text-align: right;">322.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Hepatitis B</td>
+<td style="text-align: left;">B16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">612.5</td>
+<td style="text-align: right;">352.6</td>
+<td style="text-align: right;">134.4</td>
+<td style="text-align: right;">173.3</td>
+<td style="text-align: right;">692.3</td>
+<td style="text-align: right;">235.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Hepatitis C / Hepatitis E</td>
+<td style="text-align: left;">B17</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">6,500.0</td>
+<td style="text-align: right;">500.0</td>
+<td style="text-align: right;">2,800.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,300.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Legionellosis</td>
+<td style="text-align: left;">A48</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Leprosy</td>
+<td style="text-align: left;">A30</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">33.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Listeriosis</td>
+<td style="text-align: left;">A32</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,000.0</td>
+<td style="text-align: right;">40.0</td>
+<td style="text-align: right;">14.3</td>
+<td style="text-align: right;">60.0</td>
+<td style="text-align: right;">125.0</td>
+<td style="text-align: right;">18.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Malaria</td>
+<td style="text-align: left;">B54</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3,507.1</td>
+<td style="text-align: right;">602.4</td>
+<td style="text-align: right;">414.8</td>
+<td style="text-align: right;">591.7</td>
+<td style="text-align: right;">593.8</td>
+<td style="text-align: right;">226.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Maternal death</td>
+<td style="text-align: left;">O95</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">220.0</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">27.6</td>
+<td style="text-align: right;">14.8</td>
+<td style="text-align: right;">86.7</td>
+<td style="text-align: right;">14.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Measles</td>
+<td style="text-align: left;">B05</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Meningococcal disease</td>
+<td style="text-align: left;">A39</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1,033.3</td>
+<td style="text-align: right;">270.0</td>
+<td style="text-align: right;">77.3</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">171.4</td>
+<td style="text-align: right;">120.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Non-typhoidal Salmonellosis (NTS)</td>
+<td style="text-align: left;">A02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">950.0</td>
+<td style="text-align: right;">1,200.0</td>
+<td style="text-align: right;">900.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">500.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Pertussis</td>
+<td style="text-align: left;">A37</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">63.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Plague</td>
+<td style="text-align: left;">A20</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Poliomyelitis</td>
+<td style="text-align: left;">A80</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Rabies (human)</td>
+<td style="text-align: left;">A82</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">133.3</td>
+<td style="text-align: right;">180.0</td>
+<td style="text-align: right;">166.7</td>
+<td style="text-align: right;">157.1</td>
+<td style="text-align: right;">112.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Rubella</td>
+<td style="text-align: left;">B06</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Shigellosis</td>
+<td style="text-align: left;">A03</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Soil-transmitted helminths</td>
+<td style="text-align: left;">B82</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tetanus</td>
+<td style="text-align: left;">A35</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">650.0</td>
+<td style="text-align: right;">750.0</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">500.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: MDR-TB / Tuberculosis: pulmonary / Tuberculosis: XDR-TB</td>
+<td style="text-align: left;">A15</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">30.8</td>
+<td style="text-align: right;">5.7</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">4.6</td>
+<td style="text-align: right;">2.2</td>
+<td style="text-align: right;">0.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Tuberculosis: extra-pulmonary</td>
+<td style="text-align: left;">A18</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">56,200.0</td>
+<td style="text-align: right;">7,214.3</td>
+<td style="text-align: right;">1,395.4</td>
+<td style="text-align: right;">1,417.0</td>
+<td style="text-align: right;">964.4</td>
+<td style="text-align: right;">241.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Viral haemorrhagic fever diseases</td>
+<td style="text-align: left;">A99</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Yellow fever</td>
+<td style="text-align: left;">A95</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

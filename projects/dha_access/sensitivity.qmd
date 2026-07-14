@@ -1,0 +1,108 @@
+---
+title: "Sensitivity: Population Density within 500 m of DHA Nodes"
+description: "Are DHA offices in plausibly dense locations? Benchmarking node-level density against the national ward-density distribution."
+date: "2026-01-20"
+categories: [access, sensitivity, DHA]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(flextable)
+library(scales)
+load("../../outputs/ward_level_dha_access.RData")
+```
+
+## Why this check?
+
+Method 3 assigns each ward's full population to its centroid. Where ward boundaries are large and population is heterogeneous (e.g. rural wards with one dense settlement), the centroid distance may misrepresent real access. As an external sanity check we ask:
+
+> **For each DHA office, what is the modelled population density in the immediate (500 m) catchment around the office, and is that density consistent with where high-density populations actually live in South Africa?**
+
+If DHA offices sit in plausibly dense areas, node densities should track the upper end of the **ward-level density distribution** — that is the empirical benchmark for "known high-density populations" available without a population raster.
+
+## Method
+
+For each DHA office:
+
+1. Build a **500 m circular buffer** around the office in EPSG:3857 (area ≈ 0.785 km²).
+2. **Intersect** the buffer with ward polygons.
+3. For each ward fragment inside the buffer, estimate population as
+   $$
+   p_{\text{frag}} = \frac{a_{\text{frag}}}{a_{\text{ward}}} \cdot P_{\text{ward}},
+   $$
+   i.e. the fragment area divided by the full ward area, times the ward's total population (uniform-within-ward assumption).
+4. Sum across fragments to get the **modelled population within 500 m**, then divide by buffer area to get **density (people / km²)**.
+5. Benchmark each node's density against quantiles of the **ward-density distribution** (Stats SA 2025 ÷ MDB 2020 ward area).
+
+::: callout-note
+The uniform-within-ward assumption is itself an approximation — but it is consistent across nodes and lets us flag the cases where it most plausibly breaks down (e.g. offices sitting inside a small dense pocket of a much larger sparse ward).
+:::
+
+## Reference: high-density wards
+
+```{r}
+#| label: tbl-top-wards
+sens_top_wards_ft
+```
+
+Ward density quantiles (people / km²):
+
+```{r}
+#| label: tbl-quantiles
+#| echo: false
+tibble::tibble(
+  Quantile = names(ward_density_quantiles),
+  `Density (per km²)` = round(as.numeric(ward_density_quantiles))
+) |>
+  flextable() |>
+  bold(part = "header") |>
+  theme_zebra() |>
+  autofit()
+```
+
+## Where do DHA offices sit on this distribution?
+
+```{r}
+#| label: tbl-node-summary
+sens_node_summary_ft
+```
+
+```{r}
+#| label: fig-density-compare
+#| fig-width: 9
+#| fig-height: 5
+sens_density_compare_plot
+```
+
+::: callout-important
+## Headline sensitivity statistics
+
+- **Median modelled density around a DHA office (500 m):** `r format(sens_median_node_density, big.mark = ",")` people / km²
+- **Median ward density (national):** `r format(sens_median_ward_density, big.mark = ",")` people / km²
+- **95th percentile node density:** `r format(sens_p95_node_density, big.mark = ",")` people / km²
+- **% of DHA offices sitting in areas at or above the 90th percentile of ward density:** `r sens_pct_nodes_above_p90`%
+:::
+
+## Interpretation
+
+- DHA offices are **disproportionately located in denser-than-average areas** (median node density > median ward density), which is what we would expect for service points serving population concentrations.
+- The minority of nodes whose 500 m density falls below the median ward density mostly correspond to **rural / small-town offices**, where this is appropriate.
+- Nodes appearing in the *> p99* bracket warrant a manual eyeball — they sit inside very dense urban pockets and may also flag wards where the uniform-within-ward assumption is least defensible.
+
+## Top 15 nodes by modelled 500 m density
+
+```{r}
+#| label: tbl-top-nodes
+sens_top_nodes_ft
+```
+
+## Limitations
+
+::: callout-warning
+- **Uniform-within-ward** population is an approximation. A WorldPop/HRSL raster would give a less biased per-node density and is the natural next step.
+- **500 m is a single radius** — the qualitative conclusions are robust to small changes, but a multi-radius profile (250 m, 500 m, 1 km, 2 km) would give a fuller picture.
+- The check **validates plausibility of node placement**, not access for distant residents. It complements but does not replace the [main coverage results](death_registration.qmd).
+:::

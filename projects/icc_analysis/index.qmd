@@ -1,0 +1,155 @@
+---
+title: "ICC for eMCCD Pilot"
+description: "Intraclass correlation analysis for electronic Medical Certification of Cause of Death pilot study design"
+date: "2026-01-20"
+categories: [ICC, eMCCD, sample-size, study-design, garbage-codes]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(gtsummary)
+library(flextable)
+
+# Load pre-computed outputs
+if (file.exists("../../icc_outputs/ICC_wrangling_outputs.RData")) {
+  load("../../icc_outputs/ICC_wrangling_outputs.RData")
+}
+```
+
+## Background
+
+The electronic Medical Certification of Cause of Death (eMCCD) pilot aims to evaluate whether electronic systems with built-in validation checks can improve the quality of cause-of-death certification compared to traditional paper-based methods.
+
+### Key Assumptions
+
+1. **Facility clustering**: Facilities and service levels (district, regional, tertiary) may produce clustered probabilities of garbage coding
+2. **Paired observations**: Paper vs electronic certificate on the same death may be very similar—if not ill-defined on paper, perhaps unlikely to be ill-defined on electronic (depends on incentive and UX)
+
+## Data Preparation
+
+We focus on natural hospital deaths during 2019–2020, mirroring the training window used for the eMCCD pilot analyses.
+
+## ICC from Hierarchical Model
+
+Using district as a proxy for facility, we estimated the intraclass correlation coefficient (ICC) from a mixed-effects logistic regression model.
+
+```{r}
+#| label: tbl-garbage-glmer
+#| tbl-cap: "Odds associated with having a garbage code from mixed effects logistic regression"
+#| eval: true
+
+if (exists("garbage_glmer_table")) {
+  garbage_glmer_table %>%
+    as_flex_table() %>%
+    theme_zebra()
+} else {
+  cat("Table not available - run ICC_wrangling_v2.R to generate")
+}
+```
+
+::: {.callout-note}
+## ICC Interpretation
+The estimated overall ICC from the hierarchical model indicates the proportion of variance attributable to between-cluster (facility/district) differences.
+
+A design effect is implied by this ICC, which affects the required sample size for the pilot study.
+:::
+
+### Limitations of Hierarchical Approach
+
+- The district-level proxy may not be granular enough to capture facility type and rural/urban clustering
+- Place of death has high variability in garbage coding, but analysis is already limited to hospital deaths
+- The **paired nature of the data** presents additional challenges
+
+## Paired Data Considerations
+
+We are expecting an improvement in data quality without new information—only validation checks. Additionally, we assume that electronic data will *only* improve the data.
+
+### Four Possible Outcomes
+
+For any death certificate pair (paper + electronic), there are four outcomes:
+
+| Paper | Electronic | Interpretation |
+|-------|------------|----------------|
+| Well-defined | Well-defined | Both correct |
+| Well-defined | Garbage | Regression (unexpected) |
+| Garbage | Well-defined | Improvement (expected) |
+| Garbage | Garbage | No change |
+
+### Probability Framework
+
+We define the following probabilities:
+
+- $p_1$: Probability of garbage coding on paper MCCD
+- $p_2$: Probability of garbage coding on electronic MCCD
+- $p_{01}$: Probability of paper well-defined, electronic garbage
+- $p_{10}$: Probability of paper garbage, electronic well-defined
+- $\rho$: Correlation between the two endpoints within cluster
+
+::: {.callout-warning}
+## Conservative Assumption
+We assume that going from well-defined paper to garbage is unlikely, but not impossible, and set a floor on this probability of 10%. Those that are well-defined on paper may still be misclassified on electronic MCCD due to data entry errors, system errors, etc. This "could" be a modest probability if we do not sufficiently motivate the doctors for the extra time spent.
+:::
+
+## Age-Stratified Analysis
+
+Misclassification probabilities vary by age group, particularly for HIV/AIDS-related deaths where stigma may influence certification practices.
+
+```{r}
+#| label: tbl-hiv-by-age
+#| tbl-cap: "Estimated misclassification probabilities by age group for HIV/AIDS deaths"
+#| eval: true
+
+if (exists("hiv_by_agegroup_table")) {
+  hiv_by_agegroup_table %>%
+    as_flex_table() %>%
+    theme_zebra()
+} else {
+  cat("Table not available - run ICC_wrangling_v2.R to generate")
+}
+```
+
+## Joint Probability Visualization
+
+```{r}
+#| label: fig-joint-prob
+#| fig-cap: "Joint misclassification probabilities"
+#| eval: true
+
+if (exists("joint_probability_plot")) {
+  joint_probability_plot
+} else {
+  message("Plot not available - run ICC_wrangling_v2.R to generate")
+}
+```
+
+## Power Analysis
+
+```{r}
+#| label: fig-power-curve
+#| fig-cap: "Joint power curve varying rho assumptions"
+#| eval: true
+
+if (exists("joint_power_curve_rho_plot")) {
+  joint_power_curve_rho_plot
+} else {
+  message("Plot not available - run ICC_wrangling_v2.R to generate")
+}
+```
+
+## Implications for Study Design
+
+The ICC estimates and power calculations inform:
+
+1. **Required sample size** accounting for clustering effects
+2. **Expected improvement** in data quality from electronic certification
+3. **Facility selection** to maximize statistical power
+
+::: {.callout-tip}
+## Key Recommendations
+
+- Account for design effect when calculating sample sizes
+- Consider stratification by facility type and province
+- Plan for potential "regression" cases where electronic may not improve quality
+:::

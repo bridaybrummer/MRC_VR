@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-03-02">
+<meta name="description" content="Estimating hidden COVID-19 deaths misclassified under ICD-10 J-codes in South Africa using scenario-based adjustments for influenza suppression during non-pharmaceutical interventions">
+
+<title>Misclassification of COVID-19 deaths under respiratory (J-code) causes: Adjusting excess mortality estimates for influenza suppression during the pandemic in South Africa, 2020 – 2022 – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Misclassification of COVID-19 deaths under respiratory (J-code) causes: Adjusting excess mortality estimates for influenza suppression during the pandemic in South Africa, 2020 – 2022</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#study-design-and-data-sources" id="toc-study-design-and-data-sources" class="nav-link" data-scroll-target="#study-design-and-data-sources"><span class="header-section-number">2.1</span> Study design and data sources</a></li>
+  <li><a href="#statistical-modelling" id="toc-statistical-modelling" class="nav-link" data-scroll-target="#statistical-modelling"><span class="header-section-number">2.2</span> Statistical modelling</a></li>
+  <li><a href="#scenario-definitions" id="toc-scenario-definitions" class="nav-link" data-scroll-target="#scenario-definitions"><span class="header-section-number">2.3</span> Scenario definitions</a></li>
+  <li><a href="#ethical-considerations" id="toc-ethical-considerations" class="nav-link" data-scroll-target="#ethical-considerations"><span class="header-section-number">2.4</span> Ethical considerations</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#model-selection" id="toc-model-selection" class="nav-link" data-scroll-target="#model-selection"><span class="header-section-number">3.1</span> Model selection</a></li>
+  <li><a href="#excess-j-coded-deaths-by-scenario" id="toc-excess-j-coded-deaths-by-scenario" class="nav-link" data-scroll-target="#excess-j-coded-deaths-by-scenario"><span class="header-section-number">3.2</span> Excess J-coded deaths by scenario</a></li>
+  <li><a href="#expected-and-excess-death-trajectories" id="toc-expected-and-excess-death-trajectories" class="nav-link" data-scroll-target="#expected-and-excess-death-trajectories"><span class="header-section-number">3.3</span> Expected and excess death trajectories</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a>
+  <ul class="collapse">
+  <li><a href="#implications-for-cause-specific-attribution" id="toc-implications-for-cause-specific-attribution" class="nav-link" data-scroll-target="#implications-for-cause-specific-attribution"><span class="header-section-number">4.1</span> Implications for cause-specific attribution</a></li>
+  <li><a href="#study-strengths" id="toc-study-strengths" class="nav-link" data-scroll-target="#study-strengths"><span class="header-section-number">4.2</span> Study strengths</a></li>
+  <li><a href="#study-limitations" id="toc-study-limitations" class="nav-link" data-scroll-target="#study-limitations"><span class="header-section-number">4.3</span> Study limitations</a></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">4.4</span> Recommendations</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">5</span> Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Misclassification of COVID-19 deaths under respiratory (J-code) causes: Adjusting excess mortality estimates for influenza suppression during the pandemic in South Africa, 2020 – 2022</h1>
+<p class="subtitle lead"><em>Research</em></p>
+  <div class="quarto-categories">
+    <div class="quarto-category">modelling</div>
+    <div class="quarto-category">respiratory</div>
+    <div class="quarto-category">J-codes</div>
+    <div class="quarto-category">excess-mortality</div>
+    <div class="quarto-category">COVID-19</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Estimating hidden COVID-19 deaths misclassified under ICD-10 J-codes in South Africa using scenario-based adjustments for influenza suppression during non-pharmaceutical interventions
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 2, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-simple callout-warning no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<blockquote class="blockquote">
+<p><strong>⚠ Draft for review — authorship to be confirmed</strong> The names listed below are proposed contributors based on intellectual input and data contributions to date. Inclusion, order, and affiliations are subject to discussion and agreement among all named individuals before submission.</p>
+</blockquote>
+<p><em>Proposed authors:</em> B Brummer,<sup>1,2</sup> MSc; D Bradshaw,<sup>2</sup> DPhil; P Groenewald,<sup>2</sup> MSc; R E Dorrington,<sup>3</sup> MPhil; R Laubscher,<sup>4</sup> MSc; T A Moultrie,<sup>3</sup> PhD; J Kleynhans,<sup>5,6</sup> PhD; S Walaza,<sup>5,6</sup> PhD; C Cohen,<sup>5,6</sup> PhD</p>
+<p><sup>1</sup> Bloomberg Philanthropies Data for Health Initiative, Vital Strategies, Cape Town, South Africa<br>
+<sup>2</sup> Burden of Disease Research Unit, South African Medical Research Council, Cape Town, South Africa<br>
+<sup>3</sup> Centre for Actuarial Research (CARe), University of Cape Town, Cape Town, South Africa<br>
+<sup>4</sup> Biostatistics Unit, South African Medical Research Council, Cape Town, South Africa<br>
+<sup>5</sup> Centre for Respiratory Diseases and Meningitis, National Institute for Communicable Diseases of the National Health Laboratory Service, Johannesburg, South Africa<br>
+<sup>6</sup> School of Public Health, Faculty of Health Sciences, University of the Witwatersrand, Johannesburg, South Africa</p>
+<p><em>Proposed corresponding author:</em> B Brummer (<a href="mailto:bbrummer@dataforhealth.org">bbrummer@dataforhealth.org</a>)</p>
+</div>
+</div>
+</div>
+<hr>
+<section id="abstract" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="abstract">Abstract</h2>
+<div id="abstract">
+<p><strong>Background.</strong> Excess mortality calculations have been widely used to estimate the true burden of COVID-19 deaths. For deaths coded under ICD-10 Chapter J (diseases of the respiratory system), standard excess mortality methods assume that influenza and other respiratory disease mortality continued at pre-pandemic levels. However, influenza circulation virtually disappeared during the pandemic owing to non-pharmaceutical interventions (NPIs), making this assumption untenable for cause-specific attribution.</p>
+<p><strong>Objectives.</strong> To estimate the number of COVID-19 deaths misclassified under J-codes in South Africa (2020 – 2022) by modelling expected respiratory mortality under three scenarios that account for the suppression of influenza transmission during the pandemic.</p>
+<p><strong>Methods.</strong> Weekly J-coded deaths from South African vital registration data (2015 – 2022) were analysed. A negative binomial regression model was fitted to pre-pandemic data (2015 – 2019), adjusting for epidemiological week, age group, sex, J-code subgroup, and province, with a population offset. Eight candidate model specifications were compared using Akaike information criterion and root mean squared error. Expected deaths during the pandemic period (April 2020 onwards) were estimated under three scenarios: (1) standard excess (influenza unchanged); (2) upper bound (all J-codes attributed to COVID-19); and (3) NPI-adjusted, in which expected respiratory deaths were scaled by the inverse of the COVID-19 mortality trend derived from seasonal-trend decomposition (STL).</p>
+<p><strong>Results.</strong> Scenario 1 yielded 11 803 excess J-coded deaths, Scenario 2 yielded 85 613, and Scenario 3 (NPI-adjusted) yielded 30 181. Corresponding expected (counterfactual) J-coded deaths during weeks with excess were 62 696, 4 811, and 52 450, respectively. The NPI-adjusted estimate was 2.6-fold higher than the standard excess approach.</p>
+<p><strong>Conclusion.</strong> The standard excess mortality method likely underestimates the number of COVID-19 deaths misclassified under respiratory J-codes. Accounting for the near-absence of influenza during the pandemic substantially increases cause-specific COVID-19 mortality estimates, without altering overall excess death totals. These findings have implications for accurate cause-of-death attribution in pandemic settings with limited diagnostic testing capacity.</p>
+</div>
+<p><strong>Keywords:</strong> excess mortality, COVID-19, J-codes, respiratory deaths, influenza, non-pharmaceutical interventions, cause of death, South Africa</p>
+<hr>
+<div class="callout callout-style-simple callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Contribution of the study
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Demonstrates that the standard assumption of unchanged influenza mortality during the COVID-19 pandemic leads to underestimation of misclassified COVID-19 deaths within respiratory (J-code) categories.</li>
+<li>Proposes an NPI-adjusted method that uses the inverse COVID-19 mortality trend to scale expected respiratory deaths, yielding a 2.6-fold increase in estimated misclassified COVID-19 deaths compared with the standard approach.</li>
+<li>Highlights the importance of incorporating respiratory pathogen surveillance data into excess mortality calculations for improved cause-specific attribution, particularly in low- and middle-income settings with constrained testing capacity.</li>
+</ol>
+</div>
+</div>
+<hr>
+</section>
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>COVID-19 is a respiratory illness caused by the SARS-CoV-2 virus that in severe cases progresses to pneumonia, hypoxia, or acute respiratory distress syndrome (ARDS) leading to death.<span class="citation" data-cites="bradshaw2022COVID19AllcauseMortality">(<a href="#ref-bradshaw2022COVID19AllcauseMortality" role="doc-biblioref">1</a>)</span> Influenza A and B viruses, along with other respiratory pathogens, produce overlapping clinical presentations with COVID-19. Since medical certifiers in South Africa (SA) often had to assign a cause of death without a confirmatory SARS-CoV-2 test — particularly for the nearly half of all deaths that occur outside of health facilities — many COVID-19 deaths were plausibly coded under ICD-10 Chapter J (diseases of the respiratory system), hereafter referred to as ‘J-codes’.</p>
+<p>Respiratory pathogens circulate seasonally in SA during the Southern Hemisphere winter (May – August), with sentinel surveillance and influenza-like illness (ILI) indicators peaking in this period.<span class="citation" data-cites="Tempia2021InfluenzaDecline">(<a href="#ref-Tempia2021InfluenzaDecline" role="doc-biblioref">2</a>)</span> During the COVID-19 pandemic, however, influenza circulation virtually disappeared — a pattern documented worldwide and confirmed by the National Institute for Communicable Diseases (NICD) sentinel surveillance in SA.<span class="citation" data-cites="olsenDecreasedInfluenzaActivity Tempia2021InfluenzaDecline groves2021ImpactCOVID19Pandemic">(<a href="#ref-Tempia2021InfluenzaDecline" role="doc-biblioref">2</a>–<a href="#ref-groves2021ImpactCOVID19Pandemic" role="doc-biblioref">4</a>)</span> This collapse was driven by widespread NPIs including mask-wearing, physical distancing, and movement restrictions.<span class="citation" data-cites="bents2022ImpactCOVID19Nonpharmaceutical">(<a href="#ref-bents2022ImpactCOVID19Nonpharmaceutical" role="doc-biblioref">5</a>)</span> Given that influenza has a lower basic reproduction number (<span class="math inline">\(R_0\)</span>) than SARS-CoV-2, NPIs that were insufficient to prevent COVID-19 transmission were highly effective at suppressing influenza.<span class="citation" data-cites="bents2022ImpactCOVID19Nonpharmaceutical">(<a href="#ref-bents2022ImpactCOVID19Nonpharmaceutical" role="doc-biblioref">5</a>)</span></p>
+<p>Excess mortality has been widely adopted to estimate the true pandemic death toll, particularly in settings where testing capacity was constrained.<span class="citation" data-cites="karlinsky2021TrackingExcessMortality bradshaw2022COVID19AllcauseMortality">(<a href="#ref-bradshaw2022COVID19AllcauseMortality" role="doc-biblioref">1</a>,<a href="#ref-karlinsky2021TrackingExcessMortality" role="doc-biblioref">6</a>)</span> For J-coded deaths specifically, the standard excess mortality approach estimates expected deaths based on pre-pandemic trends and attributes the difference (observed minus expected) to COVID-19. This implicitly assumes that influenza and other non-COVID-19 respiratory deaths continued at pre-pandemic levels throughout the pandemic.</p>
+<p>This assumption is problematic. If influenza circulation was virtually absent during the pandemic, then many of the ‘expected’ J-coded deaths would not have occurred, and the true number of COVID-19 deaths misclassified under J-codes would be larger than the standard excess estimate suggests.<span class="citation" data-cites="beeks2024CauseSpecificExcessMortality">(<a href="#ref-beeks2024CauseSpecificExcessMortality" role="doc-biblioref">7</a>)</span> Furthermore, the limited testing in SA and the resulting default reasoning by medical certifiers to assign respiratory codes to clinically compatible deaths likely compounded this misclassification.</p>
+<p>We estimated the number of COVID-19 deaths misclassified under J-codes in SA during 2020 – 2022 using three scenarios that progressively account for the suppression of influenza during the pandemic.</p>
+</section>
+<section id="methods" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="methods"><span class="header-section-number">2</span> Methods</h2>
+<section id="study-design-and-data-sources" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="study-design-and-data-sources"><span class="header-section-number">2.1</span> Study design and data sources</h3>
+<p>This was a retrospective analysis of nationally registered deaths in SA from 2015 to 2022. Death notification data were obtained from the vital registration system maintained by the Department of Home Affairs and processed by Statistics South Africa, with cause-of-death coding performed according to standard ICD-10 protocols. Deaths coded under ICD-10 Chapter J (J00 – J99: diseases of the respiratory system) were extracted for analysis. Deaths coded under U07 (COVID-19) were extracted separately for temporal trend decomposition.</p>
+<p>Mid-year population estimates (2015 – 2022), disaggregated by province, sex, and age group, were obtained from Statistics South Africa to provide denominator data for the negative binomial model with a population offset.</p>
+</section>
+<section id="statistical-modelling" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="statistical-modelling"><span class="header-section-number">2.2</span> Statistical modelling</h3>
+<p>A negative binomial regression was fitted to pre-pandemic data (epidemiological weeks 1 – 52, 2015 – 2019) to estimate expected weekly J-coded deaths. The outcome variable was the count of deaths in stratum-specific cells defined by epidemiological week, age group, sex, J-code subgroup, and province.</p>
+<p>Eight candidate model specifications were evaluated, including:</p>
+<ul>
+<li>Simple main-effects models with and without Fourier seasonal terms</li>
+<li>Models with demographic interaction terms (sex × age group × J-code subgroup)</li>
+<li>Province-stratified Fourier models with population offsets</li>
+<li>Generalised linear mixed models (glmmTMB) with province-level random effects and polynomial trends</li>
+<li>Generalised additive models (GAMs) with smooth terms for epidemiological week and year</li>
+</ul>
+<p>Models were compared using the Akaike information criterion (AIC), Bayesian information criterion (BIC), and root mean squared error (RMSE) evaluated on province-level aggregated predictions for the training period (2015 – 2019).</p>
+<p>The selected model was a negative binomial regression (MASS::glm.nb) with the following specification:</p>
+<p><span class="math display">\[
+\log\bigl(E(Y_{p,a,s,j,t})\bigr) = \beta_0 + \text{offset}\bigl(\log(\text{pop}_{p,a,s,t})\bigr) + f(\text{province}_p) + f(\text{sex}_s) + f(\text{agegroup}_a) + f(\text{Jcode}_j) + f(\text{epiweek}_t) + f(\text{year}_t)
+\]</span></p>
+<p>where <span class="math inline">\(Y_{p,a,s,j,t}\)</span> denotes the death count in province <span class="math inline">\(p\)</span>, age group <span class="math inline">\(a\)</span>, sex <span class="math inline">\(s\)</span>, J-code subgroup <span class="math inline">\(j\)</span>, and epidemiological week <span class="math inline">\(t\)</span>, and <span class="math inline">\(f(\cdot)\)</span> denotes fixed categorical effects. Province-level random effects and more complex interaction models did not materially improve model fit (AIC, BIC) or change estimates meaningfully, so the simpler specification was retained for interpretability.</p>
+</section>
+<section id="scenario-definitions" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="scenario-definitions"><span class="header-section-number">2.3</span> Scenario definitions</h3>
+<p>Three scenarios were modelled to estimate excess J-coded deaths attributable to COVID-19 during the pandemic period (April 2020 onwards):</p>
+<p><strong>Scenario 1 (Standard excess).</strong> The conventional approach: expected J-coded deaths were predicted from the fitted model and subtracted from observed deaths. This assumes influenza and other respiratory mortality continued at pre-pandemic levels.</p>
+<p><strong>Scenario 2 (Upper bound).</strong> All J-coded deaths during the pandemic period were attributed to COVID-19, with expected deaths set to zero from April 2020 onwards. This represents the maximum possible misclassification estimate.</p>
+<p><strong>Scenario 3 (NPI-adjusted).</strong> Expected J-coded deaths were modulated by a time-varying factor reflecting the intensity of COVID-19 transmission, used as a proxy for NPI-driven suppression of influenza. The COVID-19 death time series (ICD-10 U07 code) was decomposed using seasonal-trend decomposition by LOESS (STL),<span class="citation" data-cites="olsenDecreasedInfluenzaActivity">(<a href="#ref-olsenDecreasedInfluenzaActivity" role="doc-biblioref">3</a>)</span> extracting trend and seasonal components:</p>
+<p><span class="math display">\[
+Y^{(i)}_{\text{COVID}} = \text{trend}^{(i)} + \text{seasonal}^{(i)} + \text{remainder}^{(i)}
+\]</span></p>
+<p>The combined trend and seasonal components were normalised to the maximum value and inverted to create a suppression factor:</p>
+<p><span class="math display">\[
+\text{Suppression}^{(i)} = 1 - \frac{\text{trend}^{(i)} + \text{seasonal}^{(i)}}{\max\bigl(\text{trend} + \text{seasonal}\bigr)}
+\]</span></p>
+<p>Expected J-coded deaths were then adjusted as:</p>
+<p><span class="math display">\[
+E^{*}(Y^{(i)}_J) = E(Y^{(i)}_J) \times \text{Suppression}^{(i)}
+\]</span></p>
+<p>The rationale is that during peaks of COVID-19 transmission — when NPI adherence was highest — influenza and other respiratory pathogen circulation was maximally suppressed, so fewer J-coded deaths would have occurred from non-COVID-19 causes.</p>
+<p>Excess deaths under each scenario were calculated as the cumulative sum of positive weekly differences between observed and expected deaths from April 2020 to December 2022.</p>
+</section>
+<section id="ethical-considerations" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="ethical-considerations"><span class="header-section-number">2.4</span> Ethical considerations</h3>
+<p>This study used de-identified, routinely collected vital registration data. No individual-level data were accessed.</p>
+</section>
+</section>
+<section id="results" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="results"><span class="header-section-number">3</span> Results</h2>
+<section id="model-selection" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">3.1</span> Model selection</h3>
+<p>Among the eight candidate models, those with Fourier seasonal terms and population offsets generally outperformed models with epidemiological week as a categorical factor. The simple negative binomial model with province, sex, age group, J-code subgroup, epidemiological week (categorical), and year predictors was selected for its balance of parsimony and fit. Province-level RMSEs were comparable across the top-performing models.</p>
+</section>
+<section id="excess-j-coded-deaths-by-scenario" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="excess-j-coded-deaths-by-scenario"><span class="header-section-number">3.2</span> Excess J-coded deaths by scenario</h3>
+<div class="cell">
+<div id="tbl-scenario-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-scenario-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Summary of excess and expected J-coded deaths by scenario, South Africa, April 2020 – December 2022
+</figcaption>
+<div aria-describedby="tbl-scenario-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-4918feba{}.cl-4913dbe2{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-4913dbf6{font-family:'Helvetica';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-4915f8e6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-49160d36{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d40{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d41{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d42{width:1.8in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d4a{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d4b{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d4c{width:1.8in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d54{width:3in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-49160d55{width:1.5in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-4918feba"><thead><tr style="overflow-wrap:break-word;"><th class="cl-49160d36"><p class="cl-4915f8e6"><span class="cl-4913dbe2">Scenario</span></p></th><th class="cl-49160d40"><p class="cl-4915f8e6"><span class="cl-4913dbe2">Assumption</span></p></th><th class="cl-49160d41"><p class="cl-4915f8e6"><span class="cl-4913dbe2">Expected deaths (counterfactual)</span></p></th><th class="cl-49160d41"><p class="cl-4915f8e6"><span class="cl-4913dbe2">Excess J-coded deaths</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-49160d42"><p class="cl-4915f8e6"><span class="cl-4913dbe2">1. Standard excess</span></p></td><td class="cl-49160d4a"><p class="cl-4915f8e6"><span class="cl-4913dbe2">Influenza at pre-pandemic levels</span></p></td><td class="cl-49160d4b"><p class="cl-4915f8e6"><span class="cl-4913dbe2">62,696</span></p></td><td class="cl-49160d4b"><p class="cl-4915f8e6"><span class="cl-4913dbe2">11,803</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-49160d42"><p class="cl-4915f8e6"><span class="cl-4913dbe2">2. Upper bound</span></p></td><td class="cl-49160d4a"><p class="cl-4915f8e6"><span class="cl-4913dbe2">No respiratory deaths during pandemic</span></p></td><td class="cl-49160d4b"><p class="cl-4915f8e6"><span class="cl-4913dbe2">4,811</span></p></td><td class="cl-49160d4b"><p class="cl-4915f8e6"><span class="cl-4913dbe2">85,613</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-49160d4c"><p class="cl-4915f8e6"><span class="cl-4913dbf6">3. NPI-adjusted</span></p></td><td class="cl-49160d54"><p class="cl-4915f8e6"><span class="cl-4913dbf6">Influenza suppressed proportional to COVID-19 intensity</span></p></td><td class="cl-49160d55"><p class="cl-4915f8e6"><span class="cl-4913dbf6">52,450</span></p></td><td class="cl-49160d55"><p class="cl-4915f8e6"><span class="cl-4913dbf6">30,181</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Scenario 1 (standard excess) estimated 11 803 excess J-coded deaths during the pandemic period, with 62 696 expected (counterfactual) respiratory deaths (<a href="#tbl-scenario-summary" class="quarto-xref">Table&nbsp;1</a>). Scenario 2 (upper bound) estimated 85 613 excess deaths by attributing all pandemic-period J-coded deaths to COVID-19. The NPI-adjusted Scenario 3 estimated 30 181 excess J-coded deaths — 2.6 times higher than the standard approach — with 52 450 expected respiratory deaths during weeks of excess.</p>
+</section>
+<section id="expected-and-excess-death-trajectories" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="expected-and-excess-death-trajectories"><span class="header-section-number">3.3</span> Expected and excess death trajectories</h3>
+<p><a href="#fig-expected-deaths" class="quarto-xref">Figure&nbsp;1</a> shows the predicted weekly J-coded deaths under each scenario. In Scenario 1, expected deaths remained at pre-pandemic seasonal levels throughout; in Scenario 2, they dropped to zero; and in Scenario 3, they were dynamically reduced during COVID-19 peaks, reflecting the inverse relationship between COVID-19 wave intensity and expected respiratory pathogen circulation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-expected-deaths" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-expected-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-expected-deaths-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-expected-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Fig. 1. Weekly expected J-coded deaths under three counterfactual scenarios, South Africa 2015 – 2022. Scenario 1 maintains pre-pandemic levels; Scenario 2 sets expected deaths to zero during the pandemic; Scenario 3 scales expected deaths by the inverse of the COVID-19 mortality trend.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-excess-deaths" class="quarto-xref">Figure&nbsp;2</a> presents the resulting excess J-coded deaths (observed minus expected) under each scenario. In Scenario 1, excess deaths were visible only during the most intense COVID-19 waves; in Scenario 3, the excess was broader and higher because expected respiratory deaths were suppressed during wave peaks; and in Scenario 2, the entire observed death series was attributed to COVID-19 from April 2020.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-excess-deaths" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-excess-deaths-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-excess-deaths-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Fig. 2. Weekly excess J-coded deaths (observed minus expected) under three scenarios, South Africa 2015 – 2022. Positive values represent deaths in excess of the counterfactual expectation, interpreted as COVID-19 deaths misclassified under J-codes.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="discussion"><span class="header-section-number">4</span> Discussion</h2>
+<p>This study demonstrates that the standard excess mortality approach likely underestimates the number of COVID-19 deaths misclassified under respiratory J-codes in SA. The NPI-adjusted scenario (Scenario 3) estimated 30 181 excess J-coded deaths — 2.6 times more than the 11 803 estimated under the conventional assumption that influenza mortality was unchanged during the pandemic.</p>
+<p>The finding is consistent with the well-documented near-absence of influenza circulation during the pandemic in SA and globally.<span class="citation" data-cites="Tempia2021InfluenzaDecline olsenDecreasedInfluenzaActivity groves2021ImpactCOVID19Pandemic">(<a href="#ref-Tempia2021InfluenzaDecline" role="doc-biblioref">2</a>–<a href="#ref-groves2021ImpactCOVID19Pandemic" role="doc-biblioref">4</a>)</span> If influenza was not causing deaths, then a substantial proportion of J-coded deaths during the pandemic periods must represent misclassified COVID-19 deaths, especially given SA’s limited SARS-CoV-2 testing capacity. This reasoning has been supported by multi-country studies demonstrating reductions in cause-specific respiratory mortality during COVID-19 pandemic periods.<span class="citation" data-cites="beeks2024CauseSpecificExcessMortality">(<a href="#ref-beeks2024CauseSpecificExcessMortality" role="doc-biblioref">7</a>)</span></p>
+<p>The Scenario 3 estimate (30 181) represents approximately 35% of the upper-bound Scenario 2 estimate (85 613), suggesting that while not all J-coded deaths during the pandemic were COVID-19, a meaningful proportion beyond that captured by the standard approach may have been. The true value likely lies between Scenarios 1 and 3, depending on how completely NPIs suppressed non-COVID-19 respiratory pathogens and the extent to which clinicians defaulted to J-codes in the absence of testing.</p>
+<section id="implications-for-cause-specific-attribution" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="implications-for-cause-specific-attribution"><span class="header-section-number">4.1</span> Implications for cause-specific attribution</h3>
+<p>Critically, adjusting the J-code excess does not change the <em>total</em> excess death estimate for SA, which is calculated from all-cause mortality.<span class="citation" data-cites="bradshaw2022COVID19AllcauseMortality">(<a href="#ref-bradshaw2022COVID19AllcauseMortality" role="doc-biblioref">1</a>)</span> Rather, it redistributes deaths among cause categories. Deaths that would have been classified as ‘background respiratory’ under Scenario 1 are instead attributed to COVID-19 under Scenario 3, thus improving cause-specific accuracy without altering the overall pandemic death toll.</p>
+<p>This distinction is important for public health planning. Accurate cause-specific mortality data inform resource allocation, burden-of-disease estimates, and preparedness efforts for future pandemics.</p>
+</section>
+<section id="study-strengths" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="study-strengths"><span class="header-section-number">4.2</span> Study strengths</h3>
+<p>This analysis used nationally representative vital registration data covering all registered deaths in SA. The comparison of eight model specifications provides transparency in model selection. The NPI-adjusted scenario (Scenario 3) offers a biologically plausible intermediate estimate grounded in the empirical observation that influenza circulation collapsed during the pandemic.</p>
+</section>
+<section id="study-limitations" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="study-limitations"><span class="header-section-number">4.3</span> Study limitations</h3>
+<p>Several limitations warrant consideration. First, all J-codes (J00 – J99) were included in this analysis; restricting to more specific respiratory codes (J09 – J18, influenza and pneumonia) may yield more conservative estimates, as some J-codes (e.g.&nbsp;chronic lower respiratory diseases) are less likely to represent misclassified COVID-19.</p>
+<p>Second, the NPI-adjusted method uses the inverse of the <em>national</em> COVID-19 mortality trend as a proxy for influenza suppression. This does not account for provincial variation in NPI adherence, wave timing, or the potentially non-linear relationship between COVID-19 intensity and influenza suppression.</p>
+<p>Third, the suppression factor in Scenario 3 assumes that influenza deaths were reduced in direct, inverse proportion to COVID-19 wave intensity. While this is biologically plausible, the precise functional form of this relationship was not empirically estimated and would ideally incorporate pathogen-specific surveillance data.</p>
+<p>Fourth, severe acute respiratory infection (SARI) and ILI surveillance data, which were influenced by changes in health-seeking behaviour during the pandemic, were not integrated into the model. A fourth scenario incorporating pre-pandemic influenza detection rates as predictors is planned and may provide more precise estimates.</p>
+<p>Fifth, while vital registration coverage in SA is high, the analysis does not account for potential changes in registration completeness during the pandemic or for deaths that were never registered.</p>
+</section>
+<section id="recommendations" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="recommendations"><span class="header-section-number">4.4</span> Recommendations</h3>
+<ol type="1">
+<li><p><strong>Incorporate pathogen surveillance.</strong> Future excess mortality models for respiratory deaths should integrate influenza and respiratory pathogen surveillance data as time-varying predictors. This would allow empirical estimation of the relationship between pathogen circulation and expected deaths, rather than relying on trend-based proxies.</p></li>
+<li><p><strong>Apply informative priors.</strong> The documented collapse of influenza circulation provides a strong prior that should inform J-code excess calculations. Bayesian approaches that formally incorporate this evidence may be warranted.</p></li>
+<li><p><strong>Improve death certification.</strong> Training clinicians in cause-of-death certification, expanding SARS-CoV-2 testing to include post-mortem diagnosis, and implementing electronic death registration with validation checks would reduce misclassification at source.</p></li>
+<li><p><strong>Extend to other cause categories.</strong> Similar misclassification may have occurred in other cause categories with clinical overlap with COVID-19 (e.g.&nbsp;diabetes, cardiovascular disease, tuberculosis). However, the assumption that these causes were suppressed by NPIs is weaker, and the analysis would need to account for health-system disruptions and behavioural changes.</p></li>
+</ol>
+</section>
+</section>
+<section id="conclusion" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">5</span> Conclusion</h2>
+<p>The standard excess mortality approach for J-coded deaths underestimates the number of COVID-19 deaths misclassified under respiratory causes because it assumes influenza mortality continued at pre-pandemic levels despite documented influenza suppression. An NPI-adjusted approach that accounts for this temporal suppression produced an estimate 2.6-fold higher (30 181 <em>v.</em> 11 803 excess deaths) over the period April 2020 – December 2022 in SA. Incorporating respiratory pathogen surveillance data into excess mortality models would further refine these estimates and improve cause-specific mortality attribution in settings with limited diagnostic testing.</p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Declaration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>Author contributions.</em> [To be completed.]</p>
+<p><em>Funding.</em> [To be completed.]</p>
+<p><em>Conflicts of interest.</em> None.</p>
+</div>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-bradshaw2022COVID19AllcauseMortality" class="csl-entry" role="listitem">
+<div class="csl-left-margin">1. </div><div class="csl-right-inline">Bradshaw D, Dorrington R, Laubscher R, Groenewald P, Moultrie T. <span>COVID-19</span> and all-cause mortality in <span>South Africa</span> – the hidden deaths in the first four waves. South African Journal of Science. 2022 May;118(5/6). doi:<a href="https://doi.org/10.17159/sajs.2022/13300">10.17159/sajs.2022/13300</a></div>
+</div>
+<div id="ref-Tempia2021InfluenzaDecline" class="csl-entry" role="listitem">
+<div class="csl-left-margin">2. </div><div class="csl-right-inline">Tempia S, Walaza S, Bhiman JN, McMorrow ML, Moyes J, Mkhencele T, et al. Decline of influenza and respiratory syncytial virus detection in facility-based surveillance during the COVID-19 pandemic, south africa, january to october 2020. Eurosurveillance. 2021;26(29):2001600. doi:<a href="https://doi.org/10.2807/1560-7917.ES.2021.26.29.2001600">10.2807/1560-7917.ES.2021.26.29.2001600</a> PubMed PMID: <a href="https://www.ncbi.nlm.nih.gov/pubmed/34296675">34296675</a>; PubMed Central PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8299743">PMC8299743</a>.</div>
+</div>
+<div id="ref-olsenDecreasedInfluenzaActivity" class="csl-entry" role="listitem">
+<div class="csl-left-margin">3. </div><div class="csl-right-inline">Olsen SJ, Azziz-Baumgartner E, Budd AP, Brammer L, Sullivan S, Pineda RF, et al. Decreased <span>Influenza Activity During</span> the <span>COVID-19 Pandemic</span> — <span>United States</span>, <span>Australia</span>, <span>Chile</span>, and <span>South Africa</span>, 2020.</div>
+</div>
+<div id="ref-groves2021ImpactCOVID19Pandemic" class="csl-entry" role="listitem">
+<div class="csl-left-margin">4. </div><div class="csl-right-inline">Groves HE, Piché-Renaud PP, Peci A, Farrar DS, Buckrell S, Bancej C, et al. The impact of the <span>COVID-19</span> pandemic on influenza, respiratory syncytial virus, and other seasonal respiratory virus circulation in <span>Canada</span>: <span>A</span> population-based study. The Lancet Regional Health - Americas. 2021 Sep;1:100015. doi:<a href="https://doi.org/10.1016/j.lana.2021.100015">10.1016/j.lana.2021.100015</a></div>
+</div>
+<div id="ref-bents2022ImpactCOVID19Nonpharmaceutical" class="csl-entry" role="listitem">
+<div class="csl-left-margin">5. </div><div class="csl-right-inline">Bents S, Viboud C, Grenfell B, Hogan A, Tempia S, Gottberg AV, et al. The impact of <span>COVID-19</span> non-pharmaceutical interventions on future respiratory syncytial virus transmission in <span>South Africa</span>. <span>Public and Global Health</span>; 2022. doi:<a href="https://doi.org/10.1101/2022.03.12.22271872">10.1101/2022.03.12.22271872</a></div>
+</div>
+<div id="ref-karlinsky2021TrackingExcessMortality" class="csl-entry" role="listitem">
+<div class="csl-left-margin">6. </div><div class="csl-right-inline">Karlinsky A, Kobak D. Tracking excess mortality across countries during the <span>COVID-19</span> pandemic with the <span>World Mortality Dataset</span>. eLife. 2021 Jun;10:e69336. doi:<a href="https://doi.org/10.7554/eLife.69336">10.7554/eLife.69336</a></div>
+</div>
+<div id="ref-beeks2024CauseSpecificExcessMortality" class="csl-entry" role="listitem">
+<div class="csl-left-margin">7. </div><div class="csl-right-inline">Beeks VV, Achilleos S, Quattrocchi A, Pallari CTh, Critselis E, Salameh P, et al. Cause-<span>Specific Excess Mortality During</span> the <span>COVID-19 Pandemic</span> (2020–2021) in 12 <span>Countries</span> of the <span>C-MOR Consortium</span>. Journal of Epidemiology and Global Health. 2024 May;14(2):337–48. doi:<a href="https://doi.org/10.1007/s44197-024-00242-4">10.1007/s44197-024-00242-4</a></div>
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,851 @@
+---
+title: "Monitoring and Evaluation Dashboard"
+description: "Comparing vital registration data with Tembisa model and NCODV-corrected estimates for HIV/AIDS, TB, and poisoning mortality, plus data quality indicators"
+date: "2026-01-20"
+categories: [mortality, HIV, TB, poisoning, data-quality, timeliness, non-hospital]
+bibliography: references.bib
+csl: ../../vancouver.csl
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(ggplot2)
+library(plotly)
+library(htmlwidgets)
+library(arrow)
+library(data.table)
+library(flextable)
+library(conflicted)
+library(DT)
+library(readxl)
+library(haven)
+library(scales)
+
+# Resolve common conflicts between lubridate and data.table
+conflicts_prefer(
+  data.table::hour,
+  data.table::minute,
+  data.table::second,
+  data.table::year,
+  data.table::month,
+  data.table::mday,
+  data.table::wday
+)
+
+# Resolve conflicts between plotly and graphics
+conflicts_prefer(
+  plotly::layout
+)
+
+# -------------------------------------------------------------------------
+# Standardized data-quality TARGET (single source of truth for all figures)
+# Literature basis: WHO/GBD cause-of-death usability convention.
+#   - >20% of deaths assigned to ill-defined / garbage codes indicates
+#     LOW-quality, low-usability cause-of-death data.
+#   - <10% is the "high quality" benchmark.
+# Primary sources: Mathers et al. (2005), Bull WHO 83(3):171-7 (ill-defined
+#   % classification); Mahapatra et al. (2007), Lancet 370:1653-63 (CRVS
+#   series); Naghavi et al. (2010), Popul Health Metr 8:9 (garbage codes).
+# Target is rendered consistently as a RED DOTTED line + RED STAR (shape 8).
+# -------------------------------------------------------------------------
+dq_target          <- 20          # percent (usability upper bound)
+dq_target_high     <- 10          # percent (high-quality benchmark, in text)
+dq_target_colour   <- "#D32F2F"   # standardized red
+dq_target_lty      <- "dotted"
+
+# Auditability: capture render timestamp once
+render_stamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
+
+# Source the wrangling script if outputs are missing or stale
+output_file <- "../../outputs/me_plots.RData"
+wrangling_script <- "../../ME_wrangling.r"
+
+# Check if we need to re-run wrangling
+if (!file.exists(output_file)) {
+  message("Running wrangling script...")
+  source(wrangling_script, local = new.env())
+}
+
+# Load the pre-built plots
+load(output_file)
+
+# Source dashboard helpers for excess deaths functions
+helpersPath <- "../../dashboard/dashboard_helpers.r"
+if (file.exists(helpersPath)) {
+  source(helpersPath)
+}
+
+# Load analysis data for excess deaths calculations
+analysisPath <- "../../LGH_AnalysisData_2022.feather"
+if (file.exists(analysisPath)) {
+  dt_analysis <- read_feather(analysisPath) %>% as.data.table()
+}
+
+# Load external causes data (unnatural deaths)
+externalPath <- "../../Deaths2022_MRCversionFINAL.feather"  
+if (file.exists(externalPath)) {
+  dt_external <- read_feather(externalPath) %>% as.data.table()
+  # Filter to external causes only (V, W, X, Y codes)
+  dt_external <- dt_external[grepl("^[VWXY]", UnderlyingCause)]
+} else {
+  dt_external <- NULL
+}
+```
+
+## Overview
+
+::: {.callout-note appearance="minimal"}
+**Report generated:** `r render_stamp` &nbsp;·&nbsp; *Timestamp shown for auditability — re-rendering this dashboard refreshes it against the latest source data.*
+:::
+
+This dashboard compares vital registration (VR) data with alternative mortality data sources for monitoring and evaluation purposes:
+
+- **Tembisa Model**: Demographic projections for HIV/AIDS and TB mortality
+- **NCODV Study**: Verbal autopsy-corrected estimates (2017-2018)
+- **NMC Database**: Notifiable Medical Conditions surveillance data for TB and poisoning
+
+## HIV/AIDS Deaths {#hiv}
+
+### HIV/AIDS Mortality: VR vs Models
+
+```{r}
+#| label: hiv-plot
+
+ggplotly(p_hiv, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Key Findings
+- VR data substantially underestimates HIV/AIDS mortality compared to the Tembisa model
+- The NCODV study suggests ~23% of deaths may be HIV-related (2017-2018)
+- The gap has narrowed over time but remains significant
+:::
+
+::: {.callout-important icon=false}
+## So what? — Decision this data informs
+
+**Monitored action: correct certification and coding of HIV/AIDS as the underlying cause of death.**
+
+The gap between VR and the Tembisa model is driven mainly by HIV deaths being mis-certified to indicator or "garbage" causes (e.g. TB, pneumonia, anaemia, wasting) rather than to HIV/AIDS — a recognised driver of cause-of-death undercount in high-prevalence settings [@mathers2005; @naghavi2010].
+
+- **Trigger:** a persistent VR-vs-model gap, and an NCODV reattribution share (~23% of deaths HIV-related, 2017–2018) far exceeding the HIV fraction recorded in VR.
+- **Decision:** prioritise MCCD certifier training on naming HIV/AIDS as the underlying cause, and apply NCODV-based reattribution before reporting HIV mortality from VR.
+- **Expected effect:** the VR series moves **toward** the Tembisa model line as certification improves.
+- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track narrowing of the VR-vs-model gap.
+:::
+
+## TB Deaths {#tb}
+
+### TB Mortality: VR vs Models
+
+```{r}
+#| label: tb-plot
+
+ggplotly(p_tb, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-important icon=false}
+## So what? — Decision this data informs
+
+**Monitored action: correct certification and coding of TB as the underlying cause of death.**
+
+TB mortality in VR diverges from the Tembisa model and NMC notifications largely because TB deaths are mis-certified to terminal or ill-defined causes, or lost where HIV/TB co-morbidity is not correctly sequenced on the MCCD [@mathers2005; @naghavi2010].
+
+- **Trigger:** a VR count that sits below the Tembisa model and/or NMC notification trend for the same period.
+- **Decision:** prioritise MCCD certifier training on correct underlying-cause selection for TB (including HIV/TB sequencing), and reconcile VR against NMC notifications.
+- **Expected effect:** the VR series converges **toward** the model and notification trends as certification and coding improve.
+- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track convergence of the VR, model, and notification series.
+:::
+
+## Poisoning Deaths {#poisoning}
+
+### Poisoning Mortality: VR vs NMC
+
+```{r}
+#| label: poisoning-plot
+
+ggplotly(p_poisoning, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Key Findings
+- VR data captures poisoning deaths using ICD-10 codes X40-X49 (accidental poisoning) and X60-X69 (intentional self-poisoning)
+- NMC tracks notifications of agricultural and stock remedy poisoning cases
+- The comparison shows notification patterns vs recorded deaths from poisoning
+:::
+
+### Total Unnatural Deaths
+
+```{r}
+#| label: unnatural-plot
+#| eval: false
+
+ggplotly(p_unnatural, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-tip}
+## Understanding Unnatural Deaths
+This includes all external causes of death (ICD-10 chapters V, W, X, Y):
+- Transport accidents (V codes)
+- Other external causes like falls, drowning (W codes)  
+- Poisoning and exposure (X codes)
+- Assault and intentional harm (Y codes)
+
+Monitoring unnatural deaths helps assess injury prevention efforts and overall safety trends.
+:::
+
+## Excess Deaths Summary {#excess-deaths}
+
+This section provides a comprehensive overview of excess mortality by cause of death from 2019-2022, showing which conditions contributed most to excess deaths during the COVID-19 pandemic period.
+
+::: {.panel-tabset}
+
+#### Combined Natural & External Causes
+
+```{r}
+#| label: excess-deaths-combined-table
+#| fig-cap: "Combined excess deaths by Leading Group of Causes (LGH) and external causes, 2019-2022"
+
+if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
+  # Generate the enhanced table with both natural and external causes
+  if (exists("dt_external")) {
+    excess_table <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = TRUE)
+  } else {
+    # Fallback to natural causes only
+    excess_table <- tabulate_excess_grand_total(dt_analysis, years = 2019:2022)
+  }
+  excess_table
+} else {
+  cat("Data or functions not available for excess deaths analysis")
+}
+```
+
+::: {.callout-note}
+## Understanding the Combined Table
+- **Natural causes** (LGH codes): Positive values indicate excess deaths, negative values (green) indicate deficit deaths
+- **External causes** (Unnatural): Shows actual death counts (no baseline model available)
+- **Total column** shows cumulative excess/deficit across all years
+- **Color coding**: Green = deficit, Red = high excess (≥10,000/year or ≥50,000 total)
+- Data includes major external cause categories: road traffic accidents, falls, assault (gunshots), suicide, etc.
+:::
+
+#### Natural Causes Only
+
+```{r}
+#| label: excess-deaths-natural-only
+#| fig-cap: "Excess deaths by Leading Group of Causes (LGH) - natural causes only, 2019-2022"
+
+if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
+  # Generate table with natural causes only
+  excess_table_natural <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = FALSE)
+  excess_table_natural
+} else {
+  cat("Data or functions not available for natural causes analysis")
+}
+```
+
+::: {.callout-note}
+## Understanding Natural Causes Table
+- Shows **excess/deficit deaths** compared to baseline models for disease-related mortality
+- **Positive values** indicate more deaths than expected (excess mortality)
+- **Negative values** (green) indicate fewer deaths than expected (deficit mortality)
+- **LGH classification** groups causes into epidemiologically meaningful categories
+:::
+
+#### External Causes Only  
+
+```{r}
+#| label: excess-deaths-external-only
+#| fig-cap: "Unnatural deaths by external cause category, 2019-2022"
+#| eval: false
+
+if (exists("dt_external") && exists("tabulate_external_causes_only")) {
+  # Generate table with external causes only
+  external_table <- tabulate_external_causes_only(dt_external, years = 2019:2022)
+  external_table
+} else {
+  cat("External causes data or functions not available")
+}
+```
+
+::: {.callout-note}
+## Understanding External Causes Table  
+- Shows **actual death counts** for injury-related mortality (no baseline models available)
+- **Major categories**: Road traffic accidents (V01-V99), falls (W00-W19), assault/gunshots (X85-Y09), suicide (X60-X84), accidental poisoning (X40-X49), etc.
+- **High counts** (≥1,000/year or ≥5,000 total) are highlighted in red
+- Useful for monitoring injury prevention and safety trends
+:::
+
+:::
+
+## Data Quality: Garbage Codes {#garbage-codes}
+
+Garbage codes are ICD-10 codes that provide insufficient information about the underlying cause of death. Monitoring the proportion of non-garbage codes is essential for assessing data quality.
+
+### Overview of Death Distribution
+
+::: {.panel-tabset}
+
+#### By Province
+```{r}
+#| label: overview-province-plot
+
+ggplotly(p_overview_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### By Institution
+```{r}
+#| label: overview-instance-plot
+
+ggplotly(p_overview_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+### Garbage Code Trends
+
+::: {.panel-tabset}
+
+#### By Province
+```{r}
+#| label: garbage-province-plot
+
+ggplotly(p_garbage_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### By Institution Type
+```{r}
+#| label: garbage-instance-plot
+
+ggplotly(p_garbage_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+
+  # Look at the proportion of locations by province s
+```
+
+:::
+
+::: {.callout-tip}
+## Interpreting the Plots
+Hover over any point to see:
+- The proportion of non-garbage codes
+- Total deaths (N) in that province/institution
+- Percentage contribution to national deaths
+
+The **red dotted line / red star (★) at 80%** is the standardized data-quality target: ≥ 80% non-garbage (equivalently **≤ 20% garbage/ill-defined**) is the WHO/GBD usability cut-point above which cause-of-death data are considered acceptable; **< 10% garbage** marks high quality [@mathers2005; @mahapatra2007; @naghavi2010].
+:::
+
+## Non-Hospital Deaths {#non-hospital}
+
+Deaths occurring outside hospitals (at home, nursing homes, etc.) represent an important indicator for health system access and end-of-life care patterns.
+
+::: {.panel-tabset}
+
+#### By Province (Total)
+```{r}
+#| label: nonhospital-province-plot
+
+ggplotly(p_nonhospital_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### Trend Over Time
+```{r}
+#| label: nonhospital-trend-plot
+
+ggplotly(p_nonhospital_trend, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+::: {.callout-tip}
+## Interpreting Non-Hospital Deaths
+Hover over any point to see:
+- Non-hospital deaths (N) and percentage
+- Total deaths for comparison
+- Percentage contribution to national non-hospital deaths
+
+The **grey dashed line at 50%** is a **descriptive reference only** — it is *not* a literature-based quality target. It is styled differently (grey, no star) from the standardized red cause-of-death target to avoid implying a benchmark that the published CRVS literature does not define.
+:::
+
+## Report Timeliness {#timeliness}
+
+Stats SA releases mortality reports with a delay of several years. This section tracks the timeliness of releases.
+
+**Click on any point to open the corresponding Stats SA PDF report.**
+
+```{r}
+#| label: timeliness-plot
+
+p_timeliness_interactive
+```
+
+### Registration Delay: Timeliness vs. Completeness Tradeoff {#reg-tradeoff}
+
+Each death record carries a **date of death** and a **date of registration**. The gap between them — the *registration lag* — drives a fundamental tradeoff: publishing statistics soon after the death year is **timely** but misses deaths that are registered late, while waiting longer captures those late registrations and is more **complete**. Using registration timing as a proxy, the curve below shows, for each death-year cohort, the cumulative share of its registered deaths captured by *N* years after death.
+
+```{r}
+#| label: reg-tradeoff-plot
+#| echo: false
+#| warning: false
+#| message: false
+
+reg_cols <- c("DeathYear", "DeathMonth", "DeathDay",
+              "RegistrationYear", "RegistrationMonth", "RegistrationDay")
+
+reg_raw <- read_feather("../../LGH_MasterFile_preCollapsed2022.feather",
+                        col_select = reg_cols) |> as.data.table()
+reg_raw[, (reg_cols) := lapply(.SD, function(x) as.integer(zap_labels(x))),
+        .SDcols = reg_cols]
+
+reg_raw[, raw_lag := RegistrationYear - DeathYear]
+reg_raw[, lag_yr := pmax(raw_lag, 0L)]
+
+# --- Data-quality flags to surface as limitations / checks ---
+flag_partial2013 <- reg_raw[DeathYear == 2013, .N]      # partial cohort in extract
+flag_neg_lag     <- reg_raw[raw_lag < 0L, .N]           # registered before death (impossible)
+flag_floored     <- reg_raw[raw_lag < 0L, .N]           # records floored to lag 0
+flag_late5       <- reg_raw[raw_lag > 5L, .N]           # very late (>5 yr) registrations
+
+# Full-year cohorts only (2013 is a partial cohort in this extract)
+reg_dt   <- reg_raw[DeathYear %in% 2014:2022]
+max_reg  <- 2024L   # latest registration year present in the extract
+max_lag  <- 5L
+
+cohort_n <- reg_dt[, .(N = .N), by = DeathYear]
+cum      <- reg_dt[, .(n = .N), by = .(DeathYear, lag = pmin(lag_yr, max_lag))]
+grid     <- CJ(DeathYear = 2014:2022, lag = 0:max_lag)
+cum      <- cum[grid, on = .(DeathYear, lag)][is.na(n), n := 0L]
+setorder(cum, DeathYear, lag)
+cum[cohort_n, N := i.N, on = "DeathYear"]
+cum[, cum_pct := cumsum(n) / N * 100, by = DeathYear]
+
+# Draw each cohort only up to its observed maximum lag (right-truncation honesty)
+cum[, obs_max_lag := max_reg - DeathYear]
+cum_plot <- cum[lag <= obs_max_lag]
+cum_plot[, tt := paste0("Death cohort: ", DeathYear,
+                        "<br>Within ", lag, " yr of death: ",
+                        sprintf("%.2f%%", cum_pct))]
+
+p_tradeoff <- ggplot(cum_plot,
+                     aes(lag, cum_pct, colour = DeathYear,
+                         group = DeathYear, text = tt)) +
+  geom_vline(xintercept = 1, linetype = "dashed", colour = "grey50") +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 1.6) +
+  scale_colour_viridis_c(name = "Death\nyear", breaks = seq(2014, 2022, 2)) +
+  scale_x_continuous(breaks = 0:max_lag) +
+  coord_cartesian(ylim = c(floor(min(cum_plot$cum_pct)), 100)) +
+  labs(
+    title    = "Registration timeliness vs. completeness, by death-year cohort",
+    subtitle = "Cumulative % of each cohort registered by N years after death\nDashed line = 1-year publication cut-off; rise to its right = completeness gained by waiting",
+    x        = "Years after death (registration lag)",
+    y        = "Cumulative % of cohort registered"
+  ) +
+  theme_minimal(base_size = 12)
+
+ggplotly(p_tradeoff, tooltip = "text") |>
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Interpreting the Tradeoff
+- The **height at lag 0** is the *timely* share — deaths registered in the same calendar year (≈ 98.5–99.2% across cohorts), so South African VR registration is highly timely.
+- The **rise between lag 0 and lag 1** is the *completeness gain* from waiting one extra year; it adds only ≈ 0.6–1.3 percentage points, after which the curves plateau.
+- **Tradeoff implication:** publishing one year after the death year (dashed line) captures ≈ 99.8% of all eventually-registered deaths, so the completeness penalty for timely release is small.
+- Recent cohorts (2021–2022) are **right-truncated** — they can only be observed to registration year `r max_reg` — so their curves stop at a shorter lag.
+:::
+
+::: {.callout-warning icon=false}
+## ⚠ Data limitations & checks to investigate
+These handling decisions are applied above so the plot is honest, but each one flags a record-level issue that should be **checked at source** rather than silently corrected:
+
+- **2013 is a partial cohort** (`r format(flag_partial2013, big.mark=",")` records) and is **excluded** from cohort comparisons — its same-year registration share (≈ 54%) reflects a truncated extract window, not poor timeliness. *Check:* confirm the extract's start date and whether earlier 2013 deaths live in a separate file.
+- **Negative registration lags** (`r format(flag_neg_lag, big.mark=",")` record(s)) imply a death registered *before* it occurred — logically impossible. These are **floored to lag 0** for plotting. *Check:* audit these records for transposed or mis-keyed death/registration dates.
+- **Very late registrations** (>5 years: `r format(flag_late5, big.mark=",")` records) are **capped at lag 5** in the cumulative curve. *Check:* verify whether these are genuine late registrations (e.g. delayed/contested deaths) or data-entry errors in the year fields.
+
+None of these materially change the headline (≈ 99.8% within one year), but they should be triaged as part of routine VR data-quality control.
+:::
+
+## Data Sources
+
+| Source | Description | Coverage |
+|--------|-------------|----------|
+| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
+| Thembisa Model v4.8 | HIV/AIDS demographic projections | 1997-2025 |
+| NCODV Study | Verbal autopsy validation | 2017-2018 |
+| NMC Database | TB and poisoning surveillance notifications | 2017-2024 |
+
+## Methods
+
+### Garbage Code Classification
+
+Deaths are classified using the WHO garbage code framework. A death is considered "not garbage" if the underlying cause code provides meaningful epidemiological information.
+
+### Data Sources
+
+- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather`
+- **Tembisa**: Age-specific mortality outputs from version 4.8
+- **NMC**: Notifiable conditions from the surveillance database
+
+---
+
+## South Africa CRVS Monitoring Indicators (Cause-of-Death Focus) {#crvs-compendium}
+
+The table below lists the **South Africa CRVS monitoring indicators with a cause-of-death focus** (v1, June 2025). This is the SA-contextualised indicator set spanning the CRVS pathway — from notification and registration through medical certification, cause-of-death coding, quality control, and vital-statistics generation. Use the column filters and search box to explore indicators by CRVS milestone or performance domain.
+
+```{r}
+#| label: crvs-compendium-table
+#| echo: false
+
+compendium_raw <- read_excel(
+  "20260506_SA_CRVS_monitoring_indicators_COD_focus_V1.xlsx",
+  sheet = "Indicators"
+)
+compendium_raw <- compendium_raw[!is.na(compendium_raw$Indicator), ]
+
+datatable(
+  compendium_raw[, c("Indicator", "CRVS milestone", "Performance domain",
+                     "Desagregation level", "Numerator", "Denominator",
+                     "Compendium APP")],
+  colnames = c("Disaggregation level" = "Desagregation level",
+               "In compendium APP"    = "Compendium APP"),
+  filter     = "top",
+  extensions = "Buttons",
+  rownames   = FALSE,
+  options    = list(
+    dom        = "Bfrtip",
+    buttons    = c("csv", "excel"),
+    pageLength = 15,
+    scrollX    = TRUE,
+    autoWidth  = FALSE,
+    columnDefs = list(
+      list(width = "260px", targets = 0),   # Indicator
+      list(width = "180px", targets = 4),   # Numerator
+      list(width = "180px", targets = 5)    # Denominator
+    )
+  )
+)
+```
+
+---
+
+## Data Quality: Facility-Type Decision Framework {#facility-dq}
+
+Using a **decision-first** approach, this section identifies which `facility_type` presents the greatest data quality burden. Three indicators aligned to the SA CRVS monitoring set are computed from individual death records (2015–2022):
+
+| Indicator | SA monitoring indicator | Definition |
+|---|---|---|
+| Any garbage CoD | *Percent of medically certified deaths coded with an unusable cause* | Underlying cause coded as any garbage category (flag > 0) |
+| Ill-defined CoD | *Percent of medically certified deaths with ill-defined cause of death* | Underlying cause is a symptom / ill-defined (R-codes; flag = 1) |
+| Non-medical ascertainment | *Percent of deaths occurring outside health facilities with no medically certified cause of death* | Death certified by family interview, "Other", or unspecified (not by a medical practitioner or autopsy) |
+
+**Facility types** are grouped as: *In-hospital* (Hospital, Emergency room/Outpatient, Dead on arrival, Nursing home) and *Out-of-hospital* (Home, Other). Records with Unspecified/Unknown institution are excluded from facility comparisons.
+
+```{r}
+#| label: dq-data-load
+#| include: false
+
+dt_raw <- read_feather("../../LGH_MasterFile_preCollapsed2022.feather") |>
+  as.data.table()
+
+dt_raw[, `:=`(
+  DeathInst     = as_factor(DeathInst),
+  DeathProvince = as_factor(DeathProvince),
+  Ascertainment = as_factor(Ascertainment)
+)]
+
+dt_raw[, facility_type := fcase(
+  DeathInst %in% c("Hospital", "Emergency room/Outpatient",
+                   "Dead on arrival", "Nursing home"),  "In-hospital",
+  DeathInst %in% c("Home", "Other"),                   "Out-of-hospital",
+  default = NA_character_
+)]
+
+medical_vals <- c(
+  "Autopsy",
+  "Post mortem examination",
+  "Opinion of attending medical practitioner",
+  "Opinion of attending medical practitioner on duty",
+  "Opinion of registered professional nurse",
+  "Autopsy results may be available later"
+)
+
+dt_raw[, `:=`(
+  is_garbage    = garbage_flag > 0L,
+  is_illdefined = garbage_flag == 1L,
+  is_nonmedical = !(as.character(Ascertainment) %in% medical_vals)
+)]
+
+dt_dq <- dt_raw[DeathYear %in% 2015:2022 & !is.na(facility_type)]
+```
+
+### Summary: Which Facility Type Has the Worst Data Quality? {#facility-dq-summary}
+
+```{r}
+#| label: dq-summary-table
+#| echo: false
+
+summary_dq <- dt_dq[, .(
+  `Deaths (N)`            = comma(.N),
+  `Any garbage CoD (%)`   = round(mean(is_garbage)    * 100, 1),
+  `Ill-defined CoD (%)`   = round(mean(is_illdefined) * 100, 1),
+  `Non-medical cert. (%)` = round(mean(is_nonmedical) * 100, 1)
+), by = .(facility_type)][order(-`Any garbage CoD (%)`)]
+
+setnames(summary_dq, "facility_type", "Facility type")
+
+flextable(as.data.frame(summary_dq)) |>
+  set_caption("Data quality indicators by facility type, South Africa 2015–2022 (pooled)") |>
+  bold(part = "header") |>
+  bg(i = 1, bg = "#FFF3E0", part = "body") |>
+  autofit()
+```
+
+::: {.callout-warning}
+The facility type with the **highest** any-garbage percentage (top row) is the primary focus for data quality improvement efforts.
+:::
+
+---
+
+### National Trends: In-Hospital vs. Out-of-Hospital {#national-dq-trends}
+
+Three quality metrics tracked annually, 2015–2022.
+
+```{r}
+#| label: national-dq-panel
+#| echo: false
+#| fig-height: 5
+
+nat_dq <- dt_dq[, .(
+  n              = .N,
+  pct_garbage    = mean(is_garbage)    * 100,
+  pct_illdefined = mean(is_illdefined) * 100,
+  pct_nonmedical = mean(is_nonmedical) * 100
+), by = .(DeathYear, facility_type)]
+
+nat_long <- melt(
+  nat_dq,
+  id.vars      = c("DeathYear", "facility_type", "n"),
+  measure.vars = c("pct_garbage", "pct_illdefined", "pct_nonmedical"),
+  variable.name = "indicator", value.name = "pct"
+)
+
+nat_long[, indicator_label := fcase(
+  indicator == "pct_garbage",    "Any garbage CoD (%) [CoD073]",
+  indicator == "pct_illdefined", "Ill-defined CoD (%) [CoD045]",
+  indicator == "pct_nonmedical", "Non-medical ascertainment (%)"
+)]
+
+nat_long[, tooltip_text := paste0(
+  facility_type, "\n",
+  "Year: ", DeathYear, "\n",
+  round(pct, 1), "%\n",
+  "N = ", comma(n)
+)]
+
+# Mahapatra (2007) 20% target applies only to the garbage / ill-defined facets
+target_nat <- data.table(
+  indicator_label = c("Any garbage CoD (%) [CoD073]",
+                      "Ill-defined CoD (%) [CoD045]"),
+  yint = dq_target,
+  xstar = 2015
+)
+
+p_nat <- ggplot(nat_long,
+  aes(x = DeathYear, y = pct, colour = facility_type,
+      group = facility_type, text = tooltip_text)) +
+  geom_hline(data = target_nat, aes(yintercept = yint),
+             linetype = dq_target_lty, colour = dq_target_colour,
+             linewidth = 0.7, inherit.aes = FALSE) +
+  geom_point(data = target_nat, aes(x = xstar, y = yint),
+             shape = 8, colour = dq_target_colour, size = 3,
+             inherit.aes = FALSE) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.2) +
+  facet_wrap(~indicator_label, ncol = 3, scales = "free_y") +
+  scale_colour_manual(
+    values = c("In-hospital" = "#1976D2", "Out-of-hospital" = "#E64A19")
+  ) +
+  scale_x_continuous(breaks = 2015:2022) +
+  labs(x = NULL, y = "Percentage (%)", colour = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position  = "bottom",
+    axis.text.x      = element_text(angle = 45, hjust = 1),
+    strip.text       = element_text(size = 10, face = "bold"),
+    panel.spacing    = unit(1.2, "lines")
+  )
+
+ggplotly(p_nat, tooltip = "text") |>
+  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.2))
+```
+
+::: {.callout-tip appearance="simple"}
+The **red dotted line / red star (★)** marks the standardized **20% target**: the WHO/GBD usability cut-point above which cause-of-death data are considered **low quality** because too many deaths are assigned to ill-defined / garbage codes [@mathers2005; @mahapatra2007; @naghavi2010]. Values **below** the line are usable; **< 10%** is the high-quality benchmark [@mathers2005]. The target applies to the garbage and ill-defined panels only.
+:::
+
+---
+
+### Provincial Breakdown: In-Hospital vs. Out-of-Hospital {#provincial-dq}
+
+Each panel below shows all nine provinces. Lines track each facility type across 2015–2022.
+
+::: {.panel-tabset}
+
+#### Any Garbage CoD (%)
+
+```{r}
+#| label: prov-garbage-panel
+#| echo: false
+#| fig-height: 9
+
+prov_dq <- dt_dq[, .(
+  n              = .N,
+  pct_garbage    = mean(is_garbage)    * 100,
+  pct_illdefined = mean(is_illdefined) * 100,
+  pct_nonmedical = mean(is_nonmedical) * 100
+), by = .(DeathYear, DeathProvince, facility_type)]
+
+p_prov_gg <- ggplot(prov_dq,
+  aes(x = DeathYear, y = pct_garbage, colour = facility_type,
+      group = facility_type,
+      text = paste0(facility_type, "\n", DeathProvince,
+                    "\nYear: ", DeathYear,
+                    "\n", round(pct_garbage, 1), "% garbage\n",
+                    "N = ", comma(n)))) +
+  geom_hline(yintercept = dq_target, linetype = dq_target_lty,
+             colour = dq_target_colour, linewidth = 0.6) +
+  annotate("point", x = 2015, y = dq_target, shape = 8,
+           colour = dq_target_colour, size = 2.5) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.8) +
+  facet_wrap(~DeathProvince, ncol = 3) +
+  scale_colour_manual(
+    values = c("In-hospital" = "#1976D2", "Out-of-hospital" = "#E64A19")
+  ) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021),
+                     labels = c("'15","'17","'19","'21")) +
+  labs(x = NULL, y = "Any garbage CoD (%)", colour = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x     = element_text(angle = 45, hjust = 1),
+    strip.text      = element_text(size = 9, face = "bold"),
+    panel.spacing   = unit(0.8, "lines")
+  )
+
+ggplotly(p_prov_gg, tooltip = "text") |>
+  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.1))
+```
+
+#### Ill-Defined CoD (%)
+
+```{r}
+#| label: prov-illdefined-panel
+#| echo: false
+#| fig-height: 9
+
+p_prov_id <- ggplot(prov_dq,
+  aes(x = DeathYear, y = pct_illdefined, colour = facility_type,
+      group = facility_type,
+      text = paste0(facility_type, "\n", DeathProvince,
+                    "\nYear: ", DeathYear,
+                    "\n", round(pct_illdefined, 1), "% ill-defined\n",
+                    "N = ", comma(n)))) +
+  geom_hline(yintercept = dq_target, linetype = dq_target_lty,
+             colour = dq_target_colour, linewidth = 0.6) +
+  annotate("point", x = 2015, y = dq_target, shape = 8,
+           colour = dq_target_colour, size = 2.5) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.8) +
+  facet_wrap(~DeathProvince, ncol = 3) +
+  scale_colour_manual(
+    values = c("In-hospital" = "#1976D2", "Out-of-hospital" = "#E64A19")
+  ) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021),
+                     labels = c("'15","'17","'19","'21")) +
+  labs(x = NULL, y = "Ill-defined CoD (%)", colour = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x     = element_text(angle = 45, hjust = 1),
+    strip.text      = element_text(size = 9, face = "bold"),
+    panel.spacing   = unit(0.8, "lines")
+  )
+
+ggplotly(p_prov_id, tooltip = "text") |>
+  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.1))
+```
+
+#### Non-Medical Ascertainment (%)
+
+```{r}
+#| label: prov-nonmedical-panel
+#| echo: false
+#| fig-height: 9
+
+p_prov_nm <- ggplot(prov_dq,
+  aes(x = DeathYear, y = pct_nonmedical, colour = facility_type,
+      group = facility_type,
+      text = paste0(facility_type, "\n", DeathProvince,
+                    "\nYear: ", DeathYear,
+                    "\n", round(pct_nonmedical, 1), "% non-medical\n",
+                    "N = ", comma(n)))) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.8) +
+  facet_wrap(~DeathProvince, ncol = 3) +
+  scale_colour_manual(
+    values = c("In-hospital" = "#1976D2", "Out-of-hospital" = "#E64A19")
+  ) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021),
+                     labels = c("'15","'17","'19","'21")) +
+  labs(x = NULL, y = "Non-medical ascertainment (%)", colour = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x     = element_text(angle = 45, hjust = 1),
+    strip.text      = element_text(size = 9, face = "bold"),
+    panel.spacing   = unit(0.8, "lines")
+  )
+
+ggplotly(p_prov_nm, tooltip = "text") |>
+  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.1))
+```
+
+:::
+
+::: {.callout-important icon=false}
+## So what? — Decision this data informs
+
+**Monitored action: completion of the *Medical Certification of Cause of Death (MCCD)* course on the Knowledge Hub.**
+
+Poor cause-of-death quality is driven mainly by how certifiers complete the MCCD. These panels turn that into a concrete decision:
+
+- **Trigger:** any facility type / province sitting **above the 20% target** (red dotted line / ★) on the *garbage* or *ill-defined* panels — the WHO/GBD threshold above which cause-of-death data are deemed low quality / unusable [@mathers2005; @mahapatra2007; @naghavi2010].
+- **Decision:** prioritise that facility type / province for **MCCD course enrolment and completion** on the Knowledge Hub.
+- **Expected effect:** garbage and ill-defined percentages move **toward and below** the red target line in subsequent years.
+- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp at the top) and track movement of the In-hospital (blue) vs Out-of-hospital (orange) lines relative to the target.
+
+A persistent gap between In-hospital and Out-of-hospital lines signals a structural certification deficit — typically community/home deaths lacking a medically certified cause — and indicates where MCCD training and support will yield the largest quality gains.
+
+*Indicator definitions:* **Any garbage CoD** = underlying cause too vague or implausible to be informative (WHO garbage code framework); **Ill-defined CoD** = ICD-10 Chapter XVIII (R00–R99) symptoms/signs (CoD045 proxy); **Non-medical ascertainment** = death attested by a family member, "Other", or left unspecified (no Mahapatra target applies).
+:::
+
+---
+
+## References {.unnumbered}
+
+::: {#refs}
+:::
+

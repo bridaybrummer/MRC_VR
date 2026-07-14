@@ -1,0 +1,507 @@
+---
+title: "Poisoning Deaths in South Africa"
+description: "Epidemiology of poisoning-related mortality from the national vital registration system, 1997–2022"
+date: "2026-03-09"
+categories: [poisoning, injury-mortality, vital-registration, icd10, epidemiology]
+bibliography: poisoning_references.bib
+csl: ../../vancouver.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+format:
+  html:
+    other-links:
+      - text: "Download PDF"
+        icon: file-pdf
+        href: index.pdf
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: false
+    geometry: margin=2.5cm
+    fontsize: 11pt
+    fig-width: 7
+    fig-height: 4.5
+    keep-tex: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(data.table)
+library(ggplot2)
+library(flextable)
+library(scales)
+library(sf)
+
+if (file.exists("poisoning_results.rda")) {
+  load("poisoning_results.rda")
+} else {
+  stop("Run poisoning_wrangling.R first:\n  Rscript projects/poisoning_deaths/poisoning_wrangling.R")
+}
+```
+
+## Overview
+
+Poisoning is a significant cause of injury death in South Africa. This page describes the epidemiology of poisoning deaths recorded in the national vital registration (VR) system, using underlying-cause ICD-10 codes. Four intent categories are distinguished, though **the category boundaries are substantially distorted by the absence of a manner of death field on the South African death notification form** (see methodological note below):
+
+| ICD-10 block | Category | Description |
+|:---|:---|:---|
+| X40–X49 | Accidental / unspecified | Unintentional exposure *or intent not documented on DNF* (ICD-10 default) |
+| X60–X69 | Self-harm | Intentional self-poisoning |
+| X85 | Assault | Poisoning inflicted by another person |
+| Y10–Y19 | Undetermined | Intent unknown or not specified |
+
+::: {.callout-important}
+## Caution: intent categories reflect ICD-10 coding defaults, not certified intent
+
+South Africa's death notification form (DNF) **does not include a field for manner of death**, contrary to the WHO-recommended Medical Certificate of Cause of Death [@groenewald2023importance]. Under ICD-10 Volume 2 coding rules, when manner of death is not stated by the certifier, external cause deaths are assigned to the most appropriate **Accidental** code by default [@who2016icd10].
+
+This structural omission has two direct consequences for the intent breakdown presented in this analysis:
+
+- **"Accidental" (X40–X49) is substantially over-represented.** In the absence of a certified manner, Stats SA coders apply the ICD-10 default and assign an accidental poisoning code. The scale of this effect is illustrated starkly for firearm deaths: Groenewald et al. (2023) showed that in Stats SA's 2017 data, **98.7% of firearm deaths were coded as accidental**, while the National Cause-of-Death Validation (NCoDV) forensic data from the same period found 88.5% were homicides [@groenewald2023misclassification]. The same mechanism applies to poisoning, where the absence of certified intent causes genuine self-harm and assault deaths to be silently absorbed into the accidental category.
+
+- **"Self-harm" (X60–X69) and "Undetermined" (Y10–Y19) are substantially under-represented.** These categories require the certifier to explicitly document suicidal intent or uncertainty — information that in South Africa is almost exclusively available from forensic pathology reports. Non-forensic certifiers (the majority for poisoning deaths in clinical settings) default to the accidental category or do not specify intent, regardless of clinical context or stigma considerations [@prinsloo2017; @norman2007; @pillayvwyk2016].
+
+**Interpretation:** The "Accidental" category in these data should be read as **"accidental or intent not specified."** The true proportion of intentional and undetermined-intent poisoning deaths is almost certainly higher than shown. Accurate intent-stratified estimates require triangulation with forensic mortality surveillance data, poison information centre (NPIS) call records, and other independent sources [@prinsloo2024].
+:::
+
+### Summary statistics
+
+```{r}
+#| label: tbl-overall
+#| tbl-cap: "Table 1. Overall summary — poisoning deaths, vital registration"
+
+if (exists("tbl_overall")) {
+  flextable(as.data.frame(tbl_overall)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    width(j = 1, width = 2.8) |>
+    width(j = 2, width = 2.5)
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+---
+
+## Trends over time
+
+### Annual deaths and crude death rate
+
+```{r}
+#| label: fig-annual-trend
+#| fig-cap: "Fig. 1. Annual poisoning deaths. Bars = observed count; dashed red line = OLS trend with 95% CI."
+#| fig-width: 9
+#| fig-height: 4.5
+
+if (exists("fig_annual_trend")) fig_annual_trend else message("Run poisoning_wrangling.R")
+```
+
+```{r}
+#| label: fig-crude-rate-trend
+#| fig-cap: "Fig. 2. Annual poisoning crude death rate (deaths per 100,000 population)."
+#| fig-width: 9
+#| fig-height: 4.5
+
+if (exists("fig_crude_rate_trend")) fig_crude_rate_trend else message("Run poisoning_wrangling.R")
+```
+
+### Deaths by intent
+
+The **"Accidental/unspec."** category (blue) dominates because ICD-10 Vol. 2 coding rules assign an accidental code whenever manner of death is not stated — see the methodological note above [@groenewald2023importance; @who2016icd10].
+
+```{r}
+#| label: fig-intent-trend
+#| fig-cap: "Fig. 3. Annual poisoning deaths by intent (stacked area). Blue = accidental/unspecified; red = self-harm; orange = assault; green = undetermined."
+#| fig-width: 9
+#| fig-height: 5
+
+if (exists("fig_intent_trend")) fig_intent_trend else message("Run poisoning_wrangling.R")
+```
+
+### Annual summary
+
+```{r}
+#| label: tbl-year-summary
+#| tbl-cap: "Table 2. Annual poisoning deaths by intent, % male, and median age."
+
+if (exists("tbl_year_summary")) {
+  flextable(as.data.frame(tbl_year_summary)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    fontsize(size = 9, part = "all") |>
+    autofit()
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+---
+
+## Epicurve
+
+### Monthly time series
+
+The monthly epicurve shows all poisoning deaths from 1997 to 2022, stacked by intent category. The overlaid LOESS smoother (dark line with 95% CI) tracks the long-term trajectory of total counts while the stacked colours reveal whether any compositional shift in intent type accompanied the volume change.
+
+```{r}
+#| label: fig-weekly-epicurve
+#| fig-cap: "Fig. 3. Monthly poisoning deaths by intent (stacked bars). Dark line + band = LOESS total-count smoother (span ≈ 5-year window) with 95% CI. The dominant blue category ('Accidental/unspec.') is inflated by the ICD-10 coding default applied whenever manner of death is absent from the death notification form."
+#| fig-width: 11
+#| fig-height: 4.5
+
+if (exists("fig_weekly_epicurve")) fig_weekly_epicurve else message("Run poisoning_wrangling.R")
+```
+
+### Monthly seasonality
+
+Average deaths per calendar month (averaged across all years), with ±1 SD error bars. A consistent seasonal pattern would suggest environmental or behavioural drivers (e.g. agricultural pesticide exposure in summer, indoor heating–related gas poisoning in winter).
+
+```{r}
+#| label: fig-seasonality
+#| fig-cap: "Fig. 4. Mean poisoning deaths per calendar month (+/-1 SD across years)."
+#| fig-width: 9
+#| fig-height: 4
+
+if (exists("fig_seasonality")) fig_seasonality else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Age and sex
+
+### Age-sex pyramid
+
+The population pyramid shows the sex- and age-distribution of all poisoning deaths. Males to the left, females to the right.
+
+```{r}
+#| label: fig-pyramid
+#| fig-cap: "Fig. 5. Age-sex pyramid — all poisoning deaths. Blue = male; red = female."
+#| fig-width: 7
+#| fig-height: 7
+
+if (exists("fig_pyramid")) fig_pyramid else message("Run poisoning_wrangling.R")
+```
+
+### Age-sex pyramid by intent
+
+```{r}
+#| label: fig-pyramid-intent
+#| fig-cap: "Fig. 6. Age-sex pyramids by intent category (accidental/unspecified, self-harm, undetermined). The 'Accidental/unspec.' panel is the most affected by the ICD-10 coding default and likely absorbs cases of genuine self-harm and undetermined intent. X-axis scales differ by panel."
+#| fig-width: 11
+#| fig-height: 7
+
+if (exists("fig_pyramid_intent")) fig_pyramid_intent else message("Run poisoning_wrangling.R")
+```
+
+### Age × sex table
+
+```{r}
+#| label: tbl-age-sex
+#| tbl-cap: "Table 3. Poisoning deaths by age group and sex"
+
+if (exists("tbl_age_sex")) {
+  flextable(as.data.frame(tbl_age_sex)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    autofit()
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+---
+
+## Age-group trends over time
+
+### Age × year heatmap — nominal counts
+
+Each cell shows the **absolute number of poisoning deaths** in that age band and calendar year. This reveals which groups contribute the most deaths in volume terms and allows direct comparison across time.
+
+```{r}
+#| label: fig-age-year-count-heatmap
+#| fig-cap: "Fig. 9a. Annual poisoning deaths by age group (raw count). Darker = more deaths."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_age_year_count_heatmap")) fig_age_year_count_heatmap else message("Run poisoning_wrangling.R")
+```
+
+### Age × year heatmap — proportional share
+
+Each cell shows that age band's **share of that year's total poisoning deaths** (%). Using proportions rather than raw counts removes the effect of overall volume changes and isolates structural shifts in the age distribution — e.g. a darkening row signals a rising share for that group regardless of whether total deaths rose or fell.
+
+```{r}
+#| label: fig-age-year-heatmap
+#| fig-cap: "Fig. 9b. Proportion of annual poisoning deaths by age group (heatmap). Darker = higher share. Each column sums to 100%."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_age_year_heatmap")) fig_age_year_heatmap else message("Run poisoning_wrangling.R")
+```
+
+### Estimated annual percentage change (EAPC) by age group
+
+The EAPC is derived from a log-linear regression of annual death counts on calendar year for each age band independently (with a 0.5 continuity correction for zero counts). It estimates the average year-on-year percentage change across 1997–2022. Red = increasing trend; blue = decreasing; faded points indicate *p* ≥ 0.05. This is the standard WHO / GBD approach for characterising mortality trends by subgroup.
+
+```{r}
+#| label: fig-age-eapc
+#| fig-cap: "Fig. 10. EAPC by age group with 95% CI. Solid (opaque) points are statistically significant (p < 0.05). EAPC = estimated annual % change in poisoning death count, 1997–2022."
+#| fig-width: 7
+#| fig-height: 6.5
+
+if (exists("fig_age_eapc")) fig_age_eapc else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Age-group trends by sex
+
+The three figures below stratify the age-trend analysis by sex, enabling direct comparison between male and female poisoning death patterns — e.g. whether rising counts in older age groups are driven by males, and whether any increase in younger age groups is female-predominant.
+
+### Age × year heatmap — counts by sex
+
+Two side-by-side heatmaps showing raw death counts. Allows comparison of absolute burden between sexes across the age-year space.
+
+```{r}
+#| label: fig-age-year-sex-count
+#| fig-cap: "Fig. 11a. Annual poisoning deaths by age group, stratified by sex (raw count). Each panel's colour scale is shared, so darker cells can be compared directly between male and female panels."
+#| fig-width: 11
+#| fig-height: 5.5
+
+if (exists("fig_age_year_sex_count")) fig_age_year_sex_count else message("Run poisoning_wrangling.R")
+```
+
+### Age × year heatmap — within-sex proportional share
+
+Each cell is the **percentage of that sex's total deaths** in that year falling in that age band. Proportions are computed separately within each sex, so the panels show whether the *age structure* of male and female poisoning deaths has shifted over time — independently of the overall sex ratio in deaths.
+
+```{r}
+#| label: fig-age-year-sex-prop
+#| fig-cap: "Fig. 11b. Proportion of annual poisoning deaths by age group within each sex. Each panel's columns sum to 100%."
+#| fig-width: 11
+#| fig-height: 5.5
+
+if (exists("fig_age_year_sex_prop")) fig_age_year_sex_prop else message("Run poisoning_wrangling.R")
+```
+
+### EAPC by age group — male vs female comparison
+
+Log-linear EAPC estimated separately for each age group × sex combination. Blue circles = males; red triangles = females; faded = *p* ≥ 0.05. Reading across a row for a given age band shows which sex is driving any trend — and whether both sexes are changing in the same direction and magnitude.
+
+```{r}
+#| label: fig-age-sex-eapc
+#| fig-cap: "Fig. 12. EAPC by age group and sex with 95% CI. Blue circle = male; red triangle = female. Faded = non-significant (p ≥ 0.05). Points are horizontally dodged for legibility."
+#| fig-width: 8
+#| fig-height: 6.5
+
+if (exists("fig_age_sex_eapc")) fig_age_sex_eapc else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Geographic distribution
+
+Counts by province of **usual residence** (`ResProvince`), excluding records coded as "Outside SA" or "Unspecified".
+
+### District hot spots: last 3 years
+
+Pooling the last 3 years stabilizes district-level crude rates and makes potential geographic hot spots easier to interpret than a single-year map.
+
+```{r}
+#| label: fig-district-hotspot-map-3yr
+#| fig-cap: "Fig. 7a. District hot spot map from pooled crude poisoning death rates over the last 3 years. Red = top decile of district crude rates; blue = bottom decile."
+#| fig-width: 8
+#| fig-height: 6
+
+if (exists("fig_district_hotspot_map_3yr")) fig_district_hotspot_map_3yr else message("Run poisoning_wrangling.R")
+```
+
+```{r}
+#| label: fig-provincial
+#| fig-cap: "Fig. 7. Poisoning deaths by province of usual residence. Provinces ordered by count."
+#| fig-width: 8
+#| fig-height: 5
+
+if (exists("fig_provincial")) fig_provincial else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Cause breakdown — ICD subcodes
+
+The top 15 three-character ICD-10 subcodes within the poisoning block, ranked by total deaths across the study period.
+
+```{r}
+#| label: fig-top-icd
+#| fig-cap: "Fig. 8. Top 15 ICD-10 subcodes for poisoning deaths."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_top_icd")) fig_top_icd else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Years of Life Lost (YLL)
+
+YLL is computed as the sum of remaining life expectancy at age of death across all registered poisoning deaths with a known, valid age and documented sex (male or female). Individual ages are mapped to WHO standard remaining life expectancy using linear interpolation of the WHO reference life table (Murray 1994; LE at birth = 82.5 years). Records with unknown age or unknown/other sex are excluded from this section but remain in the death-count analyses above.
+
+::: {.callout-note}
+## Reference life table
+
+The WHO/GBD standard life table (Murray 1994) anchors YLL at a life expectancy of **82.5 years at birth**, providing a universal comparison benchmark independent of local South African life expectancy — which has fluctuated substantially over the study period due to HIV/AIDS and ART roll-out. Using a fixed standard means YLL reflects potential life lost relative to a best-practice survival frontier rather than current national survival. Standard values used for key ages: age 0 → 82.5 yr; age 20 → 62.8 yr; age 40 → 43.1 yr; age 60 → 24.3 yr; age 75 → 11.8 yr.
+:::
+
+### Summary
+
+```{r}
+#| label: tbl-yll-summary
+#| tbl-cap: "Table 4. YLL by age group and sex — all poisoning deaths with valid age and known sex (1997–2022). YLL computed using WHO standard life table (Murray 1994). 'YLL/death' = mean standard life-years lost per registered death."
+
+if (exists("tbl_yll_age_sex")) {
+  flextable(as.data.frame(tbl_yll_age_sex)) |>
+    bold(part = "header") |>
+    theme_booktabs() |>
+    fontsize(size = 9, part = "all") |>
+    set_formatter(
+      `Male YLL`    = function(x) formatC(x, format = "d", big.mark = ","),
+      `Female YLL`  = function(x) formatC(x, format = "d", big.mark = ","),
+      `Total YLL`   = function(x) formatC(x, format = "d", big.mark = ","),
+      `Male deaths` = function(x) formatC(x, format = "d", big.mark = ","),
+      `Female deaths` = function(x) formatC(x, format = "d", big.mark = ","),
+      `Total deaths`  = function(x) formatC(x, format = "d", big.mark = ",")
+    ) |>
+    autofit()
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+### Total YLL by age group and sex
+
+```{r}
+#| label: fig-yll-age-sex
+#| fig-cap: "Fig. 13. Total YLL by age group, stratified by sex (1997–2022). Blue = male; red = female. YLL computed from individual registered ages using the WHO standard life table."
+#| fig-width: 9
+#| fig-height: 4.5
+
+if (exists("fig_yll_age_sex")) fig_yll_age_sex else message("Run poisoning_wrangling.R")
+```
+
+### Mean YLL per death by age group
+
+YLL per death declines monotonically with age because older decedents have fewer remaining standard life-years. The pattern reveals where the **per-death burden** is highest — typically in younger age groups — even when older groups contribute more deaths in absolute terms.
+
+```{r}
+#| label: fig-yll-per-death
+#| fig-cap: "Fig. 14. Mean YLL per registered poisoning death by age group and sex. Reflects the WHO standard remaining life expectancy applied at each recorded age."
+#| fig-width: 9
+#| fig-height: 4.5
+
+if (exists("fig_yll_per_death")) fig_yll_per_death else message("Run poisoning_wrangling.R")
+```
+
+### Annual YLL trend by sex
+
+```{r}
+#| label: fig-yll-year-sex
+#| fig-cap: "Fig. 15. Annual total YLL from poisoning deaths by sex (1997–2022). Blue = male; red = female."
+#| fig-width: 9
+#| fig-height: 4.5
+
+if (exists("fig_yll_year_sex")) fig_yll_year_sex else message("Run poisoning_wrangling.R")
+```
+
+### YLL heatmap — age group × year
+
+```{r}
+#| label: fig-yll-age-year
+#| fig-cap: "Fig. 16. YLL by age group and calendar year (heatmap). Darker cells = higher YLL. Combines the effect of death counts and age-at-death distribution."
+#| fig-width: 10
+#| fig-height: 5.5
+
+if (exists("fig_yll_age_year")) fig_yll_age_year else message("Run poisoning_wrangling.R")
+```
+
+---
+
+## Death institution / place of death
+
+The `DeathInst` field on the South African death notification form records where the death occurred. Values are: **Hospital** (1), **Emergency room / Outpatient** (2), **Dead on arrival** (3), **Nursing home** (4), **Home** (5), **Other** (6), **Unknown** (8), and **Unspecified** (9). For the broad grouping below, categories 1, 2, and 4 are combined as **Health facility**; category 3 (**Dead on arrival**) is kept separate because it implies the death occurred outside a facility but was certified at one; categories 5 and 6 form **Out of facility**.
+
+::: {.callout-note}
+## Unspecified records (code 9)
+
+A substantial proportion of records carry code 9 (Unspecified). This likely reflects incomplete form completion rather than a genuinely unknown setting, and mirrors the broader data-quality limitations of the vital registration system. These records are retained in the tables below but excluded from the bar charts to avoid distorting the proportions of known categories. Their exclusion is reported in the figure footnotes.
+:::
+
+### X40–X49: distribution by death institution
+
+The chart below shows where accidental/unspecified poisoning deaths (X40–X49) occurred, excluding the Unknown and Unspecified categories. The "Unspecified" share is shown in the table.
+
+```{r}
+#| label: fig-facility-acc
+#| fig-cap: "Fig. 17. Death institution for X40–X49 (accidental/unspecified) poisoning deaths. Records coded Unknown (8) or Unspecified (9) are excluded from this chart but included in the table below."
+#| fig-width: 9
+#| fig-height: 4
+
+if (exists("fig_facility_acc")) fig_facility_acc else message("Run poisoning_wrangling.R")
+```
+
+```{r}
+#| label: tbl-facility-acc
+#| tbl-cap: "Table 5. X40–X49 poisoning deaths by death institution (known records only, excluding Unknown/Unspecified)."
+
+if (exists("tbl_facility_acc")) {
+  flextable(tbl_facility_acc) |>
+    colformat_int(j = "N", big.mark = ",") |>
+    set_formatter(`% of X40-49` = function(x) paste0(x, "%")) |>
+    autofit()
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+### Intent composition within each facility setting
+
+The proportional stacked bars show how the intent mix varies across facility settings. Because "Accidental/unspec." is the ICD-10 default when manner is not stated, settings where non-forensic clinicians certify deaths (e.g. hospital wards) are expected to show the highest proportional contribution from this category.
+
+```{r}
+#| label: fig-facility-intent
+#| fig-cap: "Fig. 18. Intent composition of poisoning deaths within each facility setting (100% stacked bars). 'Other' intent excluded. Percentages are within-setting shares."
+#| fig-width: 9
+#| fig-height: 4
+
+if (exists("fig_facility_intent")) fig_facility_intent else message("Run poisoning_wrangling.R")
+```
+
+```{r}
+#| label: tbl-facility-intent
+#| tbl-cap: "Table 6. Poisoning deaths by facility setting and intent (all records, including Unknown/Unspecified). '% Acc./unspec.' = proportion of that setting's deaths coded X40–X49."
+
+if (exists("tbl_facility_intent")) {
+  flextable(tbl_facility_intent) |>
+    colformat_int(j = c("Accidental/unspec.","Self-harm","Assault","Undetermined","Total"),
+                  big.mark = ",") |>
+    set_formatter(`% Acc./unspec.` = function(x) paste0(x, "%")) |>
+    autofit()
+} else {
+  message("Run poisoning_wrangling.R")
+}
+```
+
+---
+
+## Next steps
+
+- Add population denominators to compute age-standardised mortality rates.
+- Stratify provincial trends by intent.
+- Link to external toxicology data (e.g. NPIS calls, emergency department presentations) for triangulation with IMS and NCoDV forensic data.
+- Investigate the spike/dip years visible in the epicurve.
+- Apply probabilistic redistribution of the "Accidental" category using forensic correction factors (e.g. from @groenewald2023misclassification) to obtain intent-adjusted estimates.
+
+## References

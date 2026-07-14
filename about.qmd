@@ -1,0 +1,55 @@
+---
+title: "About This Project"
+---
+
+## Purpose
+
+This project analyses South African vital registration data to:
+
+1. **Assess data quality** by examining the proportion of garbage codes (uninformative cause-of-death codes) across provinces and healthcare facilities
+2. **Monitor and evaluate** vital registration data quality against demographic models (Thembisa, NCODV)
+3. **Evaluate service accessibility** by measuring population coverage of Department of Home Affairs offices
+4. **Develop statistical methods** for improving cause-of-death classification
+
+## Methodology
+
+All analyses are conducted in R, with interactive visualizations built using Plotly. Key methods include:
+
+- **Spatial analysis** using the `sf` package for distance calculations
+- **Population modelling** with weighted distribution models
+- **Time series analysis** of mortality trends
+- **Data quality metrics** following WHO standards for garbage code classification
+
+## Authors
+
+- [Your Name Here]
+- Medical Research Council, South Africa
+
+## Data Sources
+
+| Source | Description | Years |
+|--------|-------------|-------|
+| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
+| Thembisa Model | HIV/AIDS demographic projections | 1997-2025 |
+| NMC Database | Notifiable conditions surveillance | 2017-2024 |
+| DHA Office Data | Home Affairs office locations | 2024 |
+
+## Code Repository
+
+The source code for this project is available on GitHub:
+
+- **Repository**: [github.com/bridaybrummer/MRC_VR](https://github.com/bridaybrummer/MRC_VR)
+- **License**: MIT
+
+## How to Cite
+
+If you use these analyses, please cite:
+
+> [Your Name] (2026). MRC Vital Registration Analysis. Available at: https://bridaybrummer.github.io/MRC_VR
+
+## Contact
+
+For questions or collaborations, please contact:
+
+- Email: [bbrummer@dataforhealth.org]
+- Institution: Data For Heatlh 

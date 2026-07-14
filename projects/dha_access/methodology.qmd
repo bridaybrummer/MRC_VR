@@ -1,0 +1,76 @@
+---
+title: "Methodology — Method 3 (Ward-Level Centroid Distance)"
+description: "Detailed methodology for the preferred ward-level access estimate"
+date: "2026-01-20"
+categories: [access, spatial, DHA, methodology]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(flextable)
+load("../../outputs/ward_level_dha_access.RData")
+```
+
+## Why Method 3
+
+Method 3 estimates population coverage using **observed ward-level population data** rather than modelled population grids or district-level proxies. It is the most granular approach achievable without enumeration-area data.
+
+See the [Methods Comparison](methods_comparison.qmd) for the two alternatives we evaluated (district inter-office distance, modelled population grid).
+
+## Inputs
+
+| Input | Source | Granularity |
+|---|---|---|
+| Population | Stats SA mid-year estimates | Ward (4,468 wards) |
+| Ward boundaries | MDB 2020 ward shapefile | Polygon per ward |
+| Registration nodes | 2024 DHA offices `.dta` (+ hospital satellites for births) | Point per office |
+
+## Steps
+
+1. **Join** population (`PP_Sex_27-10-2025.xlsx`) to ward polygons by ward code.
+2. **Project** all geometries to `EPSG:3857` (metres) so straight-line distances are in km.
+3. **Compute the centroid** of each ward polygon — this is the population-location proxy.
+4. **Nearest-feature lookup**: for each centroid, identify the closest registration node and compute the straight-line distance ($d$, km).
+5. **Classify** each ward into distance bands: $<$ 5 km, 5–10 km, 10–20 km, 20–50 km, $>$ 50 km.
+6. **Aggregate** the ward populations by distance band to get the share of the national population within each band.
+
+Formally, for ward $w$ with population $P_w$ and centroid $c_w$, and node set $\mathcal{N}$,
+
+$$
+d_w = \min_{n \in \mathcal{N}} \, \lVert c_w - n \rVert_2 \qquad \text{(km, EPSG:3857)}
+$$
+
+and the population within threshold $T$ is
+
+$$
+\text{Pop}_{\le T} = \sum_{w : d_w \le T} P_w, \qquad
+\%_{\le T} = \frac{\text{Pop}_{\le T}}{\sum_w P_w} \times 100.
+$$
+
+## Distance summary
+
+```{r}
+#| label: tbl-dist-summary
+#| echo: false
+m3_dist_summary
+```
+
+`r missing_pop` wards lacked population data and were excluded from the percentage calculations.
+
+## Reproducibility
+
+- Script: [`ward_level_dha_access_script.R`](https://github.com/bridaybrummer/MRC_VR/blob/main/ward_level_dha_access_script.R)
+- Outputs: `outputs/ward_level_dha_access.RData`, `outputs/ward_level_dha_access_indicators.csv`
+
+## Key assumptions and where they may break
+
+::: {.callout-warning}
+- **Centroid as population locus** — fine for compact urban wards; biased in large rural wards where most people cluster near one edge. The [sensitivity check](sensitivity.qmd) probes how plausible the implied population distribution near DHA nodes is.
+- **Straight-line distance** — road-network or travel-time distance would be more accurate, especially in mountainous areas.
+- **Equal-weight nodes** — every office is treated as fully accessible. Capacity, hours, and service mix are not modelled.
+- **Static population** — the 2025 mid-year estimates lag behind real movement; informal settlements may be undercounted.
+:::

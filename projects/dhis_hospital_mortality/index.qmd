@@ -1,0 +1,431 @@
+---
+title: "DHIS2 Hospital Indicators — Exploratory Analysis"
+description: "Trend exploration of NDoH DHIS2 hospital-level data (births, deaths, contraception) for South Africa, 2015–2025. Exploratory only — not for inference."
+date: "2026-06-13"
+categories: [DHIS2, hospitals, births, deaths, contraception, exploratory]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(data.table)
+  library(ggplot2)
+  library(plotly)
+  library(scales)
+  library(DT)
+  library(htmltools)
+  library(lubridate)
+})
+
+# ── Load wrangling output ─────────────────────────────────────────────────────
+rda_path <- here::here("projects/dhis_hospital_mortality/dhis_results.rda")
+if (!file.exists(rda_path)) {
+  stop("Run projects/dhis_hospital_mortality/wrangling.R first.")
+}
+load(rda_path)
+
+# ── Colour palette (consistent across all tabs) ───────────────────────────────
+PROV_COLOURS <- c(
+  "Eastern Cape"  = "#e41a1c",
+  "Free State"    = "#ff7f00",
+  "Gauteng"       = "#984ea3",
+  "KwaZulu-Natal" = "#377eb8",
+  "Limpopo"       = "#4daf4a",
+  "Mpumalanga"    = "#a65628",
+  "North West"    = "#f781bf",
+  "Northern Cape" = "#999999",
+  "Western Cape"  = "#1f78b4"
+)
+
+# Theme for static ggplots (also used inside ggplotly)
+theme_mrc <- theme_bw(base_size = 12) +
+  theme(
+    panel.grid.minor  = element_blank(),
+    strip.background  = element_rect(fill = "#e8edf2"),
+    plot.title        = element_text(face = "bold", size = 13),
+    plot.subtitle     = element_text(size = 10, colour = "grey40"),
+    legend.position   = "bottom"
+  )
+
+# ── Shared plotly config: tidy toolbar, hi-res PNG export ──────────────────────
+ply_config <- function(p) {
+  config(
+    p,
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c("lasso2d", "select2d", "autoScale2d",
+                               "hoverClosestCartesian", "hoverCompareCartesian"),
+    toImageButtonOptions = list(format = "png", scale = 2)
+  )
+}
+
+# ── Small-multiples builder ───────────────────────────────────────────────────
+# Faceted, free-y trend panels so EVERY indicator is interpretable at its own
+# scale (large- and small-magnitude indicators no longer compete on one axis).
+# `time_col` is either "year" (numeric) or "period_date" (Date).
+make_small_multiples <- function(dt, time_col,
+                                 date_axis = FALSE,
+                                 line_col  = "#1f6eb5",
+                                 ncol      = 3) {
+  dt <- copy(dt)
+  dt[, x_plot := get(time_col)]
+  dt[, tt := paste0(
+    short_label, "<br>",
+    if (date_axis) format(x_plot, "%b %Y") else paste("Year:", x_plot),
+    "<br>Count: ", format(value, big.mark = ",")
+  )]
+
+  g <- ggplot(dt, aes(x = x_plot, y = value, group = short_label, text = tt)) +
+    geom_line(colour = line_col, linewidth = 0.6) +
+    geom_point(colour = line_col, size = 1.1) +
+    facet_wrap(~ short_label, scales = "free_y", ncol = ncol) +
+    scale_y_continuous(labels = comma) +
+    labs(x = NULL, y = "Count") +
+    theme_mrc +
+    theme(legend.position = "none",
+          strip.text  = element_text(size = 8),
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+
+  g <- if (date_axis) {
+    g + scale_x_date(date_breaks = "6 months", date_labels = "%b %y")
+  } else {
+    g + scale_x_continuous(breaks = seq(2015, 2025, 2))
+  }
+
+  ggplotly(g, tooltip = "text") |> ply_config()
+}
+
+# ── Province explorer builder ─────────────────────────────────────────────────
+# One indicator at a time (dropdown) across all provinces, with a Linear/Log
+# y-axis toggle so small provinces remain interpretable against large ones.
+# Unified hover compares all provinces at the selected year.
+make_province_explorer <- function(dt, domain_label) {
+  dt        <- dt[!is.na(province)]
+  indicators <- unique(dt$short_label)
+  provs     <- sort(unique(dt$province))
+  n_provs   <- length(provs)
+
+  fig <- plot_ly()
+  for (ind in indicators) {
+    df_i <- dt[short_label == ind]
+    for (pv in provs) {
+      df_p <- df_i[province == pv]
+      fig <- add_trace(
+        fig,
+        data        = df_p,
+        x = ~year, y = ~value,
+        name        = pv,
+        type = "scatter", mode = "lines+markers",
+        visible     = (ind == indicators[1]),
+        legendgroup = pv,
+        showlegend  = (ind == indicators[1]),
+        line   = list(color = unname(PROV_COLOURS[pv]), width = 2),
+        marker = list(color = unname(PROV_COLOURS[pv]), size = 5),
+        hovertemplate = paste0("<b>", pv, "</b><br>", ind,
+                               "<br>%{x}: %{y:,}<extra></extra>")
+      )
+    }
+  }
+
+  # Indicator dropdown — toggles which block of province traces is visible
+  ind_buttons <- lapply(seq_along(indicators), function(i) {
+    vis <- rep(FALSE, length(indicators) * n_provs)
+    vis[((i - 1) * n_provs + 1):(i * n_provs)] <- TRUE
+    list(method = "update", label = indicators[i],
+         args = list(list(visible = vis),
+                     list(title = paste0(domain_label, ": ", indicators[i],
+                                         " — by province"))))
+  })
+
+  # Linear / Log y-axis toggle
+  scale_buttons <- list(
+    list(method = "relayout", label = "Linear",
+         args = list(list(`yaxis.type` = "linear",
+                          `yaxis.title.text` = "Count"))),
+    list(method = "relayout", label = "Log",
+         args = list(list(`yaxis.type` = "log",
+                          `yaxis.title.text` = "Count (log scale)")))
+  )
+
+  fig |>
+    layout(
+      title     = paste0(domain_label, ": ", indicators[1], " — by province"),
+      hovermode = "x unified",
+      xaxis     = list(title = "", dtick = 1, showspikes = TRUE,
+                       spikemode = "across", spikethickness = 1),
+      yaxis     = list(title = "Count", tickformat = ","),
+      legend    = list(orientation = "h", y = -0.22),
+      margin    = list(t = 90),
+      updatemenus = list(
+        list(type = "dropdown", x = 0.0, xanchor = "left", y = 1.22,
+             buttons = ind_buttons, showactive = TRUE,
+             pad = list(t = 2, b = 2)),
+        list(type = "buttons", direction = "right",
+             x = 0.62, xanchor = "left", y = 1.22,
+             buttons = scale_buttons, showactive = TRUE,
+             pad = list(t = 2, b = 2))
+      ),
+      annotations = list(
+        list(text = "Indicator:", x = 0.0, xref = "paper",
+             y = 1.30, yref = "paper", xanchor = "left",
+             showarrow = FALSE, font = list(size = 11, color = "grey40")),
+        list(text = "y-axis:", x = 0.62, xref = "paper",
+             y = 1.30, yref = "paper", xanchor = "left",
+             showarrow = FALSE, font = list(size = 11, color = "grey40"))
+      )
+    ) |>
+    ply_config()
+}
+```
+
+::: {.callout-note}
+**Exploratory only.** This page presents DHIS2 hospital data supplied by Pam Groenewald (NDoH). The data have not been quality-audited. Trends shown are descriptive; no causal or inferential claims should be drawn. For comparison with official MACOD data, see the dedicated comparison section (planned).
+:::
+
+## Data provenance & audit trail
+
+```{r}
+#| label: audit-table
+#| echo: true
+
+# Print the audit record so the page self-documents its inputs
+cat("Source files:\n")
+cat("  ", audit$source_annual,  "\n")
+cat("  ", audit$source_monthly, "\n\n")
+cat("Annual sheets read    :", paste(audit$annual_sheets, collapse = " | "), "\n")
+cat("Monthly sheets read   :", paste(audit$monthly_sheets, collapse = " | "), "\n")
+cat("Annual year range     :", audit$year_range_annual[1], "–", audit$year_range_annual[2], "\n")
+cat("Monthly period range  :", format(audit$period_range_monthly[1]),
+    "–", format(audit$period_range_monthly[2]), "\n")
+cat("Wrangling run at      :", format(audit$run_timestamp), "\n\n")
+cat("Dataset sizes (long rows):\n")
+cat("  dhis_births :", nrow(dhis_births), "\n")
+cat("  dhis_deaths :", nrow(dhis_deaths), "\n")
+cat("  dhis_contra :", nrow(dhis_contra), "\n")
+```
+
+## Indicator reference
+
+The 27 DHIS2 indicators are grouped into three domains. This table is the single source of truth used to split the data.
+
+```{r}
+#| label: indicator-table
+datatable(
+  indicator_meta[, .(domain, short_label, indicator)][order(domain, short_label)],
+  colnames    = c("Domain", "Short label", "Full DHIS2 indicator name"),
+  rownames    = FALSE,
+  options     = list(pageLength = 30, dom = "ftp"),
+  caption     = "Table 1. Indicator domain map"
+)
+```
+
+---
+
+## Reporting completeness {#sec-completeness}
+
+Before interpreting any trend, inspect how many facilities were submitting data in each period. Spikes or drops in counts indicate data quality issues rather than true events.
+
+```{r}
+#| label: fig-completeness
+#| fig-cap: "Annual reporting completeness — number of distinct facility–province–district combinations submitting data per year and domain. Expect stable or slowly growing counts; sudden drops signal missing data."
+#| fig-height: 5
+
+# Three-panel: one per domain
+comp_plot <- ggplot(agg_completeness_annual,
+                    aes(x = year, y = n_facilities, fill = domain,
+                        text = paste0("Domain: ", domain,
+                                      "<br>Year: ", year,
+                                      "<br>Facilities: ", format(n_facilities, big.mark = ",")))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~domain, ncol = 3, scales = "free_y",
+             labeller = labeller(domain = c(
+               births = "Births / deliveries / BCG",
+               deaths = "Deaths",
+               contra = "Contraception / reproductive"
+             ))) +
+  scale_x_continuous(breaks = 2015:2025) +
+  scale_fill_manual(values = c(births = "#2196F3", deaths = "#f44336", contra = "#4CAF50")) +
+  labs(x = NULL, y = "Facilities reporting") +
+  theme_mrc +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(comp_plot, tooltip = "text") |>
+  layout(margin = list(b = 60)) |>
+  ply_config()
+```
+
+---
+
+## Births, deliveries & BCG {#sec-births}
+
+### National annual trends
+
+```{r}
+#| label: fig-births-national
+#| fig-cap: "National annual counts for each births/delivery/BCG indicator, 2015–2025. Each panel has its OWN y-axis (free scale) so small-volume indicators (e.g. teen deliveries) are interpretable alongside high-volume ones (e.g. live births). Hover for exact counts. 2026 is excluded (incomplete year)."
+#| fig-height: 7
+
+make_small_multiples(
+  agg_national_annual[domain == "births"],
+  time_col = "year",
+  line_col = "#1f6eb5"
+)
+```
+
+### By province
+
+```{r}
+#| label: fig-births-province
+#| fig-cap: "Provincial annual counts. Pick an indicator from the dropdown and toggle Linear / Log on the y-axis — the log view keeps low-volume provinces (e.g. Northern Cape) interpretable against high-volume ones (Gauteng, KZN). Hover compares all provinces at a year."
+
+make_province_explorer(
+  agg_prov_annual[domain == "births"],
+  domain_label = "Births / deliveries"
+)
+```
+
+---
+
+## Deaths {#sec-deaths}
+
+### National annual trends
+
+```{r}
+#| label: fig-deaths-national
+#| fig-cap: "National annual counts for each death indicator, 2015–2025, on independent (free) y-axes so low-count indicators (maternal death, 7–28 day deaths) are interpretable alongside the much larger total. 2026 is excluded (incomplete year). Note: 'Inpatient deaths (total)' is a separately reported aggregate and is NOT the sum of the age-specific panels."
+#| fig-height: 7
+
+make_small_multiples(
+  agg_national_annual[domain == "deaths"],
+  time_col = "year",
+  line_col = "#c0392b"
+)
+```
+
+### Monthly trend (Apr 2024 – Mar 2026)
+
+Monthly data from the second file allow finer temporal resolution over the most recent period. Each indicator is shown on its own scale so seasonality and short-term shifts are visible regardless of magnitude.
+
+```{r}
+#| label: fig-deaths-monthly
+#| fig-cap: "Monthly national counts for each death indicator (Apr 2024 – Mar 2026), independent y-axes. Hover for month-level values."
+#| fig-height: 7
+
+make_small_multiples(
+  agg_national_monthly[domain == "deaths"],
+  time_col  = "period_date",
+  date_axis = TRUE,
+  line_col  = "#c0392b"
+)
+```
+
+### By province
+
+```{r}
+#| label: fig-deaths-province
+#| fig-cap: "Provincial annual death counts. Pick an indicator and toggle Linear / Log. Log view recommended when comparing provinces of very different size."
+
+make_province_explorer(
+  agg_prov_annual[domain == "deaths"],
+  domain_label = "Deaths"
+)
+```
+
+---
+
+## Contraception & reproductive {#sec-contra}
+
+### National annual trends
+
+```{r}
+#| label: fig-contra-national
+#| fig-cap: "National annual counts for each contraception / reproductive indicator, 2015–2025, on independent (free) y-axes so rarer procedures (e.g. male sterilisation, TOP) are interpretable alongside high-volume methods (oral pill, injectables). 2026 is excluded (incomplete year)."
+#| fig-height: 8
+
+make_small_multiples(
+  agg_national_annual[domain == "contra"],
+  time_col = "year",
+  line_col = "#1e8449"
+)
+```
+
+### Monthly trend (Apr 2024 – Mar 2026)
+
+```{r}
+#| label: fig-contra-monthly
+#| fig-cap: "Monthly national counts for each contraception indicator (Apr 2024 – Mar 2026), independent y-axes."
+#| fig-height: 8
+
+make_small_multiples(
+  agg_national_monthly[domain == "contra"],
+  time_col  = "period_date",
+  date_axis = TRUE,
+  line_col  = "#1e8449"
+)
+```
+
+### By province
+
+```{r}
+#| label: fig-contra-province
+#| fig-cap: "Provincial annual contraception counts. Pick an indicator and toggle Linear / Log on the y-axis."
+
+make_province_explorer(
+  agg_prov_annual[domain == "contra"],
+  domain_label = "Contraception"
+)
+```
+
+---
+
+## Facility-level raw data browser {#sec-facility}
+
+Search, sort and filter the full annual dataset at facility level.
+
+```{r}
+#| label: tbl-facility
+#| tbl-cap: "Facility-level annual totals. Use the search box and column filters to explore specific provinces, districts or indicators."
+
+datatable(
+  agg_facility_totals[, .(domain, short_label, province, district, facility,
+                           total_value, years_reported)],
+  colnames  = c("Domain", "Indicator", "Province", "District", "Facility",
+                "Total (all years)", "Years reporting"),
+  rownames  = FALSE,
+  filter    = "top",
+  extensions = "Buttons",
+  options   = list(
+    pageLength = 20,
+    dom        = "Bfrtip",
+    buttons    = list("csv", "excel"),
+    scrollX    = TRUE,
+    columnDefs = list(list(className = "dt-right", targets = c(5, 6)))
+  )
+) |>
+  formatCurrency("total_value", currency = "", interval = 3, mark = ",", digits = 0)
+```
+
+---
+
+## Notes on methodology
+
+### Data sources
+- **Annual file**: `DHIS DATA 2015_2026 (2).xls` — six sheets covering 2015–2026 in wide format (one column per year). The 2022–2026 period is split across three sheets by indicator domain.
+- **Monthly file**: `DHIS DATA APR 2024_MAR 2026_test.xls` — four sheets with monthly columns (e.g. "April 2024").
+
+### Processing steps (see `wrangling.R`)
+1. Each sheet read with `readxl::read_excel(..., col_types = "text")` to prevent type coercion errors.
+2. Fixed columns 1–4 (Province, District, Sub-district, Facility) cleaned by stripping the two-letter DHIS2 province code prefix and trailing administrative suffixes.
+3. Value columns melted to long format; values coerced to numeric after removing non-numeric characters.
+4. Indicators classified into three domains (births, deaths, contra) via `indicator_meta` lookup table.
+5. Monthly sheets de-duplicated on facility + indicator + period after binding.
+6. **The 2026 calendar year is dropped from the annual series** (`year <= 2025`) because it is incomplete and would otherwise show a spurious partial-year drop. Monthly data, which is complete per-month through Mar 2026, is retained in the monthly figures.
+7. No imputation of missing values; `NA` counts are excluded from aggregations.
+
+### Limitations
+- Annual counts in the main file are calendar-year aggregates; months within a year are not individually available before April 2024.
+- The annual series ends in 2025; 2026 is excluded as incomplete. The monthly figures extend to Mar 2026.
+- The `Inpatient deaths - total` indicator is a separately reported aggregate that may not equal the sum of age-specific death indicators — they are shown together but not summed.
+- Facility coverage varies by year (see [Reporting completeness](#sec-completeness)). Declining counts in recent years are likely incomplete reporting, not true declines.
+- These data have not been validated against the official MACOD or StatsSA vital registration series.

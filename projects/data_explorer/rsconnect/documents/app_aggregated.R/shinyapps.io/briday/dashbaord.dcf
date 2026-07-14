@@ -1,0 +1,10 @@
+name: dashbaord
+title:
+username: briday
+account: briday
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13766338
+bundleId: 11715579
+url: https://briday.shinyapps.io/dashbaord/
+version: 1

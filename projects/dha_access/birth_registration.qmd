@@ -1,0 +1,93 @@
+---
+title: "Birth Registration — Coverage Results"
+description: "Population coverage of DHA offices PLUS hospital-based DHA satellites, applying Method 3 (ward-level centroid distance)"
+date: "2026-01-20"
+categories: [access, DHA, birth registration, results]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(flextable)
+library(scales)
+load("../../outputs/ward_level_dha_access.RData")
+```
+
+## Scope
+
+Most births in South Africa occur in health facilities, and a subset of public hospitals host **DHA satellite desks** where birth registration is performed on-site. Birth registration coverage should therefore be computed against the **combined set** of registration nodes:
+
+- `r n_standalone_dha` standalone DHA offices
+- `r n_hospital_dha` hospital-based DHA satellites (curated list linked to MFL coordinates via [`DHA_access/link_DHA_to_MFL.r`](https://github.com/bridaybrummer/MRC_VR/blob/main/DHA_access/link_DHA_to_MFL.r))
+
+All numbers use **[Method 3](methodology.qmd)** — ward centroid to nearest registration node — applied to this augmented node set.
+
+## Headline coverage
+
+::: callout-important
+- **`r birth_pct_5km`%** of the population lives within **5 km** of a registration node
+- **`r birth_pct_10km`%** of the population lives within **10 km** of a registration node
+- **`r birth_pct_20km`%** of the population lives within **20 km** of a registration node
+:::
+
+## Coverage by distance band
+
+```{r}
+#| label: tbl-birth-coverage
+birth_access_ft
+```
+
+## Birth vs death registration: side by side
+
+```{r}
+#| label: tbl-birth-vs-death
+birth_vs_death_ft
+```
+
+Adding the `r n_hospital_dha` hospital satellites raises 5 km coverage by **`r round(birth_pct_5km - m3_pct_5km, 1)` percentage points** — a meaningful gain in areas where mothers would otherwise have to travel beyond their birthing facility to register the birth.
+
+## Interactive map: registration nodes
+
+Standalone DHA offices in **red**; hospital-based DHA satellites in **blue**. Hover for facility detail.
+
+```{r}
+#| label: fig-birth-nodes-plotly
+#| fig-width: 10
+#| fig-height: 7
+birth_nodes_plotly
+```
+
+## Map: distance to nearest registration node
+
+```{r}
+#| label: fig-birth-map
+#| fig-width: 10
+#| fig-height: 8
+birth_distance_map
+```
+
+## Cumulative coverage: births vs deaths
+
+```{r}
+#| label: fig-birth-vs-death-curve
+#| fig-width: 10
+#| fig-height: 6
+birth_vs_death_curve_plot
+```
+
+## Notes on the hospital DHA linkage
+
+The hospital-list-to-MFL match (see `DHA_access/dha_mfl_matched.csv`) is fuzzy and includes weak matches flagged for manual review. Coverage figures should be interpreted as the **upper bound under the current linkage** — manual curation of the *Weak — verify* matches and follow-up on unmatched private facilities will refine the estimate.
+
+## Limitations
+
+::: callout-warning
+- **Service hours**: hospital DHA desks may have limited operating hours; we assume full availability.
+- **Linkage quality**: ~9% of matches are flagged "Weak — verify". See `dha_mfl_unmatched.csv` and `dha_mfl_matched.csv` for the audit trail.
+- All Method 3 limitations apply — centroid proxy, straight-line distance, static population. See [Methodology](methodology.qmd).
+:::
+
+For methodology, see [Methodology](methodology.qmd). For a check that DHA offices are in plausibly dense locations, see the [Sensitivity check](sensitivity.qmd). For alternative methods, see [Methods Comparison](methods_comparison.qmd).

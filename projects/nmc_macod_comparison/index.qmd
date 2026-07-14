@@ -1,0 +1,276 @@
+---
+title: "NMC & MACOD Comparison"
+description: "Annual counts of notifiable medical condition notifications and deaths from NMC surveillance versus MACOD (vital registration) data"
+date: "2026-06-22"
+categories: [NMC, MACOD, surveillance, vital-registration]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(knitr)
+  library(kableExtra)
+  library(here)
+})
+
+knitr::opts_knit$set(root.dir = here::here())
+
+nmc  <- readRDS(here("projects/nmc_macod_comparison/nmc_vital_status_counts.rds"))
+macod <- readRDS(here("projects/nmc_macod_comparison/macod_nmc_counts.rds"))
+
+# Year vectors
+nmc_years   <- sort(unique(nmc$year))
+macod_years <- sort(unique(macod$year))
+```
+
+## Data sources
+
+| Source | Description | Years available |
+|---|---|---|
+| **NMC surveillance** | Notifiable Medical Conditions master database — all notifications, with patient vital status (`Alive` / `Deceased` / `Unknown`) | 2016 – 2026 |
+| **MACOD (LGH)** | South African vital registration (Medical Certificate of Cause of Death) underlying-cause ICD-10 codes, filtered to NMC-mapped codes | 2016 – 2022 |
+
+ICD-10 codes for each NMC condition are sourced from the verified SA NMC ICD Reference (v3, June 2026). Matching to MACOD uses the 3-character ICD-10 prefix (e.g. `A15` covers all TB pulmonary subtypes). Run `nmc_macod_wrangling.R` to rebuild these tables from source.
+
+---
+
+## NMC Surveillance — Annual Notifications
+
+Total NMC case notifications per condition per year (duplicates excluded). The **Deceased** sub-row shows cases where patient vital status was recorded as `Deceased` at point of notification.
+
+```{r}
+#| label: tbl-nmc-notifications
+#| tbl-cap: "NMC notifications per condition per year (all non-duplicate cases)"
+
+# Total notifications wide table
+nmc_total <- nmc |>
+  group_by(nmc_condition, icd10_code, year) |>
+  summarise(n = sum(n), .groups = "drop") |>
+  pivot_wider(names_from = year, values_from = n, values_fill = 0L) |>
+  arrange(nmc_condition) |>
+  rename(`NMC Condition` = nmc_condition, `ICD-10` = icd10_code)
+
+nmc_total |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", "l", rep("r", length(nmc_years)))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE, font_size = 12) |>
+  column_spec(1, bold = TRUE) |>
+  scroll_box(width = "100%", height = "520px")
+```
+
+---
+
+## NMC Surveillance — Deaths (Deceased Cases)
+
+Cases where `patient_vital_status == "Deceased"` at notification. This reflects deaths **captured within the NMC surveillance system** and is likely an undercount of true condition-specific mortality.
+
+```{r}
+#| label: tbl-nmc-deaths
+#| tbl-cap: "NMC-notified deaths (patient vital status = Deceased) per condition per year"
+
+nmc_dead <- nmc |>
+  filter(vital_status == "Deceased") |>
+  group_by(nmc_condition, icd10_code, year) |>
+  summarise(n = sum(n), .groups = "drop") |>
+  pivot_wider(names_from = year, values_from = n, values_fill = 0L,
+              names_sort = TRUE) |>
+  arrange(nmc_condition) |>
+  rename(`NMC Condition` = nmc_condition, `ICD-10` = icd10_code)
+
+# Ensure all years present, then reorder year columns ascending
+missing_years <- setdiff(as.character(nmc_years), names(nmc_dead))
+for (yr in missing_years) nmc_dead[[yr]] <- 0L
+nmc_dead <- nmc_dead |>
+  select(`NMC Condition`, `ICD-10`, all_of(sort(as.character(nmc_years))))
+
+nmc_dead |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", "l", rep("r", length(nmc_years)))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE, font_size = 12) |>
+  column_spec(1, bold = TRUE) |>
+  scroll_box(width = "100%", height = "520px")
+```
+
+---
+
+## MACOD (Vital Registration) — Deaths Coded to NMC ICD-10 Groups
+
+Deaths in the South African vital registration system where the **underlying cause of death** was coded to an ICD-10 code that maps to a notifiable medical condition. Matching uses the 3-character ICD-10 prefix. Conditions that share a 3-character prefix are grouped together (e.g. `U07` covers COVID-19 and Respiratory disease — novel pathogen).
+
+```{r}
+#| label: tbl-macod-deaths
+#| tbl-cap: "MACOD deaths coded to NMC ICD-10 groups per year (2016–2022)"
+
+macod_wide <- macod |>
+  select(nmc_conditions, icd3, year, n_deaths) |>
+  pivot_wider(names_from = year, values_from = n_deaths, values_fill = 0L) |>
+  arrange(nmc_conditions) |>
+  rename(`NMC Condition(s)` = nmc_conditions, `ICD-10 (3-char)` = icd3)
+
+macod_wide |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", "l", rep("r", length(macod_years)))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE, font_size = 12) |>
+  column_spec(1, bold = TRUE) |>
+  scroll_box(width = "100%", height = "520px")
+```
+
+---
+
+## Summary Totals
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: "Total counts by year across both data sources (overlapping years 2016–2022)"
+
+overlap_years <- intersect(nmc_years, macod_years)
+
+nmc_summary <- nmc |>
+  filter(year %in% overlap_years) |>
+  group_by(year) |>
+  summarise(
+    `NMC notifications` = sum(n),
+    `NMC deaths`        = sum(n[vital_status == "Deceased"]),
+    .groups = "drop"
+  )
+
+macod_summary <- macod |>
+  filter(year %in% overlap_years) |>
+  group_by(year) |>
+  summarise(`MACOD NMC-coded deaths` = sum(n_deaths), .groups = "drop")
+
+full_join(nmc_summary, macod_summary, by = "year") |>
+  arrange(year) |>
+  rename(Year = year) |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", rep("r", 3))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+::: callout-note
+**MACOD counts include all deaths with a matching ICD-10 underlying cause**, not only cases that were formally notified to the NMC system. The 2020–2021 spike in MACOD deaths reflects COVID-19 (`U07.1`) mortality — now mapped to the NMC as *Coronavirus disease (COVID-19)* and *Respiratory disease — novel pathogen*.
+:::
+
+---
+
+## Sensitivity of MACOD in Detecting NMC Deaths
+
+This section estimates how well vital registration (MACOD) captures deaths from notifiable medical conditions, using NMC surveillance deaths as the reference standard.
+
+$$\text{Capture ratio (\%)} = \frac{\text{MACOD deaths (vital registration)}}{\text{NMC-notified deaths (surveillance)}} \times 100$$
+
+The join uses the 3-character ICD-10 prefix on both sides, restricted to overlapping years 2016–2022. NMC deaths are cases where `patient_vital_status == "Deceased"` was recorded in the surveillance system.
+
+::: callout-important
+**Interpretation:** A capture ratio > 100 % means MACOD recorded more deaths than NMC surveillance flagged as deceased — expected because NMC death recording is incomplete. A ratio < 100 % indicates MACOD may be undercoding that condition (e.g. vague underlying-cause coding, miscoding to a non-NMC ICD). `NA` indicates no NMC deaths were recorded for that condition in the reference period.
+:::
+
+```{r}
+#| label: tbl-sensitivity-summary
+#| tbl-cap: "MACOD capture of NMC deaths by condition, 2016–2022 (aggregate)"
+
+overlap_years <- intersect(nmc_years, macod_years)
+
+nmc_dead_icd3 <- nmc |>
+  filter(vital_status == "Deceased", year %in% overlap_years) |>
+  mutate(icd3 = substr(icd10_code, 1, 3)) |>
+  group_by(icd3, year) |>
+  summarise(nmc_deaths = sum(n), .groups = "drop")
+
+nmc_notif_icd3 <- nmc |>
+  filter(year %in% overlap_years) |>
+  mutate(icd3 = substr(icd10_code, 1, 3)) |>
+  group_by(icd3, year) |>
+  summarise(nmc_notif = sum(n), .groups = "drop")
+
+sens_long <- macod |>
+  filter(year %in% overlap_years) |>
+  left_join(nmc_dead_icd3, by = c("icd3", "year")) |>
+  left_join(nmc_notif_icd3, by = c("icd3", "year")) |>
+  mutate(
+    nmc_deaths = replace_na(nmc_deaths, 0L),
+    nmc_notif  = replace_na(nmc_notif, 0L)
+  )
+
+sens_summary <- sens_long |>
+  group_by(nmc_conditions, icd3) |>
+  summarise(
+    nmc_notif    = sum(nmc_notif),
+    nmc_deaths   = sum(nmc_deaths),
+    macod_deaths = sum(n_deaths),
+    .groups = "drop"
+  ) |>
+  mutate(
+    capture_ratio = ifelse(nmc_deaths > 0,
+                           round(macod_deaths / nmc_deaths * 100, 1),
+                           NA_real_),
+    nmc_cfr       = ifelse(nmc_notif > 0,
+                           round(nmc_deaths / nmc_notif * 100, 2),
+                           NA_real_)
+  ) |>
+  arrange(desc(macod_deaths)) |>
+  rename(
+    `NMC Condition(s)`          = nmc_conditions,
+    `ICD-10 (3-char)`           = icd3,
+    `NMC notifications`         = nmc_notif,
+    `NMC deaths (surv.)`        = nmc_deaths,
+    `MACOD deaths (VR)`         = macod_deaths,
+    `Capture ratio (%)`         = capture_ratio,
+    `NMC case-fatality (%)`     = nmc_cfr
+  )
+
+sens_summary |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", "l", rep("r", 5))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE, font_size = 12) |>
+  column_spec(1, bold = TRUE) |>
+  column_spec(6, bold = TRUE,
+              color = ifelse(
+                is.na(sens_summary[["Capture ratio (%)"]]), "grey",
+                ifelse(sens_summary[["Capture ratio (%)"]] >= 100, "#1a7abf", "#d9534f")
+              )) |>
+  scroll_box(width = "100%", height = "480px")
+```
+
+### Year-by-year capture ratio
+
+```{r}
+#| label: tbl-sensitivity-annual
+#| tbl-cap: "MACOD capture ratio (%) by condition and year, 2016–2022"
+
+sens_wide <- sens_long |>
+  mutate(
+    capture_ratio = ifelse(nmc_deaths > 0,
+                           round(n_deaths / nmc_deaths * 100, 1),
+                           NA_real_)
+  ) |>
+  select(nmc_conditions, icd3, year, capture_ratio) |>
+  pivot_wider(names_from = year, values_from = capture_ratio) |>
+  arrange(nmc_conditions) |>
+  rename(`NMC Condition(s)` = nmc_conditions, `ICD-10` = icd3)
+
+yr_cols <- as.character(sort(overlap_years))
+
+sens_wide |>
+  kable(format.args = list(big.mark = ","),
+        align = c("l", "l", rep("r", length(yr_cols)))) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE, font_size = 12) |>
+  column_spec(1, bold = TRUE) |>
+  scroll_box(width = "100%", height = "420px")
+```

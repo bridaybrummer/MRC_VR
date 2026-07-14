@@ -1,0 +1,327 @@
+---
+title: "Misclassification of COVID-19 deaths under respiratory (J-code) causes: adjusting excess mortality estimates for influenza suppression during the pandemic in South Africa, 2020–2022"
+author:
+  - name: B Brummer
+    affiliations:
+      - ref: vs
+      - ref: bod
+  - name: D Bradshaw
+    affiliations:
+      - ref: bod
+  - name: P Groenewald
+    affiliations:
+      - ref: bod
+  - name: R E Dorrington
+    affiliations:
+      - ref: care
+  - name: R Laubscher
+    affiliations:
+      - ref: biostat
+  - name: T A Moultrie
+    affiliations:
+      - ref: care
+  - name: J Kleynhans
+    affiliations:
+      - ref: crdm
+      - ref: sph
+  - name: S Walaza
+    affiliations:
+      - ref: crdm
+      - ref: sph
+  - name: C Cohen
+    affiliations:
+      - ref: crdm
+      - ref: sph
+affiliations:
+  - id: vs
+    name: "Bloomberg Philanthropies Data for Health Initiative, Vital Strategies, Cape Town, South Africa"
+  - id: bod
+    name: "Burden of Disease Research Unit, South African Medical Research Council, Cape Town, South Africa"
+  - id: care
+    name: "Centre for Actuarial Research (CARe), University of Cape Town, Cape Town, South Africa"
+  - id: biostat
+    name: "Biostatistics Unit, South African Medical Research Council, Cape Town, South Africa"
+  - id: crdm
+    name: "Centre for Respiratory Diseases and Meningitis, National Institute for Communicable Diseases of the National Health Laboratory Service, Johannesburg, South Africa"
+  - id: sph
+    name: "School of Public Health, Faculty of Health Sciences, University of the Witwatersrand, Johannesburg, South Africa"
+date: last-modified
+bibliography: j_code_modelling.bib
+csl: vancouver.csl
+lang: en
+keywords: [excess mortality, COVID-19, J-codes, respiratory deaths, influenza, non-pharmaceutical interventions, cause of death, South Africa]
+abstract: |
+  **Background.** Excess mortality calculations have been widely used to estimate the true burden of COVID-19 deaths. For deaths coded under ICD-10 Chapter J (diseases of the respiratory system), standard excess mortality methods assume that influenza and other respiratory disease mortality continued at pre-pandemic levels. However, influenza circulation virtually disappeared during the pandemic owing to non-pharmaceutical interventions (NPIs), making this assumption untenable for cause-specific attribution.
+
+  **Objectives.** To estimate the number of COVID-19 deaths misclassified under J-codes in South Africa (2020–2022) by modelling expected respiratory mortality under three scenarios that account for the suppression of influenza transmission during the pandemic.
+
+  **Methods.** Weekly J-coded deaths from South African vital registration data (2015–2022) were analysed. A negative binomial regression model was fitted to pre-pandemic data (2015–2019), adjusting for epidemiological week, age group, sex, J-code subgroup, and province, with a population offset. Eight candidate model specifications were compared using the Akaike information criterion and root mean squared error. Expected deaths during the pandemic period (April 2020 onwards) were estimated under three scenarios: (1) standard excess (influenza unchanged); (2) upper bound (all J-codes attributed to COVID-19); and (3) NPI-adjusted, in which expected respiratory deaths were scaled by the inverse of the COVID-19 mortality trend derived from seasonal-trend decomposition (STL).
+
+  **Results.** The standard approach (Scenario 1) yielded substantially fewer excess J-coded deaths than the NPI-adjusted approach (Scenario 3), while the upper bound (Scenario 2) gave the maximum possible estimate. Accounting for influenza suppression increased the cause-specific COVID-19 estimate several-fold relative to the standard method, without altering overall excess death totals.
+
+  **Conclusion.** The standard excess mortality method likely underestimates the number of COVID-19 deaths misclassified under respiratory J-codes. Accounting for the near-absence of influenza during the pandemic substantially increases cause-specific COVID-19 mortality estimates. These findings have implications for accurate cause-of-death attribution in pandemic settings with limited diagnostic testing capacity.
+format:
+  html:
+    toc: true
+    number-sections: true
+    theme: cosmo
+    embed-resources: true
+    fig-dpi: 300
+  docx:
+    toc: true
+    number-sections: true
+    fig-dpi: 300
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(flextable)
+library(scales)
+
+# Load precomputed results produced by J_code_modelling.r
+results_path <- "j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda"
+results_available <- file.exists(results_path)
+if (results_available) {
+  load(results_path)
+}
+
+# Helper: format an integer with thousands separators, or return a placeholder
+fmt_n <- function(x) {
+  if (length(x) == 0 || is.na(x)) return("[NA]")
+  format(round(as.numeric(x)), big.mark = " ", scientific = FALSE, trim = TRUE)
+}
+
+# Pull scenario-specific values defensively so the prose stays in sync with the data
+if (results_available && exists("total_excess_deaths_summary") && exists("total_expected_deaths_summary")) {
+  excess_s1 <- total_excess_deaths_summary$total_excess_deaths[1]
+  excess_s2 <- total_excess_deaths_summary$total_excess_deaths[2]
+  excess_s3 <- total_excess_deaths_summary$total_excess_deaths[3]
+
+  expected_s1 <- total_expected_deaths_summary$total_excess_deaths[1]
+  expected_s2 <- total_expected_deaths_summary$total_excess_deaths[2]
+  expected_s3 <- total_expected_deaths_summary$total_excess_deaths[3]
+
+  fold_s3_vs_s1 <- round(excess_s3 / excess_s1, 1)
+  pct_s3_of_s2  <- round(100 * excess_s3 / excess_s2)
+} else {
+  excess_s1 <- excess_s2 <- excess_s3 <- NA
+  expected_s1 <- expected_s2 <- expected_s3 <- NA
+  fold_s3_vs_s1 <- NA
+  pct_s3_of_s2 <- NA
+}
+```
+
+::: {.callout-warning appearance="minimal"}
+**Draft for review — authorship to be confirmed.** The names listed above are proposed contributors based on intellectual input and data contributions to date. Inclusion, order, and affiliations are subject to discussion and agreement among all named individuals before submission.
+
+*Proposed corresponding author:* B Brummer ([bbrummer@dataforhealth.org](mailto:bbrummer@dataforhealth.org)).
+:::
+
+# Introduction
+
+COVID-19 is a respiratory illness caused by the SARS-CoV-2 virus that in severe cases progresses to pneumonia, hypoxia, or acute respiratory distress syndrome (ARDS) leading to death.[@bradshaw2022COVID19AllcauseMortality] Influenza A and B viruses, along with other respiratory pathogens, produce clinical presentations that overlap with COVID-19. Because medical certifiers in South Africa (SA) often had to assign a cause of death without a confirmatory SARS-CoV-2 test — particularly for the nearly half of all deaths that occur outside health facilities — many COVID-19 deaths were plausibly coded under ICD-10 Chapter J (diseases of the respiratory system), hereafter 'J-codes'.
+
+Respiratory pathogens circulate seasonally in SA during the Southern Hemisphere winter (May–August), with sentinel surveillance and influenza-like illness (ILI) indicators peaking in this period.[@Tempia2021InfluenzaDecline] During the COVID-19 pandemic, however, influenza circulation virtually disappeared — a pattern documented worldwide and confirmed by the National Institute for Communicable Diseases (NICD) sentinel surveillance in SA.[@olsenDecreasedInfluenzaActivity; @Tempia2021InfluenzaDecline; @groves2021ImpactCOVID19Pandemic] This collapse was driven by widespread non-pharmaceutical interventions (NPIs) including mask-wearing, physical distancing, and movement restrictions.[@bents2022ImpactCOVID19Nonpharmaceutical] Given that influenza has a lower basic reproduction number ($R_0$) than SARS-CoV-2, NPIs that were insufficient to prevent COVID-19 transmission were highly effective at suppressing influenza.[@bents2022ImpactCOVID19Nonpharmaceutical]
+
+Excess mortality has been widely adopted to estimate the true pandemic death toll, particularly where testing capacity was constrained.[@karlinsky2021TrackingExcessMortality; @bradshaw2022COVID19AllcauseMortality] For J-coded deaths specifically, the standard excess mortality approach estimates expected deaths from pre-pandemic trends and attributes the difference (observed minus expected) to COVID-19. This implicitly assumes that influenza and other non-COVID-19 respiratory deaths continued at pre-pandemic levels throughout the pandemic.
+
+This assumption is problematic. If influenza circulation was virtually absent during the pandemic, then many of the 'expected' J-coded deaths would not have occurred, and the true number of COVID-19 deaths misclassified under J-codes would be larger than the standard excess estimate suggests.[@beeks2024CauseSpecificExcessMortality] The limited testing in SA, and the resulting tendency of medical certifiers to assign respiratory codes to clinically compatible deaths, likely compounded this misclassification.
+
+We estimated the number of COVID-19 deaths misclassified under J-codes in SA during 2020–2022 using three scenarios that progressively account for the suppression of influenza during the pandemic.
+
+# Methods
+
+## Study design and data sources
+
+This was a retrospective analysis of nationally registered deaths in SA from 2015 to 2022. Death notification data were obtained from the vital registration system maintained by the Department of Home Affairs and processed by Statistics South Africa, with cause-of-death coding performed according to standard ICD-10 protocols. Deaths coded under ICD-10 Chapter J (J00–J99: diseases of the respiratory system) were extracted for analysis. Deaths coded under U07 (COVID-19) were extracted separately for temporal trend decomposition.
+
+Mid-year population estimates (2015–2022), disaggregated by province, sex, and age group, were obtained from Statistics South Africa to provide denominator data for the negative binomial model with a population offset.
+
+## Statistical modelling
+
+A negative binomial regression was fitted to pre-pandemic data (epidemiological weeks 1–52, 2015–2019) to estimate expected weekly J-coded deaths. The outcome was the count of deaths in stratum-specific cells defined by epidemiological week, age group, sex, J-code subgroup, and province.
+
+Eight candidate model specifications were evaluated, including:
+
+- simple main-effects models with and without Fourier seasonal terms;
+- models with demographic interaction terms (sex × age group × J-code subgroup);
+- province-stratified Fourier models with population offsets;
+- generalised linear mixed models (glmmTMB) with province-level random effects and polynomial trends; and
+- generalised additive models (GAMs) with smooth terms for epidemiological week and year.
+
+Models were compared using the Akaike information criterion (AIC), Bayesian information criterion (BIC), and root mean squared error (RMSE) evaluated on province-level aggregated predictions for the training period (2015–2019).
+
+The selected model was a negative binomial regression (`MASS::glm.nb`) with the following specification:
+
+$$
+\log\!\bigl(E(Y_{p,a,s,j,t})\bigr) = \beta_0 + \text{offset}\!\bigl(\log(\text{pop}_{p,a,s,t})\bigr) + f(\text{province}_p) + f(\text{sex}_s) + f(\text{agegroup}_a) + f(\text{Jcode}_j) + f(\text{epiweek}_t) + f(\text{year}_t)
+$$
+
+where $Y_{p,a,s,j,t}$ denotes the death count in province $p$, age group $a$, sex $s$, J-code subgroup $j$, and epidemiological week $t$, and $f(\cdot)$ denotes fixed categorical effects. Province-level random effects and more complex interaction models did not materially improve model fit (AIC, BIC) or change estimates meaningfully, so the simpler specification was retained for interpretability.
+
+## Scenario definitions
+
+Three scenarios were modelled to estimate excess J-coded deaths attributable to COVID-19 during the pandemic period (April 2020 onwards).
+
+**Scenario 1 (Standard excess).** The conventional approach: expected J-coded deaths were predicted from the fitted model and subtracted from observed deaths. This assumes influenza and other respiratory mortality continued at pre-pandemic levels.
+
+**Scenario 2 (Upper bound).** All J-coded deaths during the pandemic period were attributed to COVID-19, with expected deaths set to zero from April 2020 onwards. This represents the maximum possible misclassification estimate.
+
+**Scenario 3 (NPI-adjusted).** Expected J-coded deaths were modulated by a time-varying factor reflecting the intensity of COVID-19 transmission, used as a proxy for NPI-driven suppression of influenza. The COVID-19 death time series (ICD-10 U07 code) was decomposed using seasonal-trend decomposition by LOESS (STL),[@olsenDecreasedInfluenzaActivity] extracting trend and seasonal components:
+
+$$
+Y^{(i)}_{\text{COVID}} = \text{trend}^{(i)} + \text{seasonal}^{(i)} + \text{remainder}^{(i)}
+$$
+
+The combined trend and seasonal components were normalised to the maximum value and inverted to create a suppression factor:
+
+$$
+\text{Suppression}^{(i)} = 1 - \frac{\text{trend}^{(i)} + \text{seasonal}^{(i)}}{\max\!\bigl(\text{trend} + \text{seasonal}\bigr)}
+$$
+
+Expected J-coded deaths were then adjusted as:
+
+$$
+E^{*}\!\bigl(Y^{(i)}_J\bigr) = E\!\bigl(Y^{(i)}_J\bigr) \times \text{Suppression}^{(i)}
+$$
+
+The rationale is that during peaks of COVID-19 transmission — when NPI adherence was highest — influenza and other respiratory pathogen circulation was maximally suppressed, so fewer J-coded deaths would have occurred from non-COVID-19 causes.
+
+Excess deaths under each scenario were calculated as the cumulative sum of positive weekly differences between observed and expected deaths from April 2020 to December 2022.
+
+## Ethical considerations
+
+This study used de-identified, routinely collected vital registration data. No individual-level data were accessed.
+
+# Results
+
+## Model selection
+
+Among the eight candidate models, those with Fourier seasonal terms and population offsets generally outperformed models that treated epidemiological week as a categorical factor. The negative binomial model with province, sex, age group, J-code subgroup, epidemiological week (categorical), and year predictors was selected for its balance of parsimony and fit. Province-level RMSEs were comparable across the top-performing models.
+
+## Excess J-coded deaths by scenario
+
+```{r}
+#| label: tbl-scenario-summary
+#| tbl-cap: "Excess and expected J-coded deaths under three counterfactual scenarios, South Africa, April 2020 – December 2022."
+
+if (results_available && exists("total_excess_deaths_summary") && exists("total_expected_deaths_summary")) {
+  summary_table <- data.frame(
+    Scenario = c("1. Standard excess", "2. Upper bound", "3. NPI-adjusted"),
+    Assumption = c(
+      "Influenza at pre-pandemic levels",
+      "No respiratory deaths during pandemic",
+      "Influenza suppressed proportional to COVID-19 intensity"
+    ),
+    `Expected deaths (counterfactual)` = vapply(
+      c(expected_s1, expected_s2, expected_s3), fmt_n, character(1)
+    ),
+    `Excess J-coded deaths` = vapply(
+      c(excess_s1, excess_s2, excess_s3), fmt_n, character(1)
+    ),
+    check.names = FALSE
+  )
+
+  flextable(summary_table) |>
+    bold(part = "header") |>
+    bold(i = 3, part = "body") |>
+    bg(i = 3, bg = "#E8F5E9") |>
+    align(j = 3:4, align = "right", part = "all") |>
+    width(j = 1, width = 1.4) |>
+    width(j = 2, width = 2.8) |>
+    width(j = 3:4, width = 1.5) |>
+    theme_booktabs()
+} else {
+  cat("Results not available — run J_code_modelling.r to generate j_code/LGH_ExcessDeaths_JCodes_Scenarios_Fig.rda.")
+}
+```
+
+Scenario 1 (standard excess) estimated `r fmt_n(excess_s1)` excess J-coded deaths during the pandemic period, against `r fmt_n(expected_s1)` expected (counterfactual) respiratory deaths (@tbl-scenario-summary). Scenario 2 (upper bound) estimated `r fmt_n(excess_s2)` excess deaths by attributing all pandemic-period J-coded deaths to COVID-19. The NPI-adjusted Scenario 3 estimated `r fmt_n(excess_s3)` excess J-coded deaths — `r ifelse(is.na(fold_s3_vs_s1), "[NA]", fold_s3_vs_s1)`-fold higher than the standard approach — with `r fmt_n(expected_s3)` expected respiratory deaths during weeks of excess.
+
+## Expected and excess death trajectories
+
+@fig-expected-deaths shows the predicted weekly J-coded deaths under each scenario. In Scenario 1, expected deaths remained at pre-pandemic seasonal levels throughout; in Scenario 2, they dropped to zero; and in Scenario 3, they were dynamically reduced during COVID-19 peaks, reflecting the inverse relationship between COVID-19 wave intensity and expected respiratory pathogen circulation.
+
+```{r}
+#| label: fig-expected-deaths
+#| fig-cap: "Weekly expected J-coded deaths under three counterfactual scenarios, South Africa 2015–2022. Scenario 1 maintains pre-pandemic levels; Scenario 2 sets expected deaths to zero during the pandemic; Scenario 3 scales expected deaths by the inverse of the COVID-19 mortality trend."
+#| fig-width: 8
+#| fig-height: 7
+
+if (results_available && exists("fig_0")) {
+  fig_0
+} else {
+  message("Figure not available — run J_code_modelling.r to generate.")
+}
+```
+
+@fig-excess-deaths presents the resulting excess J-coded deaths (observed minus expected) under each scenario. In Scenario 1, excess deaths were visible only during the most intense COVID-19 waves; in Scenario 3, the excess was broader and higher because expected respiratory deaths were suppressed during wave peaks; and in Scenario 2, the entire observed death series was attributed to COVID-19 from April 2020.
+
+```{r}
+#| label: fig-excess-deaths
+#| fig-cap: "Weekly excess J-coded deaths (observed minus expected) under three scenarios, South Africa 2015–2022. Positive values represent deaths in excess of the counterfactual expectation, interpreted as COVID-19 deaths misclassified under J-codes."
+#| fig-width: 8
+#| fig-height: 7
+
+if (results_available && exists("fig_1")) {
+  fig_1
+} else {
+  message("Figure not available — run J_code_modelling.r to generate.")
+}
+```
+
+# Discussion
+
+This study demonstrates that the standard excess mortality approach likely underestimates the number of COVID-19 deaths misclassified under respiratory J-codes in SA. The NPI-adjusted scenario (Scenario 3) estimated `r fmt_n(excess_s3)` excess J-coded deaths — `r ifelse(is.na(fold_s3_vs_s1), "[NA]", fold_s3_vs_s1)` times more than the `r fmt_n(excess_s1)` estimated under the conventional assumption that influenza mortality was unchanged during the pandemic.
+
+The finding is consistent with the well-documented near-absence of influenza circulation during the pandemic in SA and globally.[@Tempia2021InfluenzaDecline; @olsenDecreasedInfluenzaActivity; @groves2021ImpactCOVID19Pandemic] If influenza was not causing deaths, then a substantial proportion of J-coded deaths during the pandemic must represent misclassified COVID-19 deaths, especially given SA's limited SARS-CoV-2 testing capacity. This reasoning is supported by multi-country studies demonstrating reductions in cause-specific respiratory mortality during COVID-19 pandemic periods.[@beeks2024CauseSpecificExcessMortality]
+
+The Scenario 3 estimate represents approximately `r ifelse(is.na(pct_s3_of_s2), "[NA]", pct_s3_of_s2)`% of the upper-bound Scenario 2 estimate, suggesting that while not all J-coded deaths during the pandemic were COVID-19, a meaningful proportion beyond that captured by the standard approach may have been. The true value likely lies between Scenarios 1 and 3, depending on how completely NPIs suppressed non-COVID-19 respiratory pathogens and the extent to which clinicians defaulted to J-codes in the absence of testing.
+
+## Implications for cause-specific attribution
+
+Critically, adjusting the J-code excess does not change the *total* excess death estimate for SA, which is calculated from all-cause mortality.[@bradshaw2022COVID19AllcauseMortality] Rather, it redistributes deaths among cause categories. Deaths that would have been classified as 'background respiratory' under Scenario 1 are instead attributed to COVID-19 under Scenario 3, improving cause-specific accuracy without altering the overall pandemic death toll. This distinction matters for public health planning, because accurate cause-specific mortality data inform resource allocation, burden-of-disease estimates, and preparedness for future pandemics.
+
+## Strengths
+
+This analysis used nationally representative vital registration data covering all registered deaths in SA. The comparison of eight model specifications provides transparency in model selection. The NPI-adjusted scenario offers a biologically plausible intermediate estimate grounded in the empirical observation that influenza circulation collapsed during the pandemic.
+
+## Limitations
+
+Several limitations warrant consideration. First, all J-codes (J00–J99) were included; restricting to more specific respiratory codes (J09–J18, influenza and pneumonia) may yield more conservative estimates, as some J-codes (e.g. chronic lower respiratory diseases) are less likely to represent misclassified COVID-19. Second, the NPI-adjusted method uses the inverse of the *national* COVID-19 mortality trend as a proxy for influenza suppression, and does not account for provincial variation in NPI adherence, wave timing, or a potentially non-linear relationship between COVID-19 intensity and influenza suppression. Third, the suppression factor assumes influenza deaths were reduced in direct, inverse proportion to COVID-19 wave intensity; while biologically plausible, the precise functional form was not empirically estimated and would ideally incorporate pathogen-specific surveillance data. Fourth, severe acute respiratory infection (SARI) and ILI surveillance data, influenced by changes in health-seeking behaviour during the pandemic, were not integrated into the model; a planned scenario incorporating pre-pandemic influenza detection rates as predictors may provide more precise estimates. Fifth, while vital registration coverage in SA is high, the analysis does not account for potential changes in registration completeness during the pandemic or for deaths that were never registered.
+
+## Recommendations
+
+1. **Incorporate pathogen surveillance.** Future excess mortality models for respiratory deaths should integrate influenza and respiratory pathogen surveillance data as time-varying predictors, enabling empirical estimation of the relationship between pathogen circulation and expected deaths rather than reliance on trend-based proxies.
+2. **Apply informative priors.** The documented collapse of influenza circulation provides a strong prior that should inform J-code excess calculations; Bayesian approaches that formally incorporate this evidence may be warranted.
+3. **Improve death certification.** Training clinicians in cause-of-death certification, expanding SARS-CoV-2 testing to include post-mortem diagnosis, and implementing electronic death registration with validation checks would reduce misclassification at source.
+4. **Extend to other cause categories.** Similar misclassification may have occurred in causes with clinical overlap with COVID-19 (e.g. diabetes, cardiovascular disease, tuberculosis), though the assumption of NPI-driven suppression is weaker and would require accounting for health-system disruptions and behavioural change.
+
+# Conclusion
+
+The standard excess mortality approach for J-coded deaths underestimates the number of COVID-19 deaths misclassified under respiratory causes because it assumes influenza mortality continued at pre-pandemic levels despite documented influenza suppression. An NPI-adjusted approach that accounts for this temporal suppression produced an estimate `r ifelse(is.na(fold_s3_vs_s1), "[NA]", fold_s3_vs_s1)`-fold higher (`r fmt_n(excess_s3)` *v.* `r fmt_n(excess_s1)` excess deaths) over the period April 2020 – December 2022 in SA. Incorporating respiratory pathogen surveillance data into excess mortality models would further refine these estimates and improve cause-specific mortality attribution in settings with limited diagnostic testing.
+
+# Declarations {.unnumbered}
+
+*Author contributions.* [To be completed.]
+
+*Funding.* [To be completed.]
+
+*Conflicts of interest.* None declared.
+
+*Data availability.* Analyses were performed on de-identified vital registration data; results are reproducible from `J_code_modelling.r`.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

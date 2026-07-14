@@ -1,0 +1,73 @@
+---
+title: "Death Registration — Coverage Results"
+description: "Population coverage of standalone DHA offices, applying Method 3 (ward-level centroid distance)"
+date: "2026-01-20"
+categories: [access, DHA, death registration, results]
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(flextable)
+library(scales)
+load("../../outputs/ward_level_dha_access.RData")
+```
+
+## Scope
+
+Death registration in South Africa takes place at **standalone DHA offices** (`r n_standalone_dha` offices with geocoded locations in the 2024 dataset). Unlike births, deaths are not commonly registered at health facilities, so the hospital-based DHA satellites are **not** included here — they are added in the [birth registration analysis](birth_registration.qmd).
+
+All numbers below use **[Method 3](methodology.qmd)** — ward centroid to nearest DHA office.
+
+## Headline coverage
+
+::: callout-important
+- **`r m3_pct_5km`%** of the population lives within **5 km** of a DHA office
+- **`r m3_pct_10km`%** of the population lives within **10 km** of a DHA office
+- **`r m3_pct_20km`%** of the population lives within **20 km** of a DHA office
+- `r missing_pop` wards had missing population data and were excluded
+:::
+
+## Coverage by distance band
+
+```{r}
+#| label: tbl-death-coverage
+ward_access_ft
+```
+
+## Map: distance to nearest DHA office
+
+```{r}
+#| label: fig-death-map
+#| fig-width: 10
+#| fig-height: 8
+ward_distance_map
+```
+
+## Cumulative coverage curve
+
+```{r}
+#| label: fig-death-curve
+#| fig-width: 10
+#| fig-height: 6
+coverage_curve_plot
+```
+
+## What this means for death registration
+
+The headline figure — roughly **`r m3_pct_10km`%** of the population within 10 km of a DHA office — is the working population covered for death registration under realistic same-day travel. Coverage drops markedly in rural districts, which is where under-registration of deaths is most plausible.
+
+The [sensitivity check](sensitivity.qmd) confirms that DHA offices sit, on average, in denser-than-average areas — consistent with population-weighted placement.
+
+## Limitations
+
+::: callout-warning
+- **Centroid proxy**: large rural wards may misrepresent where people actually live.
+- **Straight-line distance**: real travel cost is higher in mountainous / poorly connected districts.
+- **Office capacity** is not modelled — overcrowding at busy urban offices can be a real access barrier even with low geographic distance.
+- **Static population**: 2025 mid-year estimates may understate informal settlement growth.
+:::
+
+For a side-by-side comparison with alternative methods, see [Methods Comparison](methods_comparison.qmd).

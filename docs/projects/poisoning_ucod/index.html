@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-06-24">
+<meta name="description" content="Comparing four approaches to identifying poisoning deaths — Line 1, Line 4, last reported line, and UCOD — in Gauteng and KwaZulu-Natal vital registration data, 1997–2022">
+
+<title>Why the underlying cause of death matters: a poisoning case study – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Why the underlying cause of death matters: a poisoning case study</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><span class="header-section-number">1</span> Background</a></li>
+  <li><a href="#the-decision-which-field-to-use" id="toc-the-decision-which-field-to-use" class="nav-link" data-scroll-target="#the-decision-which-field-to-use"><span class="header-section-number">2</span> The decision: which field to use?</a>
+  <ul class="collapse">
+  <li><a href="#option-1-line-1-only-causea" id="toc-option-1-line-1-only-causea" class="nav-link" data-scroll-target="#option-1-line-1-only-causea"><span class="header-section-number">2.1</span> Option 1 — Line 1 only (<code>CauseA</code>)</a></li>
+  <li><a href="#option-2-line-4-only-caused" id="toc-option-2-line-4-only-caused" class="nav-link" data-scroll-target="#option-2-line-4-only-caused"><span class="header-section-number">2.2</span> Option 2 — Line 4 only (<code>CauseD</code>)</a></li>
+  <li><a href="#option-3-last-reported-line" id="toc-option-3-last-reported-line" class="nav-link" data-scroll-target="#option-3-last-reported-line"><span class="header-section-number">2.3</span> Option 3 — Last reported line</a></li>
+  <li><a href="#option-4-ucod-underlyingcause-the-reference-standard" id="toc-option-4-ucod-underlyingcause-the-reference-standard" class="nav-link" data-scroll-target="#option-4-ucod-underlyingcause-the-reference-standard"><span class="header-section-number">2.4</span> Option 4 — UCOD (<code>UnderlyingCause</code>) — the reference standard</a></li>
+  </ul></li>
+  <li><a href="#decision-summary-gauteng-and-kwazulu-natal-poisoning-deaths-19972022" id="toc-decision-summary-gauteng-and-kwazulu-natal-poisoning-deaths-19972022" class="nav-link" data-scroll-target="#decision-summary-gauteng-and-kwazulu-natal-poisoning-deaths-19972022"><span class="header-section-number">3</span> Decision summary: Gauteng and KwaZulu-Natal poisoning deaths, 1997–2022</a></li>
+  <li><a href="#why-options-13-fall-short-supporting-evidence" id="toc-why-options-13-fall-short-supporting-evidence" class="nav-link" data-scroll-target="#why-options-13-fall-short-supporting-evidence"><span class="header-section-number">4</span> Why options 1–3 fall short: supporting evidence</a>
+  <ul class="collapse">
+  <li><a href="#how-many-part-i-lines-do-certifiers-actually-fill" id="toc-how-many-part-i-lines-do-certifiers-actually-fill" class="nav-link" data-scroll-target="#how-many-part-i-lines-do-certifiers-actually-fill"><span class="header-section-number">4.1</span> How many Part I lines do certifiers actually fill?</a></li>
+  <li><a href="#where-in-the-chain-is-the-poisoning-code-recorded" id="toc-where-in-the-chain-is-the-poisoning-code-recorded" class="nav-link" data-scroll-target="#where-in-the-chain-is-the-poisoning-code-recorded"><span class="header-section-number">4.2</span> Where in the chain is the poisoning code recorded?</a></li>
+  <li><a href="#sensitivity-and-specificity-against-the-ucod-reference" id="toc-sensitivity-and-specificity-against-the-ucod-reference" class="nav-link" data-scroll-target="#sensitivity-and-specificity-against-the-ucod-reference"><span class="header-section-number">4.3</span> Sensitivity and specificity against the UCOD reference</a></li>
+  </ul></li>
+  <li><a href="#illustrative-examples" id="toc-illustrative-examples" class="nav-link" data-scroll-target="#illustrative-examples"><span class="header-section-number">5</span> Illustrative examples</a>
+  <ul class="collapse">
+  <li><a href="#type-1-missed-by-option-1-poisoning-buried-in-the-chain" id="toc-type-1-missed-by-option-1-poisoning-buried-in-the-chain" class="nav-link" data-scroll-target="#type-1-missed-by-option-1-poisoning-buried-in-the-chain"><span class="header-section-number">5.1</span> Type 1 — Missed by Option 1: poisoning buried in the chain</a></li>
+  <li><a href="#type-2-false-positive-for-option-1-poisoning-code-on-line-1-but-ucod-differs" id="toc-type-2-false-positive-for-option-1-poisoning-code-on-line-1-but-ucod-differs" class="nav-link" data-scroll-target="#type-2-false-positive-for-option-1-poisoning-code-on-line-1-but-ucod-differs"><span class="header-section-number">5.2</span> Type 2 — False positive for Option 1: poisoning code on Line 1 but UCOD differs</a></li>
+  <li><a href="#type-3-buried-on-line-3-missed-by-options-1-and-3" id="toc-type-3-buried-on-line-3-missed-by-options-1-and-3" class="nav-link" data-scroll-target="#type-3-buried-on-line-3-missed-by-options-1-and-3"><span class="header-section-number">5.3</span> Type 3 — Buried on Line 3: missed by Options 1 and 3</a></li>
+  </ul></li>
+  <li><a href="#trend-over-time-what-each-option-gives-you-year-by-year" id="toc-trend-over-time-what-each-option-gives-you-year-by-year" class="nav-link" data-scroll-target="#trend-over-time-what-each-option-gives-you-year-by-year"><span class="header-section-number">6</span> Trend over time: what each option gives you year by year</a></li>
+  <li><a href="#recommendation" id="toc-recommendation" class="nav-link" data-scroll-target="#recommendation"><span class="header-section-number">7</span> Recommendation</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">8</span> References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Why the underlying cause of death matters: a poisoning case study</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">poisoning</div>
+    <div class="quarto-category">UCOD</div>
+    <div class="quarto-category">data-quality</div>
+    <div class="quarto-category">vital-registration</div>
+    <div class="quarto-category">icd10</div>
+    <div class="quarto-category">methodology</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Comparing four approaches to identifying poisoning deaths — Line 1, Line 4, last reported line, and UCOD — in Gauteng and KwaZulu-Natal vital registration data, 1997–2022
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 24, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="background" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="background"><span class="header-section-number">1</span> Background</h2>
+<p>The South African death notification form (DNF) records the <strong>sequence of conditions</strong> leading to death in <strong>Part I</strong>, which provides up to four lines (a–d):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Position</th>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Line 1 (1a)</td>
+<td style="text-align: left;"><code>CauseA</code></td>
+<td style="text-align: left;">Immediate cause — the final condition before death</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Line 2 (1b)</td>
+<td style="text-align: left;"><code>CauseB</code></td>
+<td style="text-align: left;">Due to / antecedent cause of Line 1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Line 3 (1c)</td>
+<td style="text-align: left;"><code>CauseC</code></td>
+<td style="text-align: left;">Due to / antecedent cause of Line 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Line 4 (1d)</td>
+<td style="text-align: left;"><code>CauseD</code></td>
+<td style="text-align: left;">Due to / most distal antecedent cause</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>underlying cause of death (UCOD)</strong> is derived by Stats SA by applying ICD-10 Volume 2 selection and modification rules to the complete certificate, starting from the lowest reported line and working back up the causal chain. This is the condition that initiated the train of morbid events, or the external circumstances of injury.</p>
+<p>When a researcher wants to identify poisoning deaths from the LGH data, they face a practical choice: <strong>which field to search for the ICD-10 poisoning code?</strong> This case study uses 4,503,263 death records from <strong>Gauteng</strong> and <strong>KwaZulu-Natal</strong>, 1997–2022, to show the consequences of each option.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Poisoning definition applied in all options
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">ICD-10 block</th>
+<th style="text-align: left;">Category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X40–X49</td>
+<td style="text-align: left;">Accidental / unspecified</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">X60–X69</td>
+<td style="text-align: left;">Intentional self-poisoning</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">X85</td>
+<td style="text-align: left;">Assault by poisoning</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Y10–Y19</td>
+<td style="text-align: left;">Poisoning, undetermined intent</td>
+</tr>
+</tbody>
+</table>
+<p>The same pattern is applied identically to every field.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="the-decision-which-field-to-use" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="the-decision-which-field-to-use"><span class="header-section-number">2</span> The decision: which field to use?</h2>
+<p>There are four candidate approaches for identifying poisoning deaths in the raw LGH data. Here is what each one does and what it produces.</p>
+<section id="option-1-line-1-only-causea" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="option-1-line-1-only-causea"><span class="header-section-number">2.1</span> Option 1 — Line 1 only (<code>CauseA</code>)</h3>
+<p>Search <code>CauseA</code> (the immediate cause field) for a poisoning ICD-10 code.</p>
+<p><strong>When this would be right:</strong> The certifier has written the external cause (e.g.&nbsp;<code>X49</code>) directly on Line 1 as the immediate cause of death, with nothing below it.</p>
+<p><strong>When this fails:</strong> The certifier correctly records a terminal physiological event on Line 1 — e.g.&nbsp;<em>cardiac arrest</em> or <em>hepatic failure</em> — and writes the actual poisoning code on a lower line. This is the <strong>intended</strong> structure of a causal chain; it is not a certifier error. Line 1 scanning would silently drop the entire death from the poisoning count.</p>
+<p><strong>Also:</strong> Line 1 can carry a poisoning code that is <em>not</em> ultimately selected as the UCOD — for example when a certifier places an external cause on Line 1 but an underlying chronic disease sits below it. Those records become <strong>false positives</strong>.</p>
+<hr>
+</section>
+<section id="option-2-line-4-only-caused" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="option-2-line-4-only-caused"><span class="header-section-number">2.2</span> Option 2 — Line 4 only (<code>CauseD</code>)</h3>
+<p>Search <code>CauseD</code> (the most distal / antecedent cause field) for a poisoning code.</p>
+<p><strong>When this would be right:</strong> The certifier has recorded the external cause at the bottom of a four-line chain.</p>
+<p><strong>When this fails:</strong> Most South African certifiers fill <strong>one or two lines</strong> and leave Line 4 blank. An approach anchored to <code>CauseD</code> will therefore find almost nothing — not because the deaths are absent but because the field is empty.</p>
+<hr>
+</section>
+<section id="option-3-last-reported-line" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="option-3-last-reported-line"><span class="header-section-number">2.3</span> Option 3 — Last reported line</h3>
+<p>Identify the last non-empty line in the Part I chain for each certificate, then search that field.</p>
+<p><strong>When this would be right:</strong> The certifier uses the bottom-most filled line for the root cause, following the standard instruction to proceed from the immediate cause down to its origin.</p>
+<p><strong>When this fails:</strong> Some certifiers record an underlying chronic disease on the last line (e.g.&nbsp;<em>diabetes mellitus</em> on Line 3) while the poisoning code sits on an intermediate line (e.g.&nbsp;<code>X48 — pesticides</code> on Line 2). The last-line approach picks up the chronic disease, not the poisoning.</p>
+<hr>
+</section>
+<section id="option-4-ucod-underlyingcause-the-reference-standard" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="option-4-ucod-underlyingcause-the-reference-standard"><span class="header-section-number">2.4</span> Option 4 — UCOD (<code>UnderlyingCause</code>) — the reference standard</h3>
+<p>Use the <code>UnderlyingCause</code> field, which contains the UCOD assigned by Stats SA after applying ICD-10 Volume 2 rules to the full certificate.</p>
+<p><strong>Why this is correct:</strong> The UCOD algorithm is specifically designed to resolve the ambiguities that defeat Options 1–3: it reads the entire certificate, handles terminal-event immediacy in Line 1, applies modification rules that can shift the assigned cause, and uses Part II (contributing conditions) where relevant.</p>
+<p><strong>Trade-off:</strong> The UCOD field is only populated in processed extracts. Raw DNF data or early extracts may not have it. However, for any analytic purpose — surveillance, trend analysis, burden estimation — UCOD is the appropriate and internationally mandated denominator.</p>
+<hr>
+</section>
+</section>
+<section id="decision-summary-gauteng-and-kwazulu-natal-poisoning-deaths-19972022" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="decision-summary-gauteng-and-kwazulu-natal-poisoning-deaths-19972022"><span class="header-section-number">3</span> Decision summary: Gauteng and KwaZulu-Natal poisoning deaths, 1997–2022</h2>
+<p>The table below shows exactly what each option produces when applied to the 4,503,263 GP + KZN death records. <strong>UCOD total (22,575 deaths) is the reference.</strong></p>
+<div class="cell">
+<div id="tbl-decision" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-decision-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Decision summary: poisoning deaths identified by each approach in GP + KZN, with sensitivity and false-positive rate against the UCOD reference. Green row = recommended approach.
+</figcaption>
+<div aria-describedby="tbl-decision-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-870bd998{}.cl-8705b3d8{font-family:'Helvetica';font-size:9.5pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-8705b3e2{font-family:'Helvetica';font-size:9.5pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-87086b8c{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87087fc8{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087fdc{width:1.305in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087fdd{width:0.689in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087fe6{width:0.747in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087fe7{width:1.176in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087fe8{width:1.26in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087ff0{width:1.121in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087ff1{width:1.158in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087ff2{width:5.513in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087ffa{width:0.82in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87087ffb{width:1.305in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088004{width:0.689in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088005{width:0.747in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088006{width:1.176in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088007{width:1.26in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708800e{width:1.121in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708800f{width:1.158in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088010{width:5.513in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088011{width:0.82in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088018{width:1.305in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088019{width:0.689in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708801a{width:0.747in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088022{width:1.176in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088023{width:1.26in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088024{width:1.121in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708802c{width:1.158in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708802d{width:5.513in;background-color:rgba(252, 228, 236, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708802e{width:0.82in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088036{width:1.305in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088037{width:0.689in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088038{width:0.747in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088039{width:1.176in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088040{width:1.26in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088041{width:1.121in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088042{width:1.158in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708804a{width:5.513in;background-color:rgba(255, 248, 225, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708804b{width:0.82in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708804c{width:1.305in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708804d{width:0.689in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088054{width:0.747in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088055{width:1.176in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088056{width:1.26in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708805e{width:1.121in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8708805f{width:1.158in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87088068{width:5.513in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-870bd998"><thead><tr style="overflow-wrap:break-word;"><th class="cl-87087fc8"><p class="cl-87086b8c"><span class="cl-8705b3d8">Option</span></p></th><th class="cl-87087fdc"><p class="cl-87086b8c"><span class="cl-8705b3d8">Approach / field</span></p></th><th class="cl-87087fdd"><p class="cl-87086b8c"><span class="cl-8705b3d8">GP (n)</span></p></th><th class="cl-87087fe6"><p class="cl-87086b8c"><span class="cl-8705b3d8">KZN (n)</span></p></th><th class="cl-87087fe7"><p class="cl-87086b8c"><span class="cl-8705b3d8">GP + KZN total</span></p></th><th class="cl-87087fe8"><p class="cl-87086b8c"><span class="cl-8705b3d8">% of UCOD total</span></p></th><th class="cl-87087ff0"><p class="cl-87086b8c"><span class="cl-8705b3d8">Sensitivity (%)</span></p></th><th class="cl-87087ff1"><p class="cl-87086b8c"><span class="cl-8705b3d8">False positives</span></p></th><th class="cl-87087ff0"><p class="cl-87086b8c"><span class="cl-8705b3d8">Specificity (%)</span></p></th><th class="cl-87087ff2"><p class="cl-87086b8c"><span class="cl-8705b3d8">Consequence</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-87087ffa"><p class="cl-87086b8c"><span class="cl-8705b3d8">Option 1</span></p></td><td class="cl-87087ffb"><p class="cl-87086b8c"><span class="cl-8705b3d8">Line 1 (CauseA)</span></p></td><td class="cl-87088004"><p class="cl-87086b8c"><span class="cl-8705b3d8"> 9,755</span></p></td><td class="cl-87088005"><p class="cl-87086b8c"><span class="cl-8705b3d8">5,675</span></p></td><td class="cl-87088006"><p class="cl-87086b8c"><span class="cl-8705b3d8">15,430</span></p></td><td class="cl-87088007"><p class="cl-87086b8c"><span class="cl-8705b3d8">68.3%</span></p></td><td class="cl-8708800e"><p class="cl-87086b8c"><span class="cl-8705b3d8">67.5%</span></p></td><td class="cl-8708800f"><p class="cl-87086b8c"><span class="cl-8705b3d8">  188</span></p></td><td class="cl-8708800e"><p class="cl-87086b8c"><span class="cl-8705b3d8">100%</span></p></td><td class="cl-87088010"><p class="cl-87086b8c"><span class="cl-8705b3d8">Undercounts: misses all deaths where the poisoning code is not the immediate cause</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87088011"><p class="cl-87086b8c"><span class="cl-8705b3d8">Option 2</span></p></td><td class="cl-87088018"><p class="cl-87086b8c"><span class="cl-8705b3d8">Line 4 (CauseD)</span></p></td><td class="cl-87088019"><p class="cl-87086b8c"><span class="cl-8705b3d8">   478</span></p></td><td class="cl-8708801a"><p class="cl-87086b8c"><span class="cl-8705b3d8">  436</span></p></td><td class="cl-87088022"><p class="cl-87086b8c"><span class="cl-8705b3d8">   914</span></p></td><td class="cl-87088023"><p class="cl-87086b8c"><span class="cl-8705b3d8">4%</span></p></td><td class="cl-87088024"><p class="cl-87086b8c"><span class="cl-8705b3d8">2.3%</span></p></td><td class="cl-8708802c"><p class="cl-87086b8c"><span class="cl-8705b3d8">  389</span></p></td><td class="cl-87088024"><p class="cl-87086b8c"><span class="cl-8705b3d8">100%</span></p></td><td class="cl-8708802d"><p class="cl-87086b8c"><span class="cl-8705b3d8">Largely uninformative: most certifiers do not fill Line 4</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8708802e"><p class="cl-87086b8c"><span class="cl-8705b3d8">Option 3</span></p></td><td class="cl-87088036"><p class="cl-87086b8c"><span class="cl-8705b3d8">Last reported line</span></p></td><td class="cl-87088037"><p class="cl-87086b8c"><span class="cl-8705b3d8">12,118</span></p></td><td class="cl-87088038"><p class="cl-87086b8c"><span class="cl-8705b3d8">8,636</span></p></td><td class="cl-87088039"><p class="cl-87086b8c"><span class="cl-8705b3d8">20,754</span></p></td><td class="cl-87088040"><p class="cl-87086b8c"><span class="cl-8705b3d8">91.9%</span></p></td><td class="cl-87088041"><p class="cl-87086b8c"><span class="cl-8705b3d8">83.5%</span></p></td><td class="cl-87088042"><p class="cl-87086b8c"><span class="cl-8705b3d8">1,900</span></p></td><td class="cl-87088041"><p class="cl-87086b8c"><span class="cl-8705b3d8">100%</span></p></td><td class="cl-8708804a"><p class="cl-87086b8c"><span class="cl-8705b3d8">Better than Line 1 but still misses intermediate-chain poisoning codes</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8708804b"><p class="cl-87086b8c"><span class="cl-8705b3e2">Option 4</span></p></td><td class="cl-8708804c"><p class="cl-87086b8c"><span class="cl-8705b3e2">UCOD</span></p></td><td class="cl-8708804d"><p class="cl-87086b8c"><span class="cl-8705b3e2">12,963</span></p></td><td class="cl-87088054"><p class="cl-87086b8c"><span class="cl-8705b3e2">9,612</span></p></td><td class="cl-87088055"><p class="cl-87086b8c"><span class="cl-8705b3e2">22,575</span></p></td><td class="cl-87088056"><p class="cl-87086b8c"><span class="cl-8705b3e2">100%</span></p></td><td class="cl-8708805e"><p class="cl-87086b8c"><span class="cl-8705b3e2">100%</span></p></td><td class="cl-8708805f"><p class="cl-87086b8c"><span class="cl-8705b3e2">    0</span></p></td><td class="cl-8708805e"><p class="cl-87086b8c"><span class="cl-8705b3e2">100%</span></p></td><td class="cl-87088068"><p class="cl-87086b8c"><span class="cl-8705b3e2">Reference standard — captures all certificate information via ICD-10 selection rules</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-capture" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-capture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-capture-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-capture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Fig. 1. Poisoning deaths identified by each option, by province. The UCOD bar (Option 4, green) is the reference total.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-options-13-fall-short-supporting-evidence" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="why-options-13-fall-short-supporting-evidence"><span class="header-section-number">4</span> Why options 1–3 fall short: supporting evidence</h2>
+<section id="how-many-part-i-lines-do-certifiers-actually-fill" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="how-many-part-i-lines-do-certifiers-actually-fill"><span class="header-section-number">4.1</span> How many Part I lines do certifiers actually fill?</h3>
+<p>If every certifier filled all four lines, Option 2 (Line 4) might recover most cases. The chart below shows the reality.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-lines-filled" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-lines-filled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-lines-filled-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lines-filled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Fig. 2. Distribution of the number of Part I cause lines filled per death certificate in GP and KZN.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="where-in-the-chain-is-the-poisoning-code-recorded" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="where-in-the-chain-is-the-poisoning-code-recorded"><span class="header-section-number">4.2</span> Where in the chain is the poisoning code recorded?</h3>
+<p>Among all UCOD-poisoning records, this shows which line the certifier used for the X/Y external cause code — and therefore which option can see it.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-chain-pos" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-chain-pos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-chain-pos-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-chain-pos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Fig. 3. Position of the poisoning code in the Part I chain for UCOD-identified poisoning deaths.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-chain-wide" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-chain-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Table 2. UCOD-poisoning records by position of poisoning code in Part I chain.
+</figcaption>
+<div aria-describedby="tbl-chain-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-87a0d4f8{}.cl-8792c7e6{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-879566b8{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-879566c2{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87958e72{width:1.729in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e7c{width:0.871in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e7d{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e86{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e87{width:1.465in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e90{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e91{width:1.729in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e92{width:0.871in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e9a{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e9b{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87958e9c{width:1.465in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87959020{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8795902a{width:1.729in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8795902b{width:0.871in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8795902c{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8795902d{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87959034{width:1.465in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87959035{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-87a0d4f8"><thead><tr style="overflow-wrap:break-word;"><th class="cl-87958e72"><p class="cl-879566b8"><span class="cl-8792c7e6">Code position (Part I)</span></p></th><th class="cl-87958e7c"><p class="cl-879566c2"><span class="cl-8792c7e6">Gauteng</span></p></th><th class="cl-87958e7d"><p class="cl-879566c2"><span class="cl-8792c7e6">KwaZulu-Natal</span></p></th><th class="cl-87958e86"><p class="cl-879566c2"><span class="cl-8792c7e6">% Gauteng</span></p></th><th class="cl-87958e87"><p class="cl-879566c2"><span class="cl-8792c7e6">% KwaZulu-Natal</span></p></th><th class="cl-87958e90"><p class="cl-879566c2"><span class="cl-8792c7e6">Total</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-87958e91"><p class="cl-879566b8"><span class="cl-8792c7e6">Line 1</span></p></td><td class="cl-87958e92"><p class="cl-879566c2"><span class="cl-8792c7e6">9,650</span></p></td><td class="cl-87958e9a"><p class="cl-879566c2"><span class="cl-8792c7e6">5,592</span></p></td><td class="cl-87958e9b"><p class="cl-879566c2"><span class="cl-8792c7e6">74.4</span></p></td><td class="cl-87958e9c"><p class="cl-879566c2"><span class="cl-8792c7e6">58.2</span></p></td><td class="cl-87959020"><p class="cl-879566c2"><span class="cl-8792c7e6">15,242</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87958e91"><p class="cl-879566b8"><span class="cl-8792c7e6">Line 2</span></p></td><td class="cl-87958e92"><p class="cl-879566c2"><span class="cl-8792c7e6">1,902</span></p></td><td class="cl-87958e9a"><p class="cl-879566c2"><span class="cl-8792c7e6">2,508</span></p></td><td class="cl-87958e9b"><p class="cl-879566c2"><span class="cl-8792c7e6">14.7</span></p></td><td class="cl-87958e9c"><p class="cl-879566c2"><span class="cl-8792c7e6">26.1</span></p></td><td class="cl-87959020"><p class="cl-879566c2"><span class="cl-8792c7e6">4,410</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87958e91"><p class="cl-879566b8"><span class="cl-8792c7e6">Line 3</span></p></td><td class="cl-87958e92"><p class="cl-879566c2"><span class="cl-8792c7e6">931</span></p></td><td class="cl-87958e9a"><p class="cl-879566c2"><span class="cl-8792c7e6">1,022</span></p></td><td class="cl-87958e9b"><p class="cl-879566c2"><span class="cl-8792c7e6">7.2</span></p></td><td class="cl-87958e9c"><p class="cl-879566c2"><span class="cl-8792c7e6">10.6</span></p></td><td class="cl-87959020"><p class="cl-879566c2"><span class="cl-8792c7e6">1,953</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87958e91"><p class="cl-879566b8"><span class="cl-8792c7e6">Line 4</span></p></td><td class="cl-87958e92"><p class="cl-879566c2"><span class="cl-8792c7e6">264</span></p></td><td class="cl-87958e9a"><p class="cl-879566c2"><span class="cl-8792c7e6">258</span></p></td><td class="cl-87958e9b"><p class="cl-879566c2"><span class="cl-8792c7e6">2.0</span></p></td><td class="cl-87958e9c"><p class="cl-879566c2"><span class="cl-8792c7e6">2.7</span></p></td><td class="cl-87959020"><p class="cl-879566c2"><span class="cl-8792c7e6">522</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8795902a"><p class="cl-879566b8"><span class="cl-8792c7e6">Not in Part I</span></p></td><td class="cl-8795902b"><p class="cl-879566c2"><span class="cl-8792c7e6">216</span></p></td><td class="cl-8795902c"><p class="cl-879566c2"><span class="cl-8792c7e6">232</span></p></td><td class="cl-8795902d"><p class="cl-879566c2"><span class="cl-8792c7e6">1.7</span></p></td><td class="cl-87959034"><p class="cl-879566c2"><span class="cl-8792c7e6">2.4</span></p></td><td class="cl-87959035"><p class="cl-879566c2"><span class="cl-8792c7e6">448</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="sensitivity-and-specificity-against-the-ucod-reference" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="sensitivity-and-specificity-against-the-ucod-reference"><span class="header-section-number">4.3</span> Sensitivity and specificity against the UCOD reference</h3>
+<p>For each option, sensitivity = proportion of UCOD-poisoning deaths correctly captured; specificity = proportion of non-poisoning deaths correctly excluded.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-disc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-disc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-disc-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-disc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Fig. 4. Sensitivity and specificity of each option against the UCOD reference standard.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-discordance" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-discordance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Table 3. Sensitivity, specificity, and error counts for each option against the UCOD reference. TP = true positive; FP = false positive (flagged as poisoning but UCOD is not); FN = false negative (not flagged but UCOD is poisoning).
+</figcaption>
+<div aria-describedby="tbl-discordance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-87cf38d4{}.cl-87cb18ee{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-87cb18f8{font-family:'Helvetica';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-87cd07ee{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87cd07f8{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87cd19be{width:1.466in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19c8{width:1.16in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19c9{width:1.219in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19ca{width:1.279in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19d2{width:1.253in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19d3{width:1.466in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19dc{width:1.16in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19dd{width:1.219in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19de{width:1.279in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19e6{width:1.253in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19e7{width:1.466in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19e8{width:1.16in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19e9{width:1.219in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19f0{width:1.279in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87cd19f1{width:1.253in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-87cf38d4"><thead><tr style="overflow-wrap:break-word;"><th class="cl-87cd19be"><p class="cl-87cd07ee"><span class="cl-87cb18ee">Approach</span></p></th><th class="cl-87cd19c8"><p class="cl-87cd07ee"><span class="cl-87cb18ee">True positive</span></p></th><th class="cl-87cd19c9"><p class="cl-87cd07ee"><span class="cl-87cb18ee">False positive</span></p></th><th class="cl-87cd19ca"><p class="cl-87cd07ee"><span class="cl-87cb18ee">False negative</span></p></th><th class="cl-87cd19d2"><p class="cl-87cd07f8"><span class="cl-87cb18ee">Sensitivity (%)</span></p></th><th class="cl-87cd19d2"><p class="cl-87cd07f8"><span class="cl-87cb18ee">Specificity (%)</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-87cd19d3"><p class="cl-87cd07ee"><span class="cl-87cb18ee">Line 1 (CauseA)</span></p></td><td class="cl-87cd19dc"><p class="cl-87cd07ee"><span class="cl-87cb18ee">15,242</span></p></td><td class="cl-87cd19dd"><p class="cl-87cd07ee"><span class="cl-87cb18ee">188</span></p></td><td class="cl-87cd19de"><p class="cl-87cd07ee"><span class="cl-87cb18ee">7,333</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">67.5</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">100</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87cd19d3"><p class="cl-87cd07ee"><span class="cl-87cb18ee">Line 4 (CauseD)</span></p></td><td class="cl-87cd19dc"><p class="cl-87cd07ee"><span class="cl-87cb18ee">525</span></p></td><td class="cl-87cd19dd"><p class="cl-87cd07ee"><span class="cl-87cb18ee">389</span></p></td><td class="cl-87cd19de"><p class="cl-87cd07ee"><span class="cl-87cb18ee">22,050</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">2.3</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">100</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87cd19d3"><p class="cl-87cd07ee"><span class="cl-87cb18ee">Last reported line</span></p></td><td class="cl-87cd19dc"><p class="cl-87cd07ee"><span class="cl-87cb18ee">18,854</span></p></td><td class="cl-87cd19dd"><p class="cl-87cd07ee"><span class="cl-87cb18ee">1,900</span></p></td><td class="cl-87cd19de"><p class="cl-87cd07ee"><span class="cl-87cb18ee">3,721</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">83.5</span></p></td><td class="cl-87cd19e6"><p class="cl-87cd07f8"><span class="cl-87cb18ee">100</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87cd19e7"><p class="cl-87cd07ee"><span class="cl-87cb18f8">UCOD</span></p></td><td class="cl-87cd19e8"><p class="cl-87cd07ee"><span class="cl-87cb18f8">22,575</span></p></td><td class="cl-87cd19e9"><p class="cl-87cd07ee"><span class="cl-87cb18f8">0</span></p></td><td class="cl-87cd19f0"><p class="cl-87cd07ee"><span class="cl-87cb18f8">0</span></p></td><td class="cl-87cd19f1"><p class="cl-87cd07f8"><span class="cl-87cb18f8">100.0</span></p></td><td class="cl-87cd19f1"><p class="cl-87cd07f8"><span class="cl-87cb18f8">100</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>What the numbers mean for a poisoning analyst
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Of the <strong>22,575 poisoning deaths</strong> (UCOD) in GP + KZN:</p>
+<ul>
+<li><strong>Option 1 (Line 1)</strong> misses <strong>32.5%</strong> (7,333 records) and also adds <strong>188 false positives</strong> (1.2% of its identifications).</li>
+<li><strong>Option 3 (last reported line)</strong> still misses <strong>16.5%</strong> (3,721 records) — the cases where the poisoning code sits on an intermediate line.</li>
+<li><strong>448 UCOD-poisoning records</strong> (2%) carry <strong>no X/Y code anywhere in Part I</strong> — invisible to any line-scanning approach and only recoverable via the UCOD.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="illustrative-examples" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="illustrative-examples"><span class="header-section-number">5</span> Illustrative examples</h2>
+<section id="type-1-missed-by-option-1-poisoning-buried-in-the-chain" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="type-1-missed-by-option-1-poisoning-buried-in-the-chain"><span class="header-section-number">5.1</span> Type 1 — Missed by Option 1: poisoning buried in the chain</h3>
+<p>Line 1 carries a terminal physiological event; the poisoning code appears lower. Line 1 scanning misses the death entirely.</p>
+<div class="cell">
+<div id="tbl-examples-miss" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-examples-miss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Table 4. Records where UCOD = poisoning but Line 1 (CauseA) is not a poisoning code. Green column = UCOD; ‘—’ = line not filled.
+</figcaption>
+<div aria-describedby="tbl-examples-miss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-87e6c544{}.cl-87e0bb22{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-87e35120{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87e3512a{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87e36278{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36282{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36283{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36284{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e3628c{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36296{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36297{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e36298{width:1.244in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362a0{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362a1{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362aa{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362ab{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362b4{width:1.244in;background-color:rgba(232, 245, 233, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362b5{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87e362b6{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-87e6c544"><thead><tr style="overflow-wrap:break-word;"><th class="cl-87e36278"><p class="cl-87e35120"><span class="cl-87e0bb22">CauseA</span></p></th><th class="cl-87e36278"><p class="cl-87e35120"><span class="cl-87e0bb22">CauseB</span></p></th><th class="cl-87e36282"><p class="cl-87e35120"><span class="cl-87e0bb22">CauseC</span></p></th><th class="cl-87e36282"><p class="cl-87e35120"><span class="cl-87e0bb22">CauseD</span></p></th><th class="cl-87e36283"><p class="cl-87e35120"><span class="cl-87e0bb22">UnderlyingCause</span></p></th><th class="cl-87e36284"><p class="cl-87e35120"><span class="cl-87e0bb22">province</span></p></th><th class="cl-87e3628c"><p class="cl-87e3512a"><span class="cl-87e0bb22">year</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">A099</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">R58</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">I50</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">A41</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">P23</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">P54</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">E142</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">A099</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">P78</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">I46</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">N17</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">K72</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">N17</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">A35</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">I46</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">A41</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">H05</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">P29</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">I46</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">Y17</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">Y17</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">Gauteng</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">R57</span></p></td><td class="cl-87e36296"><p class="cl-87e35120"><span class="cl-87e0bb22">C61</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">K72</span></p></td><td class="cl-87e36297"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e36298"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362a0"><p class="cl-87e35120"><span class="cl-87e0bb22">Gauteng</span></p></td><td class="cl-87e362a1"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87e362aa"><p class="cl-87e35120"><span class="cl-87e0bb22">I46</span></p></td><td class="cl-87e362aa"><p class="cl-87e35120"><span class="cl-87e0bb22">J18</span></p></td><td class="cl-87e362ab"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362ab"><p class="cl-87e35120"><span class="cl-87e0bb22">—</span></p></td><td class="cl-87e362b4"><p class="cl-87e35120"><span class="cl-87e0bb22">X49</span></p></td><td class="cl-87e362b5"><p class="cl-87e35120"><span class="cl-87e0bb22">KwaZulu-Natal</span></p></td><td class="cl-87e362b6"><p class="cl-87e3512a"><span class="cl-87e0bb22">1,997</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="type-2-false-positive-for-option-1-poisoning-code-on-line-1-but-ucod-differs" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="type-2-false-positive-for-option-1-poisoning-code-on-line-1-but-ucod-differs"><span class="header-section-number">5.2</span> Type 2 — False positive for Option 1: poisoning code on Line 1 but UCOD differs</h3>
+<p>The certifier placed the external cause on Line 1; the ICD-10 selection rules selected a different condition as the true UCOD. Option 1 would count these as poisoning deaths in error.</p>
+<div class="cell">
+<div id="tbl-examples-fp" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-examples-fp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Table 5. Records where Line 1 (CauseA) = poisoning code but UCOD is not poisoning. Orange column = CauseA.
+</figcaption>
+<div aria-describedby="tbl-examples-fp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-87fc293e{}.cl-87f740fe{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-87f8eac6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87f8ead0{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-87f901aa{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901b4{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901be{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901bf{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901c0{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901c8{width:0.73in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901c9{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901ca{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901d2{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901d3{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901d4{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901d5{width:0.73in;background-color:rgba(255, 243, 224, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901dc{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901dd{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901de{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901e6{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-87f901e7{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-87fc293e"><thead><tr style="overflow-wrap:break-word;"><th class="cl-87f901aa"><p class="cl-87f8eac6"><span class="cl-87f740fe">CauseA</span></p></th><th class="cl-87f901aa"><p class="cl-87f8eac6"><span class="cl-87f740fe">CauseB</span></p></th><th class="cl-87f901b4"><p class="cl-87f8eac6"><span class="cl-87f740fe">CauseC</span></p></th><th class="cl-87f901b4"><p class="cl-87f8eac6"><span class="cl-87f740fe">CauseD</span></p></th><th class="cl-87f901be"><p class="cl-87f8eac6"><span class="cl-87f740fe">UnderlyingCause</span></p></th><th class="cl-87f901bf"><p class="cl-87f8eac6"><span class="cl-87f740fe">province</span></p></th><th class="cl-87f901c0"><p class="cl-87f8ead0"><span class="cl-87f740fe">year</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">E86</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">D64</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y53</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y53</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">Gauteng</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">1,998</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">P74</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">P78</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">E40</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">E40</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">KwaZulu-Natal</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,005</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">P78</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">B59</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">Gauteng</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,005</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">G00</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">KwaZulu-Natal</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,005</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">B22</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B22</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">Gauteng</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,005</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X49</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">KwaZulu-Natal</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,005</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">X61</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">X59</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">KwaZulu-Natal</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,006</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y11</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">N17</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">E87</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B33</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">Gauteng</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,006</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901c8"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y14</span></p></td><td class="cl-87f901c9"><p class="cl-87f8eac6"><span class="cl-87f740fe">B23</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901ca"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901d2"><p class="cl-87f8eac6"><span class="cl-87f740fe">B23</span></p></td><td class="cl-87f901d3"><p class="cl-87f8eac6"><span class="cl-87f740fe">Gauteng</span></p></td><td class="cl-87f901d4"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,006</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-87f901d5"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y17</span></p></td><td class="cl-87f901dc"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y26</span></p></td><td class="cl-87f901dd"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901dd"><p class="cl-87f8eac6"><span class="cl-87f740fe">—</span></p></td><td class="cl-87f901de"><p class="cl-87f8eac6"><span class="cl-87f740fe">Y26</span></p></td><td class="cl-87f901e6"><p class="cl-87f8eac6"><span class="cl-87f740fe">KwaZulu-Natal</span></p></td><td class="cl-87f901e7"><p class="cl-87f8ead0"><span class="cl-87f740fe">2,006</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="type-3-buried-on-line-3-missed-by-options-1-and-3" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="type-3-buried-on-line-3-missed-by-options-1-and-3"><span class="header-section-number">5.3</span> Type 3 — Buried on Line 3: missed by Options 1 and 3</h3>
+<p>The poisoning code sits on Line 3 with a different condition below it. Option 3 (last reported line) picks up the non-poisoning Line 4 or the non-poisoning last line, not the poisoning on Line 3.</p>
+<div class="cell">
+<div id="tbl-examples-buried" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-examples-buried-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Table 6. Records where UCOD = poisoning but the poisoning code is on Line 3 (CauseC), with a different condition as the most distal line. Blue column = CauseC.
+</figcaption>
+<div aria-describedby="tbl-examples-buried-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-88121d34{}.cl-880d1bae{font-family:'Helvetica';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-880ef6e0{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-880ef6ea{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-880f0d2e{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d2f{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d38{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d39{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d3a{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d42{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d43{width:0.737in;background-color:rgba(227, 242, 253, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d44{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d4c{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d4d{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d56{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d57{width:0.73in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d58{width:0.737in;background-color:rgba(227, 242, 253, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d60{width:0.737in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d61{width:1.244in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d6a{width:1.105in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-880f0d6b{width:0.598in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-88121d34"><thead><tr style="overflow-wrap:break-word;"><th class="cl-880f0d2e"><p class="cl-880ef6e0"><span class="cl-880d1bae">CauseA</span></p></th><th class="cl-880f0d2e"><p class="cl-880ef6e0"><span class="cl-880d1bae">CauseB</span></p></th><th class="cl-880f0d2f"><p class="cl-880ef6e0"><span class="cl-880d1bae">CauseC</span></p></th><th class="cl-880f0d2f"><p class="cl-880ef6e0"><span class="cl-880d1bae">CauseD</span></p></th><th class="cl-880f0d38"><p class="cl-880ef6e0"><span class="cl-880d1bae">UnderlyingCause</span></p></th><th class="cl-880f0d39"><p class="cl-880ef6e0"><span class="cl-880d1bae">province</span></p></th><th class="cl-880f0d3a"><p class="cl-880ef6ea"><span class="cl-880d1bae">year</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">A099</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">R58</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">I50</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">A41</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">N17</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">A35</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">I46</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">J18</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">P29</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">P36</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">K72</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">E40</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">R16</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">Gauteng</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">E87</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">J18</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">Gauteng</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">L51</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">A41</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">Y19</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">Y19</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">J81</span></p></td><td class="cl-880f0d42"><p class="cl-880ef6e0"><span class="cl-880d1bae">E142</span></p></td><td class="cl-880f0d43"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d44"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d4c"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d4d"><p class="cl-880ef6e0"><span class="cl-880d1bae">Gauteng</span></p></td><td class="cl-880f0d56"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-880f0d57"><p class="cl-880ef6e0"><span class="cl-880d1bae">A41</span></p></td><td class="cl-880f0d57"><p class="cl-880ef6e0"><span class="cl-880d1bae">E14</span></p></td><td class="cl-880f0d58"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d60"><p class="cl-880ef6e0"><span class="cl-880d1bae">—</span></p></td><td class="cl-880f0d61"><p class="cl-880ef6e0"><span class="cl-880d1bae">X49</span></p></td><td class="cl-880f0d6a"><p class="cl-880ef6e0"><span class="cl-880d1bae">KwaZulu-Natal</span></p></td><td class="cl-880f0d6b"><p class="cl-880ef6ea"><span class="cl-880d1bae">1,997</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="trend-over-time-what-each-option-gives-you-year-by-year" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="trend-over-time-what-each-option-gives-you-year-by-year"><span class="header-section-number">6</span> Trend over time: what each option gives you year by year</h2>
+<p>The gap between the UCOD line (Option 4, solid green) and the other lines represents poisoning deaths that would be lost or added in error in every year of the study.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-annual" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-annual-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Fig. 5. Annual poisoning deaths identified by each option, GP + KZN combined. The gap between Option 4 (UCOD, green solid) and the other options shows the persistent annual cost of not using the UCOD.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="recommendation" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="recommendation"><span class="header-section-number">7</span> Recommendation</h2>
+<p>Use <strong>Option 4 — UCOD</strong> for any analysis of cause-specific mortality.</p>
+<p>Options 1–3 produce systematically biased counts because they assume the cause of interest will appear at a predictable position in the Part I chain. South African certifiers do not write certificates in a standardised position order; the UCOD algorithm exists precisely to handle this variation.</p>
+<p>Specific failure mechanisms:</p>
+<ul>
+<li><strong>Option 1</strong> loses all deaths where the certifier correctly records a terminal event (cardiac arrest, respiratory failure) on Line 1 and places the causal agent lower — the most common certificate structure for poisoning.</li>
+<li><strong>Option 2</strong> loses almost all poisoning deaths because the majority of certificates are single-line entries.</li>
+<li><strong>Option 3</strong> improves on Option 1 but fails on certificates with a chronic disease recorded below an intermediate-line poisoning code — the “buried” pattern shown in Type 3 above.</li>
+<li>All three options are also <strong>incomparable across years and settings</strong> because they are sensitive to certifier behaviour and coding conventions that shift over time; UCOD processing normalises this variation.</li>
+</ul>
+</section>
+<section id="references" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="references"><span class="header-section-number">8</span> References</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
