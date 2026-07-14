@@ -455,6 +455,13 @@
     "text": "6.3 Cumulative coverage\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\n\nCoverage: 27.3% within 5 km, 53% within 10 km, 80% within 20 km.\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — ward centroids are still a proxy. The sensitivity check tests how plausible the implied population distribution near DHA nodes is."
   },
   {
+    "objectID": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
+    "href": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
+    "title": "Methods Comparison",
+    "section": "7.1 Results (Western Cape, death registration only)",
+    "text": "7.1 Results (Western Cape, death registration only)\n\n\nMeasure&lt; 5 km&lt; 10 km&lt; 20 kmStraight-line distance48.6%74.5%86.5%Road-network distance36.0%71.1%83.3%\n\n\n\n\nMeasure&lt; 10 min&lt; 30 min&lt; 60 minDriving time71.9%91.1%97.6%\n\n\n\n\n\n\n\n\nImportant\n\n\n\nRoad distance: 36.0% within 5 km, 71.1% within 10 km, 83.3% within 20 km. Driving time: 91.1% within 30 minutes, 97.6% within 60 minutes (death registration, DHA offices only, Western Cape).\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — Western Cape only; not yet run nationally. Assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method."
+  },
+  {
     "objectID": "projects/dha_access/index.html",
     "href": "projects/dha_access/index.html",
     "title": "DHA Service Access and Coverage",
@@ -1713,12 +1720,5 @@
     "title": "Signal Detection in Vital Registration Data",
     "section": "References",
     "text": "References"
-  },
-  {
-    "objectID": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
-    "href": "projects/dha_access/methods_comparison.html#results-western-cape-death-registration-only",
-    "title": "Methods Comparison",
-    "section": "7.1 Results (Western Cape, death registration only)",
-    "text": "7.1 Results (Western Cape, death registration only)\n\n\nMeasure&lt; 5 km&lt; 10 km&lt; 20 kmStraight-line distance48.6%74.5%86.5%Road-network distance36.0%71.1%83.3%\n\n\n\n\nMeasure&lt; 10 min&lt; 30 min&lt; 60 minDriving time71.9%91.1%97.6%\n\n\n\n\n\n\n\n\nImportant\n\n\n\nRoad distance: 36.0% within 5 km, 71.1% within 10 km, 83.3% within 20 km. Driving time: 91.1% within 30 minutes, 97.6% within 60 minutes (death registration, DHA offices only, Western Cape).\n\n\n\n\n\n\n\n\nWarning\n\n\n\nWeakness — Western Cape only; not yet run nationally. Assumes free-flow road speeds; excludes residential/unclassified streets; no birth-registration (hospital satellite) analysis has been run against this method."
   }
 ]
