@@ -5,6 +5,9 @@
 #   master file and produce:
 #   1. outputs/verified_nmc_condition_icd10.csv  — verified two-column NMC ↔ ICD-10 map
 #   2. outputs/nmc_icd_annual_counts.csv         — cases per condition per year
+#   3. outputs/nmc_icd_full_reference.csv        — full reference table (category,
+#      ICD-10/ICD-11 codes, pathogen notes, surveillance artefacts, MACOD note,
+#      reporting timeframe) for the ICD ↔ NMC explorer page
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -89,12 +92,19 @@ load_icd_map <- function() {
     mutate(
       nmc_category  = trimws(nmc_category),
       nmc_condition = trimws(nmc_condition),
+      icd11_code    = trimws(icd11_code),
+      pathogen_notes = trimws(pathogen_notes),
+      surveillance_artefacts = trimws(surveillance_artefacts),
+      macod_note    = trimws(macod_note),
+      reporting_timeframe = trimws(reporting_timeframe),
       icd10_code    = extract_primary_icd10(icd10_code),
       # normalised key for joining
       join_key      = normalise_name(nmc_condition)
     ) |>
     filter(!is.na(icd10_code)) |>
-    select(nmc_category, nmc_condition, icd10_code, join_key)
+    select(nmc_category, nmc_condition, icd10_code, icd11_code,
+           pathogen_notes, surveillance_artefacts, macod_note,
+           reporting_timeframe, join_key)
 
   # The current SA map workbook has no Mpox row; add the verified ICD-10 code.
   bind_rows(
@@ -103,6 +113,11 @@ load_icd_map <- function() {
       nmc_category = "Cat 1",
       nmc_condition = "Mpox",
       icd10_code = "B04",
+      icd11_code = NA_character_,
+      pathogen_notes = NA_character_,
+      surveillance_artefacts = NA_character_,
+      macod_note = NA_character_,
+      reporting_timeframe = NA_character_,
       join_key = normalise_name("Mpox")
     )
   ) |>
@@ -156,6 +171,19 @@ main <- function() {
   verified_out <- file.path(output_dir, "verified_nmc_condition_icd10.csv")
   write_csv(verified_map, verified_out)
   message("Verified map written (", nrow(verified_map), " rows): ", verified_out)
+
+  # 2b. Output: full reference table (category, ICD-10/11, notes) for the
+  #     ICD <-> NMC explorer page
+  full_reference <- icd_map |>
+    select(nmc_category, nmc_condition, icd10_code, icd11_code,
+           pathogen_notes, surveillance_artefacts, macod_note,
+           reporting_timeframe) |>
+    arrange(nmc_category, nmc_condition)
+
+  full_reference_out <- file.path(output_dir, "nmc_icd_full_reference.csv")
+  write_csv(full_reference, full_reference_out)
+  message("Full reference table written (", nrow(full_reference), " rows): ",
+          full_reference_out)
 
   # 3. Load NMC surveillance data and join
   nmc <- load_nmc_data()

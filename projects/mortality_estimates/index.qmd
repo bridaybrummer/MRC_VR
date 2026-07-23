@@ -106,278 +106,6 @@ This dashboard compares vital registration (VR) data with alternative mortality 
 - **NCODV Study**: Verbal autopsy-corrected estimates (2017-2018)
 - **NMC Database**: Notifiable Medical Conditions surveillance data for TB and poisoning
 
-## HIV/AIDS Deaths {#hiv}
-
-### HIV/AIDS Mortality: VR vs Models
-
-```{r}
-#| label: hiv-plot
-
-ggplotly(p_hiv, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-::: {.callout-note}
-## Key Findings
-- VR data substantially underestimates HIV/AIDS mortality compared to the Tembisa model
-- The NCODV study suggests ~23% of deaths may be HIV-related (2017-2018)
-- The gap has narrowed over time but remains significant
-:::
-
-::: {.callout-important icon=false}
-## So what? — Decision this data informs
-
-**Monitored action: correct certification and coding of HIV/AIDS as the underlying cause of death.**
-
-The gap between VR and the Tembisa model is driven mainly by HIV deaths being mis-certified to indicator or "garbage" causes (e.g. TB, pneumonia, anaemia, wasting) rather than to HIV/AIDS — a recognised driver of cause-of-death undercount in high-prevalence settings [@mathers2005; @naghavi2010].
-
-- **Trigger:** a persistent VR-vs-model gap, and an NCODV reattribution share (~23% of deaths HIV-related, 2017–2018) far exceeding the HIV fraction recorded in VR.
-- **Decision:** prioritise MCCD certifier training on naming HIV/AIDS as the underlying cause, and apply NCODV-based reattribution before reporting HIV mortality from VR.
-- **Expected effect:** the VR series moves **toward** the Tembisa model line as certification improves.
-- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track narrowing of the VR-vs-model gap.
-:::
-
-## TB Deaths {#tb}
-
-### TB Mortality: VR vs Models
-
-```{r}
-#| label: tb-plot
-
-ggplotly(p_tb, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-::: {.callout-important icon=false}
-## So what? — Decision this data informs
-
-**Monitored action: correct certification and coding of TB as the underlying cause of death.**
-
-TB mortality in VR diverges from the Tembisa model and NMC notifications largely because TB deaths are mis-certified to terminal or ill-defined causes, or lost where HIV/TB co-morbidity is not correctly sequenced on the MCCD [@mathers2005; @naghavi2010].
-
-- **Trigger:** a VR count that sits below the Tembisa model and/or NMC notification trend for the same period.
-- **Decision:** prioritise MCCD certifier training on correct underlying-cause selection for TB (including HIV/TB sequencing), and reconcile VR against NMC notifications.
-- **Expected effect:** the VR series converges **toward** the model and notification trends as certification and coding improve.
-- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track convergence of the VR, model, and notification series.
-:::
-
-## Poisoning Deaths {#poisoning}
-
-### Poisoning Mortality: VR vs NMC
-
-```{r}
-#| label: poisoning-plot
-
-ggplotly(p_poisoning, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-::: {.callout-note}
-## Key Findings
-- VR data captures poisoning deaths using ICD-10 codes X40-X49 (accidental poisoning) and X60-X69 (intentional self-poisoning)
-- NMC tracks notifications of agricultural and stock remedy poisoning cases
-- The comparison shows notification patterns vs recorded deaths from poisoning
-:::
-
-### Total Unnatural Deaths
-
-```{r}
-#| label: unnatural-plot
-#| eval: false
-
-ggplotly(p_unnatural, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-::: {.callout-tip}
-## Understanding Unnatural Deaths
-This includes all external causes of death (ICD-10 chapters V, W, X, Y):
-- Transport accidents (V codes)
-- Other external causes like falls, drowning (W codes)  
-- Poisoning and exposure (X codes)
-- Assault and intentional harm (Y codes)
-
-Monitoring unnatural deaths helps assess injury prevention efforts and overall safety trends.
-:::
-
-## Excess Deaths Summary {#excess-deaths}
-
-This section provides a comprehensive overview of excess mortality by cause of death from 2019-2022, showing which conditions contributed most to excess deaths during the COVID-19 pandemic period.
-
-::: {.panel-tabset}
-
-#### Combined Natural & External Causes
-
-```{r}
-#| label: excess-deaths-combined-table
-#| fig-cap: "Combined excess deaths by Leading Group of Causes (LGH) and external causes, 2019-2022"
-
-if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
-  # Generate the enhanced table with both natural and external causes
-  if (exists("dt_external")) {
-    excess_table <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = TRUE)
-  } else {
-    # Fallback to natural causes only
-    excess_table <- tabulate_excess_grand_total(dt_analysis, years = 2019:2022)
-  }
-  excess_table
-} else {
-  cat("Data or functions not available for excess deaths analysis")
-}
-```
-
-::: {.callout-note}
-## Understanding the Combined Table
-- **Natural causes** (LGH codes): Positive values indicate excess deaths, negative values (green) indicate deficit deaths
-- **External causes** (Unnatural): Shows actual death counts (no baseline model available)
-- **Total column** shows cumulative excess/deficit across all years
-- **Color coding**: Green = deficit, Red = high excess (≥10,000/year or ≥50,000 total)
-- Data includes major external cause categories: road traffic accidents, falls, assault (gunshots), suicide, etc.
-:::
-
-#### Natural Causes Only
-
-```{r}
-#| label: excess-deaths-natural-only
-#| fig-cap: "Excess deaths by Leading Group of Causes (LGH) - natural causes only, 2019-2022"
-
-if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
-  # Generate table with natural causes only
-  excess_table_natural <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = FALSE)
-  excess_table_natural
-} else {
-  cat("Data or functions not available for natural causes analysis")
-}
-```
-
-::: {.callout-note}
-## Understanding Natural Causes Table
-- Shows **excess/deficit deaths** compared to baseline models for disease-related mortality
-- **Positive values** indicate more deaths than expected (excess mortality)
-- **Negative values** (green) indicate fewer deaths than expected (deficit mortality)
-- **LGH classification** groups causes into epidemiologically meaningful categories
-:::
-
-#### External Causes Only  
-
-```{r}
-#| label: excess-deaths-external-only
-#| fig-cap: "Unnatural deaths by external cause category, 2019-2022"
-#| eval: false
-
-if (exists("dt_external") && exists("tabulate_external_causes_only")) {
-  # Generate table with external causes only
-  external_table <- tabulate_external_causes_only(dt_external, years = 2019:2022)
-  external_table
-} else {
-  cat("External causes data or functions not available")
-}
-```
-
-::: {.callout-note}
-## Understanding External Causes Table  
-- Shows **actual death counts** for injury-related mortality (no baseline models available)
-- **Major categories**: Road traffic accidents (V01-V99), falls (W00-W19), assault/gunshots (X85-Y09), suicide (X60-X84), accidental poisoning (X40-X49), etc.
-- **High counts** (≥1,000/year or ≥5,000 total) are highlighted in red
-- Useful for monitoring injury prevention and safety trends
-:::
-
-:::
-
-## Data Quality: Garbage Codes {#garbage-codes}
-
-Garbage codes are ICD-10 codes that provide insufficient information about the underlying cause of death. Monitoring the proportion of non-garbage codes is essential for assessing data quality.
-
-### Overview of Death Distribution
-
-::: {.panel-tabset}
-
-#### By Province
-```{r}
-#| label: overview-province-plot
-
-ggplotly(p_overview_province, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-#### By Institution
-```{r}
-#| label: overview-instance-plot
-
-ggplotly(p_overview_instance, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-:::
-
-### Garbage Code Trends
-
-::: {.panel-tabset}
-
-#### By Province
-```{r}
-#| label: garbage-province-plot
-
-ggplotly(p_garbage_province, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-#### By Institution Type
-```{r}
-#| label: garbage-instance-plot
-
-ggplotly(p_garbage_instance, tooltip = "text") %>%
-  layout(hovermode = "closest")
-
-  # Look at the proportion of locations by province s
-```
-
-:::
-
-::: {.callout-tip}
-## Interpreting the Plots
-Hover over any point to see:
-- The proportion of non-garbage codes
-- Total deaths (N) in that province/institution
-- Percentage contribution to national deaths
-
-The **red dotted line / red star (★) at 80%** is the standardized data-quality target: ≥ 80% non-garbage (equivalently **≤ 20% garbage/ill-defined**) is the WHO/GBD usability cut-point above which cause-of-death data are considered acceptable; **< 10% garbage** marks high quality [@mathers2005; @mahapatra2007; @naghavi2010].
-:::
-
-## Non-Hospital Deaths {#non-hospital}
-
-Deaths occurring outside hospitals (at home, nursing homes, etc.) represent an important indicator for health system access and end-of-life care patterns.
-
-::: {.panel-tabset}
-
-#### By Province (Total)
-```{r}
-#| label: nonhospital-province-plot
-
-ggplotly(p_nonhospital_province, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-#### Trend Over Time
-```{r}
-#| label: nonhospital-trend-plot
-
-ggplotly(p_nonhospital_trend, tooltip = "text") %>%
-  layout(hovermode = "closest")
-```
-
-:::
-
-::: {.callout-tip}
-## Interpreting Non-Hospital Deaths
-Hover over any point to see:
-- Non-hospital deaths (N) and percentage
-- Total deaths for comparison
-- Percentage contribution to national non-hospital deaths
-
-The **grey dashed line at 50%** is a **descriptive reference only** — it is *not* a literature-based quality target. It is styled differently (grey, no star) from the standardized red cause-of-death target to avoid implying a benchmark that the published CRVS literature does not define.
-:::
-
 ## Report Timeliness {#timeliness}
 
 Stats SA releases mortality reports with a delay of several years. This section tracks the timeliness of releases.
@@ -477,68 +205,65 @@ These handling decisions are applied above so the plot is honest, but each one f
 None of these materially change the headline (≈ 99.8% within one year), but they should be triaged as part of routine VR data-quality control.
 :::
 
-## Data Sources
+## Data Quality: Garbage Codes {#garbage-codes}
 
-| Source | Description | Coverage |
-|--------|-------------|----------|
-| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
-| Thembisa Model v4.8 | HIV/AIDS demographic projections | 1997-2025 |
-| NCODV Study | Verbal autopsy validation | 2017-2018 |
-| NMC Database | TB and poisoning surveillance notifications | 2017-2024 |
+Garbage codes are ICD-10 codes that provide insufficient information about the underlying cause of death. Monitoring the proportion of non-garbage codes is essential for assessing data quality.
 
-## Methods
+### Overview of Death Distribution
 
-### Garbage Code Classification
+::: {.panel-tabset}
 
-Deaths are classified using the WHO garbage code framework. A death is considered "not garbage" if the underlying cause code provides meaningful epidemiological information.
-
-### Data Sources
-
-- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather`
-- **Tembisa**: Age-specific mortality outputs from version 4.8
-- **NMC**: Notifiable conditions from the surveillance database
-
----
-
-## South Africa CRVS Monitoring Indicators (Cause-of-Death Focus) {#crvs-compendium}
-
-The table below lists the **South Africa CRVS monitoring indicators with a cause-of-death focus** (v1, June 2025). This is the SA-contextualised indicator set spanning the CRVS pathway — from notification and registration through medical certification, cause-of-death coding, quality control, and vital-statistics generation. Use the column filters and search box to explore indicators by CRVS milestone or performance domain.
-
+#### By Province
 ```{r}
-#| label: crvs-compendium-table
-#| echo: false
+#| label: overview-province-plot
 
-compendium_raw <- read_excel(
-  "20260506_SA_CRVS_monitoring_indicators_COD_focus_V1.xlsx",
-  sheet = "Indicators"
-)
-compendium_raw <- compendium_raw[!is.na(compendium_raw$Indicator), ]
-
-datatable(
-  compendium_raw[, c("Indicator", "CRVS milestone", "Performance domain",
-                     "Desagregation level", "Numerator", "Denominator",
-                     "Compendium APP")],
-  colnames = c("Disaggregation level" = "Desagregation level",
-               "In compendium APP"    = "Compendium APP"),
-  filter     = "top",
-  extensions = "Buttons",
-  rownames   = FALSE,
-  options    = list(
-    dom        = "Bfrtip",
-    buttons    = c("csv", "excel"),
-    pageLength = 15,
-    scrollX    = TRUE,
-    autoWidth  = FALSE,
-    columnDefs = list(
-      list(width = "260px", targets = 0),   # Indicator
-      list(width = "180px", targets = 4),   # Numerator
-      list(width = "180px", targets = 5)    # Denominator
-    )
-  )
-)
+ggplotly(p_overview_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
 ```
 
----
+#### By Institution
+```{r}
+#| label: overview-instance-plot
+
+ggplotly(p_overview_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+### Garbage Code Trends
+
+::: {.panel-tabset}
+
+#### By Province
+```{r}
+#| label: garbage-province-plot
+
+ggplotly(p_garbage_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### By Institution Type
+```{r}
+#| label: garbage-instance-plot
+
+ggplotly(p_garbage_instance, tooltip = "text") %>%
+  layout(hovermode = "closest")
+
+  # Look at the proportion of locations by province s
+```
+
+:::
+
+::: {.callout-tip}
+## Interpreting the Plots
+Hover over any point to see:
+- The proportion of non-garbage codes
+- Total deaths (N) in that province/institution
+- Percentage contribution to national deaths
+
+The **red dotted line / red star (★) at 80%** is the standardized data-quality target: ≥ 80% non-garbage (equivalently **≤ 20% garbage/ill-defined**) is the WHO/GBD usability cut-point above which cause-of-death data are considered acceptable; **< 10% garbage** marks high quality [@mathers2005; @mahapatra2007; @naghavi2010].
+:::
 
 ## Data Quality: Facility-Type Decision Framework {#facility-dq}
 
@@ -844,8 +569,282 @@ A persistent gap between In-hospital and Out-of-hospital lines signals a structu
 
 ---
 
+## Non-Hospital Deaths {#non-hospital}
+
+Deaths occurring outside hospitals (at home, nursing homes, etc.) represent an important indicator for health system access and end-of-life care patterns.
+
+::: {.panel-tabset}
+
+#### By Province (Total)
+```{r}
+#| label: nonhospital-province-plot
+
+ggplotly(p_nonhospital_province, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+#### Trend Over Time
+```{r}
+#| label: nonhospital-trend-plot
+
+ggplotly(p_nonhospital_trend, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+:::
+
+::: {.callout-tip}
+## Interpreting Non-Hospital Deaths
+Hover over any point to see:
+- Non-hospital deaths (N) and percentage
+- Total deaths for comparison
+- Percentage contribution to national non-hospital deaths
+
+The **grey dashed line at 50%** is a **descriptive reference only** — it is *not* a literature-based quality target. It is styled differently (grey, no star) from the standardized red cause-of-death target to avoid implying a benchmark that the published CRVS literature does not define.
+:::
+
+## South Africa CRVS Monitoring Indicators (Cause-of-Death Focus) {#crvs-compendium}
+
+The table below lists the **South Africa CRVS monitoring indicators with a cause-of-death focus** (v1, June 2025). This is the SA-contextualised indicator set spanning the CRVS pathway — from notification and registration through medical certification, cause-of-death coding, quality control, and vital-statistics generation. Use the column filters and search box to explore indicators by CRVS milestone or performance domain.
+
+```{r}
+#| label: crvs-compendium-table
+#| echo: false
+
+compendium_raw <- read_excel(
+  "20260506_SA_CRVS_monitoring_indicators_COD_focus_V1.xlsx",
+  sheet = "Indicators"
+)
+compendium_raw <- compendium_raw[!is.na(compendium_raw$Indicator), ]
+
+datatable(
+  compendium_raw[, c("Indicator", "CRVS milestone", "Performance domain",
+                     "Desagregation level", "Numerator", "Denominator",
+                     "Compendium APP")],
+  colnames = c("Disaggregation level" = "Desagregation level",
+               "In compendium APP"    = "Compendium APP"),
+  filter     = "top",
+  extensions = "Buttons",
+  rownames   = FALSE,
+  options    = list(
+    dom        = "Bfrtip",
+    buttons    = c("csv", "excel"),
+    pageLength = 15,
+    scrollX    = TRUE,
+    autoWidth  = FALSE,
+    columnDefs = list(
+      list(width = "260px", targets = 0),   # Indicator
+      list(width = "180px", targets = 4),   # Numerator
+      list(width = "180px", targets = 5)    # Denominator
+    )
+  )
+)
+```
+
+---
+
+## HIV/AIDS Deaths {#hiv}
+
+### HIV/AIDS Mortality: VR vs Models
+
+```{r}
+#| label: hiv-plot
+
+ggplotly(p_hiv, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Key Findings
+- VR data substantially underestimates HIV/AIDS mortality compared to the Tembisa model
+- The NCODV study suggests ~23% of deaths may be HIV-related (2017-2018)
+- The gap has narrowed over time but remains significant
+:::
+
+::: {.callout-important icon=false}
+## So what? — Decision this data informs
+
+**Monitored action: correct certification and coding of HIV/AIDS as the underlying cause of death.**
+
+The gap between VR and the Tembisa model is driven mainly by HIV deaths being mis-certified to indicator or "garbage" causes (e.g. TB, pneumonia, anaemia, wasting) rather than to HIV/AIDS — a recognised driver of cause-of-death undercount in high-prevalence settings [@mathers2005; @naghavi2010].
+
+- **Trigger:** a persistent VR-vs-model gap, and an NCODV reattribution share (~23% of deaths HIV-related, 2017–2018) far exceeding the HIV fraction recorded in VR.
+- **Decision:** prioritise MCCD certifier training on naming HIV/AIDS as the underlying cause, and apply NCODV-based reattribution before reporting HIV mortality from VR.
+- **Expected effect:** the VR series moves **toward** the Tembisa model line as certification improves.
+- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track narrowing of the VR-vs-model gap.
+:::
+
+## TB Deaths {#tb}
+
+### TB Mortality: VR vs Models
+
+```{r}
+#| label: tb-plot
+
+ggplotly(p_tb, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-important icon=false}
+## So what? — Decision this data informs
+
+**Monitored action: correct certification and coding of TB as the underlying cause of death.**
+
+TB mortality in VR diverges from the Tembisa model and NMC notifications largely because TB deaths are mis-certified to terminal or ill-defined causes, or lost where HIV/TB co-morbidity is not correctly sequenced on the MCCD [@mathers2005; @naghavi2010].
+
+- **Trigger:** a VR count that sits below the Tembisa model and/or NMC notification trend for the same period.
+- **Decision:** prioritise MCCD certifier training on correct underlying-cause selection for TB (including HIV/TB sequencing), and reconcile VR against NMC notifications.
+- **Expected effect:** the VR series converges **toward** the model and notification trends as certification and coding improve.
+- **Monitor:** re-render this dashboard each cycle (see the *Report generated* timestamp) and track convergence of the VR, model, and notification series.
+:::
+
+## Poisoning Deaths {#poisoning}
+
+### Poisoning Mortality: VR vs NMC
+
+```{r}
+#| label: poisoning-plot
+
+ggplotly(p_poisoning, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-note}
+## Key Findings
+- VR data captures poisoning deaths using ICD-10 codes X40-X49 (accidental poisoning) and X60-X69 (intentional self-poisoning)
+- NMC tracks notifications of agricultural and stock remedy poisoning cases
+- The comparison shows notification patterns vs recorded deaths from poisoning
+:::
+
+### Total Unnatural Deaths
+
+```{r}
+#| label: unnatural-plot
+#| eval: false
+
+ggplotly(p_unnatural, tooltip = "text") %>%
+  layout(hovermode = "closest")
+```
+
+::: {.callout-tip}
+## Understanding Unnatural Deaths
+This includes all external causes of death (ICD-10 chapters V, W, X, Y):
+- Transport accidents (V codes)
+- Other external causes like falls, drowning (W codes)  
+- Poisoning and exposure (X codes)
+- Assault and intentional harm (Y codes)
+
+Monitoring unnatural deaths helps assess injury prevention efforts and overall safety trends.
+:::
+
+## Excess Deaths Summary {#excess-deaths}
+
+This section provides a comprehensive overview of excess mortality by cause of death from 2019-2022, showing which conditions contributed most to excess deaths during the COVID-19 pandemic period.
+
+::: {.panel-tabset}
+
+#### Combined Natural & External Causes
+
+```{r}
+#| label: excess-deaths-combined-table
+#| fig-cap: "Combined excess deaths by Leading Group of Causes (LGH) and external causes, 2019-2022"
+
+if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
+  # Generate the enhanced table with both natural and external causes
+  if (exists("dt_external")) {
+    excess_table <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = TRUE)
+  } else {
+    # Fallback to natural causes only
+    excess_table <- tabulate_excess_grand_total(dt_analysis, years = 2019:2022)
+  }
+  excess_table
+} else {
+  cat("Data or functions not available for excess deaths analysis")
+}
+```
+
+::: {.callout-note}
+## Understanding the Combined Table
+- **Natural causes** (LGH codes): Positive values indicate excess deaths, negative values (green) indicate deficit deaths
+- **External causes** (Unnatural): Shows actual death counts (no baseline model available)
+- **Total column** shows cumulative excess/deficit across all years
+- **Color coding**: Green = deficit, Red = high excess (≥10,000/year or ≥50,000 total)
+- Data includes major external cause categories: road traffic accidents, falls, assault (gunshots), suicide, etc.
+:::
+
+#### Natural Causes Only
+
+```{r}
+#| label: excess-deaths-natural-only
+#| fig-cap: "Excess deaths by Leading Group of Causes (LGH) - natural causes only, 2019-2022"
+
+if (exists("dt_analysis") && exists("tabulate_excess_grand_total_with_external")) {
+  # Generate table with natural causes only
+  excess_table_natural <- tabulate_excess_grand_total_with_external(dt_analysis, dt_external, years = 2019:2022, include_external = FALSE)
+  excess_table_natural
+} else {
+  cat("Data or functions not available for natural causes analysis")
+}
+```
+
+::: {.callout-note}
+## Understanding Natural Causes Table
+- Shows **excess/deficit deaths** compared to baseline models for disease-related mortality
+- **Positive values** indicate more deaths than expected (excess mortality)
+- **Negative values** (green) indicate fewer deaths than expected (deficit mortality)
+- **LGH classification** groups causes into epidemiologically meaningful categories
+:::
+
+#### External Causes Only  
+
+```{r}
+#| label: excess-deaths-external-only
+#| fig-cap: "Unnatural deaths by external cause category, 2019-2022"
+#| eval: false
+
+if (exists("dt_external") && exists("tabulate_external_causes_only")) {
+  # Generate table with external causes only
+  external_table <- tabulate_external_causes_only(dt_external, years = 2019:2022)
+  external_table
+} else {
+  cat("External causes data or functions not available")
+}
+```
+
+::: {.callout-note}
+## Understanding External Causes Table  
+- Shows **actual death counts** for injury-related mortality (no baseline models available)
+- **Major categories**: Road traffic accidents (V01-V99), falls (W00-W19), assault/gunshots (X85-Y09), suicide (X60-X84), accidental poisoning (X40-X49), etc.
+- **High counts** (≥1,000/year or ≥5,000 total) are highlighted in red
+- Useful for monitoring injury prevention and safety trends
+:::
+
+:::
+
+## Data Sources
+
+| Source | Description | Coverage |
+|--------|-------------|----------|
+| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
+| Thembisa Model v4.8 | HIV/AIDS demographic projections | 1997-2025 |
+| NCODV Study | Verbal autopsy validation | 2017-2018 |
+| NMC Database | TB and poisoning surveillance notifications | 2017-2024 |
+
+## Methods
+
+### Garbage Code Classification
+
+Deaths are classified using the WHO garbage code framework. A death is considered "not garbage" if the underlying cause code provides meaningful epidemiological information.
+
+### Data Sources
+
+- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather`
+- **Tembisa**: Age-specific mortality outputs from version 4.8
+- **NMC**: Notifiable conditions from the surveillance database
+
+---
+
 ## References {.unnumbered}
 
 ::: {#refs}
 :::
-

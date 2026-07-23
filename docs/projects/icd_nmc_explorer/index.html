@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-07-23">
+<meta name="description" content="Searchable reference linking Notifiable Medical Conditions (NMC) to their verified ICD-10 / ICD-11 codes, with coding pitfalls and MACOD data-quality notes">
+
+<title>ICD-10 ↔︎ NMC / IDSR Condition Explorer – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../../site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="../../site_libs/jszip-1.13.6/jszip.min.js"></script>
+<link href="../../site_libs/dt-ext-buttons-1.13.6/css/buttons.dataTables.min.css" rel="stylesheet">
+<script src="../../site_libs/dt-ext-buttons-1.13.6/js/dataTables.buttons.min.js"></script>
+<script src="../../site_libs/dt-ext-buttons-1.13.6/js/buttons.html5.min.js"></script>
+<script src="../../site_libs/dt-ext-buttons-1.13.6/js/buttons.colVis.min.js"></script>
+<script src="../../site_libs/dt-ext-buttons-1.13.6/js/buttons.print.min.js"></script>
+<link href="../../site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="../../site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="../../site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="../../site_libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_ucod/index.html">
+ <span class="dropdown-text">Poisoning: Why UCOD Matters</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cancer_deaths/index.html">
+ <span class="dropdown-text">Cancer Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/yll_comparison/index.html">
+ <span class="dropdown-text">YLL Comparison (NMC)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/district_variable_veracity/index.html">
+ <span class="dropdown-text">District QA: Deaths &amp; Rates</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/nmc_macod_comparison/index.html">
+ <span class="dropdown-text">NMC &amp; MACOD Comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icd_nmc_explorer/index.html">
+ <span class="dropdown-text">ICD-10 ↔︎ NMC / IDSR Explorer</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">ICD-10 ↔︎ NMC / IDSR Condition Explorer</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-this-is" id="toc-what-this-is" class="nav-link active" data-scroll-target="#what-this-is"><span class="header-section-number">1</span> What this is</a></li>
+  <li><a href="#definitions-cause-of-death-coding" id="toc-definitions-cause-of-death-coding" class="nav-link" data-scroll-target="#definitions-cause-of-death-coding"><span class="header-section-number">2</span> Definitions &amp; cause-of-death coding</a></li>
+  <li><a href="#download-the-raw-map" id="toc-download-the-raw-map" class="nav-link" data-scroll-target="#download-the-raw-map"><span class="header-section-number">3</span> Download the raw map</a></li>
+  <li><a href="#coverage-note" id="toc-coverage-note" class="nav-link" data-scroll-target="#coverage-note"><span class="header-section-number">4</span> Coverage note</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ICD-10 ↔︎ NMC / IDSR Condition Explorer</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">NMC</div>
+    <div class="quarto-category">IDSR</div>
+    <div class="quarto-category">ICD-10</div>
+    <div class="quarto-category">ICD-11</div>
+    <div class="quarto-category">reference</div>
+    <div class="quarto-category">data-quality</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Searchable reference linking Notifiable Medical Conditions (NMC) to their verified ICD-10 / ICD-11 codes, with coding pitfalls and MACOD data-quality notes
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 23, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-is" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="what-this-is"><span class="header-section-number">1</span> What this is</h2>
+<p>A single reference table answering, for <strong>each Notifiable Medical Condition (NMC)</strong> — South Africa’s IDSR-aligned notification list — the question: <em>“if this condition were the underlying cause of death, what ICD-10 and ICD-11 code should be assigned?”</em> Alongside the verified <strong>UCoD (underlying cause of death) ICD-10 and ICD-11 codes</strong>, the table lists known <strong>coding pitfalls</strong> and how the condition tends to actually appear (or not) in <strong>MACOD</strong> vital-registration data.</p>
+<p>Use the search box or per-column filters below to find a condition, category, or ICD code. Columns wrap long text — click a cell to expand, or use the <strong>CSV / Excel</strong> buttons to export the full table.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This table is generated from the SA NMC ICD Reference (v3) and rebuilt by <code>nmc_icd10_verifier/build_verified_nmc_table.R</code>. It is also used as the source map for the <a href="../../projects/nmc_macod_comparison/index.html">NMC &amp; MACOD Comparison</a> project, where the counts and MACOD sensitivity analysis derived from this map are presented.</p>
+</div>
+</div>
+</section>
+<section id="definitions-cause-of-death-coding" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="definitions-cause-of-death-coding"><span class="header-section-number">2</span> Definitions &amp; cause-of-death coding</h2>
+<p>Medical certification of death (the WHO/MCCD form) records causes in a structured sequence, and only one cause per death is coded as the statistic used in mortality reporting.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Underlying cause of death (UCoD)</strong></td>
+<td>“The disease or injury which initiated the train of morbid events leading directly to death.” This is the single cause selected for national/international mortality statistics (WHO ICD-10/ICD-11 rules), and is the code shown in the <strong>UCoD ICD-10 / UCoD ICD-11</strong> columns below.</td>
+</tr>
+<tr class="even">
+<td><strong>Immediate cause of death</strong></td>
+<td>The final disease or condition directly causing death (death certificate <strong>Part I(a)</strong>) — e.g.&nbsp;“septic shock” — which is usually a <em>consequence</em> of the underlying cause, not the underlying cause itself.</td>
+</tr>
+<tr class="odd">
+<td><strong>Antecedent / intervening causes</strong></td>
+<td>Conditions reported in Part I(b)/(c) that link the immediate cause back to the underlying cause (the causal chain).</td>
+</tr>
+<tr class="even">
+<td><strong>Multiple cause of death (MCOD) coding</strong></td>
+<td>All conditions listed on the certificate (Part I chain <strong>and</strong> Part II contributory conditions) are coded, not just the UCoD. MCOD analysis can reveal a notifiable condition even when it was not selected as the UCoD (e.g.&nbsp;HIV listed as a contributory cause under a UCoD of TB).</td>
+</tr>
+<tr class="odd">
+<td><strong>Part II — contributory conditions</strong></td>
+<td>Conditions that contributed to death but were not part of the direct causal chain to the immediate cause (e.g.&nbsp;diabetes, hypertension). These are coded but never selected as UCoD.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why this matters for NMC ↔︎ MACOD linkage:</strong> the NMC/MACOD comparison and sensitivity tables in this site match on the <strong>UCoD only</strong> — the single cause South Africa’s vital statistics report. A notifiable condition that is frequently recorded as an immediate or contributory cause (rather than the UCoD) will therefore appear <strong>under-captured</strong> in MACOD, even if it was mentioned on the death certificate. This is a key reason capture ratios in the <a href="../../projects/nmc_macod_comparison/index.html">NMC &amp; MACOD Comparison</a> sensitivity analysis fall below 100% for some conditions — the coding pitfall columns below flag where this is a known issue.</p>
+<p>For each row: <strong>UCoD ICD-10</strong> / <strong>UCoD ICD-11</strong> are the codes to assign <em>when this NMC condition is the underlying cause of death</em>.</p>
+<div class="cell">
+<div id="tbl-icd-nmc-explorer" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-icd-nmc-explorer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Underlying cause of death (UCoD) ICD-10 / ICD-11 codes for all NMC / IDSR conditions
+</figcaption>
+<div aria-describedby="tbl-icd-nmc-explorer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-14f6d8375bf44f8cf716" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-14f6d8375bf44f8cf716">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"data":[["Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 1","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 2","Cat 3","Cat 3","Cat 3","Cat 3","Cat 3","Cat 3","Cat 3","Cat 4","Cat 4","Cat 4","Cat 4","Cat 4","Cat 4"],["Acute flaccid paralysis","Acute rheumatic fever","Anthrax","Botulism","Cholera","Diphtheria","Enteric fever (typhoid / paratyphoid)","Food-borne disease outbreak","Haemolytic uraemic syndrome (HUS)","Listeriosis","Malaria","Measles","Meningococcal disease","Mpox","Pertussis","Plague","Poliomyelitis","Rabies (human)","Respiratory disease — novel pathogen","Rift Valley fever (human)","Smallpox","Viral haemorrhagic fever diseases","Yellow fever","Agricultural/stock remedy poisoning","Bilharzia (schistosomiasis)","Brucellosis","Congenital rubella syndrome","Congenital syphilis","Coronavirus disease (COVID-19)","Haemophilus influenzae type B","Hepatitis A","Hepatitis B","Hepatitis C","Hepatitis E","Lead poisoning","Legionellosis","Leprosy","Maternal death","Mercury poisoning","Soil-transmitted helminths","Tetanus","Tuberculosis: MDR-TB","Tuberculosis: XDR-TB","Tuberculosis: extra-pulmonary","Tuberculosis: pulmonary","Endemic arboviral diseases (West Nile/Sindbis/Chikungunya)","Gonorrhoea (ceftriaxone-resistant N.gonorrhoeae)","Non-endemic arboviral diseases (Dengue/other imported)","Non-typhoidal Salmonellosis (NTS)","Rubella","Shiga toxin-producing E.coli (STEC)","Shigellosis","HCAI/MDRO — CPE (Carbapenemase-producing Enterobacteriaceae)","HCAI/MDRO — Clostridioides difficile (CDI)","HCAI/MDRO — Colistin-resistant Acinetobacter baumannii","HCAI/MDRO — Colistin-resistant Pseudomonas aeruginosa","HCAI/MDRO — S.aureus (MRSA/hGISA/GISA)","HCAI/MDRO — VRE (Vancomycin-resistant enterococci)"],["G83.9","I00","A22.9","A05.1","A00.9","A36.9","A01.0","A05.9","D59.3","A32.9","B54","B05.9","A39.9","B04","A37.9","A20.9","A80.9","A82.9","U07.1","A92.4","B03","A99","A95.9","T65.9","B65.9","A23.9","P35.0","A50.9","U07.1","G00.0","B15.9","B16.9","B17.1","B17.2","T56.0","A48.1","A30.9","O95","T56.1","B82.0","A35","A15.0","A15.0","A18.9","A15.0","A92.9","A54.9","A90","A02.9","B06.9","A04.3","A03.9","A41.59","A04.7","A41.5","A41.5","A41.0","A41.8"],["8D60.Z","1B41.Z","1B97.Z","1A11.Z","1A00.Z","1C17.Z","1A07.0","1A1Z","3A21.2","1C1A.Z","1F4Z","1F03.Z","1C1C.Z",null,"1C12.Z","1B93.Z","1C81.Z","1C82.Z","RA01.0","1D42","1E70","1D6Z","1D47.Z","NE91.Z","1F60.Z","1B95.Z","KA62.0","KA62.4Z","RA01.0","CA40.02","1E50.Z","1E51.Z","1E52.Z","1E53","NE92.0","1C19.1","1B20.Z","JA8Z","NE92.1","1F8Z","1C13 / 1C14 / 1C15","1B10.1 + QA48","1B10.1 + QA49","1B12.Z","1B10.1","1D41.Z","1A7Z","1D20.Z","1A09.Z","1F02.Z","1A03.1","1A02.Z","1G41.Z + XY7H.Y","1A04","1G41.Z + XY7H.Y","1G41.Z + XY7H.Y","1G41.0 + XY7H.Y","1G41.Z + XY7H.Y"],["Code to aetiology: wild-type polio→A80; vaccine-assoc→A80.0; non-polio AFP→G83.9/8D60.Z","ICD-10: without carditis→I00; with carditis→I01.x. ICD-11: without heart→1B40; WITH heart (fatal form)→1B41.Z; chorea→1B42. Rheumatic heart disease sequela→BA80.","Pulmonary→A22.1/1B97.1; septicaemic→A22.7/1B97.3; cutaneous→A22.0/1B97.0; GI→A22.2/1B97.2; unspecified→A22.9/1B97.Z","ICD-10: foodborne→A05.1; wound→A48.52; infant→A48.51. ICD-11: foodborne→1A11.0; other forms (wound/infant)→1A11.1; unspecified→1A11.Z. Primary CoD depends on form.","V.cholerae O1 El Tor→A00.1/1A00.1; O139→A00.9/1A00.Z; unspecified→A00.9/1A00.Z","Pharyngeal→A36.0/1C17.0; laryngeal→A36.2/1C17.2; myocarditis→A36.81/1C17.3; unspecified→A36.9/1C17.Z","Typhoid→A01.0/1A07.0; Paratyphoid A→A01.1/1A08.0; B→A01.2/1A08.1; unspecified→A01.4/1A08.Z","ICD-11: code to specific agent when known (1A11.0 botulism, 1A12 C.perfringens, 1A13 B.cereus); unspecified→1A1Z. NB: 5B51 is infant wasting (nutrition chapter) — do NOT use.","ICD-10 WHO: D59.3 billable. ICD-10-CM subcodes: D59.31 (STEC-HUS), D59.30 (unspec). ICD-11: 3A21.2. STEC UCoD should be A04.3 with D59.3/3A21.2 as complication.","Neonatal→A32.1/1C1A.10; septicaemia→A32.7/1C1A.Y; meningoencephalitis→A32.12/1C1A.1; cutaneous→A32.0/1C1A.0; unspecified→A32.9/1C1A.Z","P.falciparum→B50.9/1F40.Z; cerebral→B50.0/1F40.0; P.vivax→B51.9/1F41.Z; P.malariae→B52.9/1F42.Z; P.ovale→B53.0/1F43; unspecified→B54/1F4Z","With pneumonia→B05.2/1F03.1; encephalitis→B05.0/1F03.0; SSPE sequela→A81.1; uncomplicated→B05.9/1F03.Z","Meningitis→A39.0/1C1C.0; septicaemia→A39.2/1C1C.2; Waterhouse-Friderichsen→A39.1/1C1C.1; unspecified→A39.9/1C1C.Z",null,"B.pertussis→A37.0/1C12.0; B.parapertussis→A37.1/1C12.1; with pneumonia→A37.01; unspecified→A37.9/1C12.Z. ⚠ ICD-11 CA44=PYOTHORAX — dangerous collision.","Bubonic→A20.0/1B93.0; septicaemic→A20.7/1B93.3; pneumonic→A20.2/1B93.2; unspecified→A20.9/1B93.Z","Wild-type→A80.1/1C81.1; vaccine-associated→A80.0/1C81.0; paralytic unspec→A80.30; non-paralytic→A80.4; unspecified→A80.9/1C81.Z","Encephalitic (furious)→A82.0/1C82.0; paralytic (dumb)→A82.1/1C82.1; unspecified→A82.9/1C82.Z","SARS-CoV-2 confirmed→U07.1/RA01.0; clinical dx→U07.2/RA01.1; MERS-CoV→U04; novel influenza A→J09; unspecified novel→J22","RVF haemorrhagic→A92.4/1D42; encephalitis→A92.4+G05*/1D42; retinal vasculitis→A92.4+H58*","Variola major→B03/1E70. Mpox (monkeypox)→B04/1E71 — NOT B03. Varicella→B01/1E90.","Ebola→A98.3/1D60; Marburg→A98.3/1D61; Lassa→A96.2/1D62; CCHF→A98.0/1D42.1; Lujo→A96.8; unspecified VHF→A99/1D6Z","Jungle (sylvatic)→A95.0/1D47.0; urban→A95.1/1D47.1; unspecified→A95.9/1D47.Z","Organophosphate→T60.0/NE91.0; paraquat→T65.8/NE9Z; carbamate→T60.0; unspecified→T60.9/NE91.Z","S.haematobium→B65.0/1F60.0; S.mansoni→B65.1/1F60.1; hepatosplenic→B65.1+K77*/1F60.1; hepatic fibrosis→B65.9+K74.6*","B.abortus→A23.0/1B95.0; B.melitensis→A23.1/1B95.1; B.suis→A23.2/1B95.2; B.canis→A23.3; unspecified→A23.9/1B95.Z","Neonatal→P35.0/KA62.0; rubella in pregnancy→O35.3; structural defect+P35.0* (dagger-asterisk convention)","Early symptomatic→A50.0; early latent→A50.1; late→A50.7; Hutchinson's triad→A50.52; unspecified→A50.9/KA62.4Z","Confirmed→U07.1/RA01.0; clinical dx→U07.2/RA01.1; post-COVID→U09.9/RA02","HiB meningitis→G00.0; HiB pneumonia→J14/CA40.02; HiB septicaemia→A41.3; epiglottitis→J05.1+B96.3*. ICD-11 lacks specific HiB meningitis stem; use CA40.02 for pneumonia context.","Fulminant (with coma)→B15.0/1E50.0; without coma→B15.9/1E50.Z","Acute with delta+coma→B16.0; acute without→B16.9/1E51.Z; chronic→B18.1/1E51.1; cirrhosis→K74.6†+B18.1*; HCC→C22.0†+B18.1*","Acute→B17.1/1E52.0; chronic→B18.2/1E52.1; cirrhosis→K74.6†+B18.2*; HCC→C22.0†+B18.2*","Acute HEV→B17.2/1E53; fulminant in pregnancy→B17.2+O98.4; zoonotic genotype 3/4 from pigs underrecognised in SA","Toxic effect→T56.0/NE92.0; encephalopathy→G92+T56.0*; nephropathy→N14.3+T56.0*","Legionnaires' disease (pneumonia)→A48.1/1C19.1; Pontiac fever (non-pneumonic)→A48.2/1C19.0; unspecified→1C19.Z","Tuberculoid→A30.1/1B20.1; borderline→A30.3/1B20.3; lepromatous→A30.5/1B20.5; unspecified→A30.9/1B20.Z","Direct obstetric→O95; indirect (TB/HIV in pregnancy)→O98; late maternal→O96/O97; unspecified→O95/JA8Z","Organic mercury (methylmercury)→T56.1/NE92.1; acrodynia→T56.1; renal failure→N17+T56.1*","Ascariasis→B77.9/1F8Y; hookworm (Ancylostoma/Necator)→B76.9/1F8Y; trichuriasis→B79/1F8Y; mixed→B82.0/1F8Z","ICD-11 separates: generalised→1C13; obstetrical→1C14; neonatal→1C15. ICD-10: neonatal→A33; obstetric→A34; generalised→A35.","Anatomical site code + resistance code U51 (any resistance). QA48 = MDR-TB qualifier in ICD-11. WHO 2021 MDR-TB definition applies.","XDR per WHO 2021 definition. Resistance code: U51.2 (pre-XDR) / U51.3 (XDR) in ICD-10; QA49 in ICD-11.","TB meningitis→A17.0/1B11; TB pericarditis→A18.84/1B12.8; TB lymphadenitis→A18.2; miliary→A19.9/1B13; unspecified→A18.9/1B12.Z","Bacteriologically confirmed→A15.0/1B10.1; histologically→A15.1/1B10.1; clinical dx→A16.2 (ICD-10 only; removed ICD-11)","West Nile→A92.3/1D41.1; Chikungunya→A92.0/1D41.0; Sindbis→A93.8; unspecified→A92.9/1D41.Z","Uncomplicated→A54.0/1A70; pelvic peritonitis→A54.24; disseminated→A54.85; septicaemia→A54.86; unspecified→A54.9/1A7Z","Dengue without warning signs→A90/1D20.0; severe dengue/DHF→A91/1D20.1; Zika→A92.5; unspecified→A90/1D20.Z","NTS bacteraemia→A02.1/1A09.1; NTS focal infection→A02.8; NTS gastroenteritis→A02.0/1A09.0; unspecified→A02.9/1A09.Z","With neurological→B06.0/1F02.0; with other complications→B06.8/1F02.Y; uncomplicated→B06.9/1F02.Z. ⚠ ICD-11: Roseola infantum=1F01; Rubella=1F02 — collision risk.","STEC enterocolitis (E.coli O157:H7)→A04.3/1A03.1; HUS complication→D59.3/3A21.2 as sequela (A04.3 remains UCoD)","S.dysenteriae→A03.0/1A02.0; S.flexneri→A03.1/1A02.1; S.boydii→A03.2/1A02.2; S.sonnei→A03.3/1A02.3; unspecified→A03.9/1A02.Z","*ICD-10-CM only: A41.59. WHO ICD-10 (SA): A41.5 (other Gram-negative sepsis). Resistance→U80.1/XY7H.Y (never applied on SA certificates).","C.difficile colitis→A04.7/1A04; fulminant/toxic megacolon→A04.7+K57.2*; pseudomembranous colitis→K52.1. ICD-11 1A04 confirmed (same block as ICD-10 A04 family).","*Same as CRPA above. CRAB pattern; colistin resistance U80.4/XY7H.Y. VAP context: J15.5 (bacterial pneumonia unspecified).","*WHO ICD-10 (SA): A41.5 (Gram-negative sepsis). ICD-10-CM A41.59 does not apply. Colistin resistance U80.4/XY7H.Y never applied.","*WHO ICD-10 (SA): A41.0 (S.aureus sepsis — no MRSA subcode). ICD-10-CM A41.01 (MRSA) does NOT exist in WHO ICD-10. U82.0 resistance code never applied.","*WHO ICD-10 (SA): A41.8 (other specified sepsis). ICD-10-CM A41.81 does NOT exist in WHO ICD-10. U80.3 resistance code never applied."],["⚠ AFP is a surveillance trigger not a final diagnosis. Coders leave G83.9 even when polio confirmed, inflating G-chapter and undercounting A80.","⚠ Fatal ARF involves carditis (1B41); 1B40 is the non-fatal, non-cardiac form — using 1B40 as CoD is clinically incorrect. Terminal RHD (BA80 / I05–I09) obscures ARF as underlying cause in MACOD.","⚠ Anthrax septicaemia (A22.7) mis-coded A41.9 when lab confirmation absent from death certificate.","⚠ Botulism deaths present as respiratory failure (J96) or AFP (G83.9). Toxin aetiology invisible in MACOD without clinical notes on certificate.","⚠ Dehydration deaths coded E86 or A09 (gastroenteritis NOS) rather than A00 when cholera not lab-confirmed on certificate.","⚠ Diphtheria myocarditis (A36.81) coded I51.4 (myocarditis NOS) when aetiological link absent from certificate.","⚠ Deaths coded R50.9 (fever NOS) or A09 when blood culture not on certificate. Intestinal perforation K63.1 may appear as UCoD.","⚠ Outbreak is an epidemiological event, not a CoD. Individual deaths need pathogen code. A09/A05.9/1A1Z give no outbreak linkage in MACOD — artefact: outbreak deaths invisible in routine ICD analysis.","⚠ STEC UCoD (A04.3) often not coded; D59.3 appears as UCoD — infectious aetiology disappears into haematology chapter. Sequencing reversed in practice.","⚠ Neonatal listeria deaths coded P36.9 (neonatal sepsis NOS) when culture results not on death record. 2017–18 SA outbreak deaths may include P36.9 miscodes.","⚠ Malaria deaths in non-endemic provinces coded R50.9 or G93.6 (cerebral oedema) when clinician lacks malaria awareness. Imported malaria deaths can occur in any province.","⚠ Measles pneumonia deaths coded J18.9 when measles not noted on certificate. Encephalitis coded G04.9 rather than B05.0/1F03.0.","⚠ Meningococcal septicaemia coded A41.9 when CSF/blood culture absent from certificate. DIC (D65) as terminal event obscures A39 aetiology.",null,"⚠ Infant deaths coded J18.9, J21.9 or J96.0 when whooping cough not documented. PCR rarely on certificate. CA44 is pyothorax in ICD-11 — must not be used for pertussis.","⚠ Plague septicaemia coded A41.9; pneumonic plague as J15.9 without aetiological specification.","⚠ Post-polio syndrome (G14) is a distinct late sequela — not for acute deaths. Respiratory failure coded J96 rather than A80 on certificate.","⚠ Encephalitis coded G04.9 or A86 (viral encephalitis NOS) when dog bite not documented. Dumb rabies mistaken for Guillain-Barré (G61.0).","⚠ U07.1 not in standard ICD-10 hierarchy — SA facilities used J18.9, B34.2 (coronavirus NOS) or R99 early pandemic. U07.2 (clinical dx) coded differently across provinces.","⚠ RVF deaths coded A99 (haemorrhagic fever NOS) or A86 (viral encephalitis) without lab confirmation on certificate.","⚠ B03 absent from global death data since 1978. Any B03 in MACOD is a miscoding artefact — likely mpox (B04/1E71) or varicella (B01/1E90). Requires immediate NICD notification.","⚠ VHF deaths coded A41.9, D65 (DIC) or R68.89 (multi-organ failure) pending confirmation. CCHF endemic in Northern Cape (tick exposure).","⚠ Not endemic in SA. Imported from ECOWAS. Deaths appear as K72.0 (liver failure) or A99 (haemorrhagic fever) if YF not documented.","⚠ Deaths coded J96 or I46.9 (cardiac arrest) when toxicological exposure absent from certificate. Intent (accidental vs deliberate) is an additional coding challenge.","⚠ Advanced schistosomiasis deaths coded K74.6 (cirrhosis), K76.6 (portal hypertension) or K92.2 (UGI bleed) without B65 as UCoD.","⚠ Deaths coded R50.9, I38 (endocarditis), or A41.9 when serological confirmation absent. Occupational exposure in abattoir workers.","⚠ CRS infant deaths coded to structural defect (Q20–Q24 cardiac, Q12 ophthalmic) without P35.0 as UCoD — vaccine-preventable aetiology hidden.","⚠ Neonatal syphilis deaths coded P36.9 (neonatal sepsis NOS) or P07 (preterm) without A50. Intrauterine deaths (stillbirths) outside MACOD scope.","⚠ U07.1 emergency code not in standard ICD-10 tree — SA facilities used J18.9, B34.2 or R99 early 2020. U07.2 uptake inconsistent across provinces.","⚠ HiB deaths coded G03.9, J18.9 or A41.9 without B96.3 supplementary code. Organism-specific supplementary codes rarely applied on SA certificates.","⚠ Fulminant hepatitis A deaths coded K72.0 (liver failure) or K72.9 (hepatic encephalopathy) as UCoD — vaccine-preventable aetiology invisible.","⚠ Chronic HBV deaths in MACOD coded K74.6, K72.1 or C22.0 without B18.1 as UCoD. Dagger-asterisk convention not implemented in SA MACOD processing.","⚠ Same pattern as HBV: HCC and cirrhosis coded at terminal manifestation. B18.2 rare in SA MACOD; K74.6 and C22.0 dominate.","⚠ HEV deaths in pregnancy coded O26.6 (liver disorder in pregnancy) or O95 (maternal death NOS) without B17.2 aetiology.","⚠ Chronic lead poisoning deaths coded N18.5 (ESRD), G93.4 (encephalopathy) or D64.9 (anaemia) without T56.0 as UCoD. SA context: mine workers and informal lead recycling.","⚠ Legionella pneumonia deaths coded J18.9 or J15.9 without A48.1 unless urinary antigen/culture on certificate. Healthcare-associated outbreaks (SA hospital cooling towers) particularly likely to be miscoded.","⚠ Leprosy deaths (rare in SA) have terminal events coded N18.5, A41.9 or 'diabetic foot' codes without A30 as UCoD.","⚠ Deaths coded outside O-chapter (A15 TB, B20 HIV) not counted in MMR. Converse also occurs: non-obstetric deaths in pregnant women over-coded O95. NCCEMD data reconciles poorly with MACOD O-chapter counts.","⚠ Mercury poisoning deaths coded N18.9, G62.2 or R99. ASGM (artisanal gold mining) in SA — occupational deaths undetected in MACOD.","⚠ STH deaths are indirect (anaemia D50, malnutrition E44, bowel obstruction K56.6). These terminal codes appear in MACOD without B-chapter helminth UCoD.","⚠ Tetanus deaths coded J96 (respiratory failure), J69.0 (aspiration pneumonia) or P36.9 (neonatal sepsis NOS). Neonatal tetanus particularly likely to be P36.9.","⚠ U51/QA48 resistance codes never applied on SA death certificates. MDR-TB and DS-TB deaths identical in MACOD ICD-10 coded data — drug resistance only traceable via NHLS DST results.","⚠ Same as MDR-TB: XDR deaths coded identically to DS-TB in MACOD (A15.0 only). U51 codes never applied. SA XDR-TB mortality surveillance depends entirely on NHLS data.","⚠ TB pericarditis coded I31 (pericardial disease NOS); TB meningitis coded G03.9; miliary TB coded A41.9 or J80 (ARDS). All hide TB aetiology.","⚠ Most significant SA MACOD issue: TB deaths in HIV+ individuals coded B20 or B22.1 rather than A15.0 as UCoD. WHO rules require infectious underlying cause — practice inconsistent. A16 codes indicate no bacteriological confirmation.","⚠ West Nile encephalitis deaths coded G04.9 or A86 rather than A92.3. Chikungunya deaths in elderly coded I51.4 (myocarditis) without A92.0.","⚠ Gonorrhoea deaths very rare; disseminated GC coded A54.85–86 or A41.89 without AMR flag. No drug-resistance supplementary code applied in practice.","⚠ Imported dengue deaths coded D69.6 (thrombocytopaenia), K72.0 (liver failure), or A99 (haemorrhagic fever NOS). Travel history absent from certificates.","⚠ NTS bacteraemia in HIV+ individuals (common AIDS-defining illness) coded B20/B22 without A02.1 as UCoD. NTS septicaemia coded A41.89 when speciation absent.","⚠ Rubella encephalitis coded A86 (viral encephalitis NOS). CRS (P35.0/KA62.0) is the more common MACOD entry point. ICD-11 code 1F01=Roseola not Rubella.","⚠ STEC deaths coded D59.3 (HUS) or N17.9 (AKI) as UCoD rather than A04.3. Coding rule (infectious aetiology=UCoD) not consistently applied.","⚠ Shigella deaths in under-5s coded A09, E86 (dehydration) or K52.9 (haemorrhagic colitis) without A03 aetiology.","⚠ U80.1 never applied on SA death certificates. CPE sepsis coded A41.5 (WHO ICD-10) not A41.59 (ICD-10-CM). CPE mortality invisible in MACOD — only detectable through NHLS AMR surveillance.","⚠ CDI deaths coded K52.1 (pseudomembranous colitis NOS), K57.2 (toxic megacolon) or sepsis codes as UCoD rather than A04.7. Post-antibiotic context not capturable in MACOD.","⚠ Same AMR invisibility pattern. Acinetobacter is critical ICU pathogen in SA. CRAB outbreaks undetectable in MACOD coded data.","⚠ CRPA sepsis in SA MACOD: A41.5 without organism or resistance specification. WHO ICD-10 uses A41.5 not A41.59 (ICD-10-CM).","⚠ MRSA deaths appear as A41.0 in SA MACOD without resistance distinction. A41.01 is ICD-10-CM only — SA uses WHO ICD-10.","⚠ VRE deaths appear as A41.8 (WHO ICD-10) without resistance qualifier. Resistance invisible in MACOD."],["Polio deaths likely coded G83.9 in MACOD; AFP surveillance and MACOD counts will not reconcile without NHLS linkage.","ARF deaths undercounted; appear as valvular/cardiac disease (I05–I09/BA80). 1B41.Z is the correct ICD-11 CoD for fatal ARF.","Extremely rare in SA MACOD. Occupational anthrax in farm workers may appear as A41.9.","Virtually absent from MACOD. J96 and G83.9 coded instead. Infant botulism may appear as P28.5 (respiratory failure of newborn).","SA cholera deaths (e.g. 2008–09 outbreak) likely under-coded as A09 or E86; NMC notification and MACOD counts diverge.","Rare in SA MACOD. Deaths appear as myocarditis or respiratory obstruction without diphtheria attribution.","R50.9 and A09 common proxy codes in MACOD for typhoid deaths without confirmed lab result.","No MACOD field flags 'part of outbreak'. Outbreak deaths appear under A09, A05.9, or pathogen codes with no aggregation signal.","HUS deaths in MACOD appear as D59.3 without A04.3 as UCoD — STEC burden underestimated in infectious disease chapter analyses.","Neonatal listeria deaths significantly undercounted in MACOD. P36.9 is the dominant proxy; NHLS lab linkage needed to identify true burden.","Malaria deaths under-coded in non-endemic provinces. B54/1F4Z rare in Western Cape or Northern Cape MACOD. True burden exceeds MACOD count.","Under-5 MACOD J18.9 pool includes uncoded measles pneumonia deaths. NMC notification counts exceed MACOD measles death counts.","A41.9 and G03.9 in MACOD conceal confirmed meningococcal deaths. Lab-linked MACOD reveals deficit in A39 codes.",null,"Pertussis infant deaths severely undercounted in SA MACOD. J18.9 and J21.9 are common proxies. A37 codes rare in under-5 MACOD.","Extremely rare in SA MACOD. Any plague death would appear as A41.9 unless NICD confirmation fed back to certifying doctor.","Near-absent from MACOD (elimination era). Any A80 code should trigger immediate reconciliation with AFP surveillance and NICD.","SA MACOD substantially undercounts rabies deaths. KZN is endemic but deaths appear as G04.9 or A86 without A82 attribution.","Significant COVID-19 death undercount in SA MACOD 2020. U07.1 uptake improved after NDOH circular but early data unreliable. Excess mortality shows &gt;3× true toll.","Absent from routine SA MACOD. Any suspected RVF death must be reported to NICD before certificate completion.","B03 in SA MACOD = data entry error. Should be B04 (mpox) or B01 (varicella).","CCHF deaths may appear as A98.0, A99, or D65 in Northern Cape MACOD. Lab confirmation through NICD required for specific coding.","Absent from SA MACOD. Any A95 code should trigger travel history verification and NICD notification.","Agricultural poisoning deaths significantly undercoded in SA MACOD. Paraquat ingestion deaths common in KZN and Limpopo.","Bilharzia burden in SA MACOD grossly underestimated. Advanced hepatosplenic disease appears as cirrhosis (K74.6) without B65 attribution.","Rare in SA MACOD. Deaths coded R50.9 or A41.9 without brucellosis attribution.","CRS deaths appear under Q20–Q24 in MACOD. P35.0 rarely coded as UCoD — major gap in vaccine-preventable disease mortality tracking.","Congenital syphilis deaths substantially undercounted in SA MACOD. P36.9 and P07 are common proxies. Stillbirth burden outside ICD death certificate scope.","COVID-19 UCoD coding in SA MACOD improved post-NDOH circular but early 2020–21 data unreliable. Excess mortality shows 3× true death toll vs MACOD coded counts.","HiB meningitis decline since vaccine introduction partially visible in MACOD G00.0 trends, but G03.9 and J18.9 remain common proxies for unconfirmed cases.","B15 codes underrepresented in SA MACOD. Fulminant hepatitis A appears as K72.0 or K72.9.","Hepatitis B is a major MACOD coding gap. HCC (C22.0) deaths do not have B18.1 linked as UCoD. True HBV mortality burden invisible in ICD chapter analyses.","HCV death coding absent from SA MACOD in practice. B17.1/B18.2 extremely rare; K74.6 and C22.0 are dominant proxy codes.","HEV near-absent in SA MACOD; likely coded B17.9 (acute viral hepatitis NOS) or liver failure codes.","Lead poisoning deaths near-absent from SA MACOD. True occupational burden hidden in ESRD (N18.5) and anaemia (D64) codes.","A48.1 significantly under-represented in SA MACOD. Legionella deaths appear as J15.9 or J18.9. Outbreaks undetectable in MACOD without active lab surveillance linkage.","Leprosy near-absent from SA MACOD; deaths appear under terminal complication codes.","Maternal death is the single largest CoD coding discrepancy in SA vital statistics. NCCEMD counts consistently exceed MACOD O-chapter deaths by 30–50%+ due to indirect cause misclassification.","Near-absent from SA MACOD. Artisanal miner deaths appear as renal failure or unexplained neuropathy.","STH deaths absent from SA MACOD as coded UCoD. Indirect mortality via D50, E44, K56.6 — helminth aetiology invisible.","Tetanus rare in SA MACOD (vaccination era). Neonatal tetanus deaths in under-vaccinated communities coded P36.9 rather than A33/1C15.","MDR-TB invisible in SA MACOD coded data. Resistance burden tracked through NHLS linkage only. Recognised data quality gap in SA TB surveillance.","XDR-TB deaths completely invisible in SA MACOD coded data. Policy on XDR treatment cannot be grounded in MACOD-only analysis.","Extra-pulmonary TB undercounted in MACOD; pericarditis, meningitis, miliary TB appear under cardiac, neurological and sepsis codes without A17–A19 attribution.","TB/HIV dual coding is the primary MACOD coding controversy in SA. Excess TB deaths estimated 2–3× MACOD A15 count when HIV-attributed deaths with TB included.","Endemic arboviral deaths absent from SA MACOD coded data; coded as G04.9 or A86. West Nile encephalitis sporadic in SA but undocumented in MACOD.","Near-absent as CoD in SA MACOD. AMR resistance not capturable in MACOD ICD-10 without supplementary codes which are not applied.","Near-absent from SA MACOD. Imported dengue deaths appear as D69.6, K72.0 or A99.","NTS bacteraemia — one of the most common HIV-associated OIs in SA — virtually invisible in MACOD due to B20 coding as UCoD.","Rubella deaths rare in SA MACOD (vaccination era). CRS deaths are the primary rubella coding gap (see Cat 2).","STEC/HUS deaths in SA MACOD appear predominantly under D59.3 or N17.9 rather than A04.3. Infectious aetiology invisible in ICD chapter analyses.","Shigellosis deaths undercounted in SA MACOD under-5 mortality. A09, E86 and K52.9 are common proxy codes.","CPE deaths indistinguishable from other Gram-negative sepsis (A41.5) in SA MACOD. NHLS AMR data is the only source for CPE mortality burden.","CDI deaths in SA MACOD appear under K52.1, K57.2 or E-chapter sepsis codes. A04.7 under-used as UCoD. Healthcare-associated context not capturable.","CRAB ICU deaths coded A41.5 or J15.9 in SA MACOD — organism and resistance both invisible. Critical gap for HCAI/HAP surveillance.","CRPA deaths invisible in SA MACOD coded data. A41.5 codes all Gram-negative sepsis without organism identification.","MRSA deaths in SA MACOD indistinguishable from MSSA. No resistance qualifier in WHO ICD-10. NHLS AMR data is the only source.","VRE deaths coded A41.8 in SA MACOD. No AMR resistance codes applied. NHLS AMR surveillance only source."],["Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h",null,"Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","Immediate ≤24 h","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days","≤7 days (lab)","≤7 days (lab)","≤7 days (lab)","≤7 days (lab)","≤7 days (lab)","≤7 days (lab)","≤7 days (lab)","≤1 month (lab)","≤1 month (lab)","≤1 month (lab)","≤1 month (lab)","≤1 month (lab)","≤1 month (lab)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Category<\/th>\n      <th>NMC Condition<\/th>\n      <th>UCoD ICD-10<\/th>\n      <th>UCoD ICD-11<\/th>\n      <th>Pathogen / specificity notes<\/th>\n      <th>Surveillance artefacts &amp; coding pitfalls<\/th>\n      <th>SA MACOD data quality note<\/th>\n      <th>Reporting timeframe<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":["csv","excel"],"pageLength":15,"scrollX":true,"autoWidth":false,"columnDefs":[{"width":"80px","targets":0},{"width":"220px","targets":1},{"width":"80px","targets":2},{"width":"80px","targets":3},{"width":"320px","targets":4},{"width":"320px","targets":5},{"width":"320px","targets":6},{"width":"120px","targets":7},{"name":"Category","targets":0},{"name":"NMC Condition","targets":1},{"name":"UCoD ICD-10","targets":2},{"name":"UCoD ICD-11","targets":3},{"name":"Pathogen / specificity notes","targets":4},{"name":"Surveillance artefacts & coding pitfalls","targets":5},{"name":"SA MACOD data quality note","targets":6},{"name":"Reporting timeframe","targets":7}],"order":[],"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="download-the-raw-map" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="download-the-raw-map"><span class="header-section-number">3</span> Download the raw map</h2>
+<p>The underlying two-column verified map (NMC condition → primary UCoD ICD-10 code) used for joining to MACOD/VR data is available here:</p>
+<ul>
+<li><a href="../../outputs/nmc_icd_full_reference.csv"><code>nmc_icd_full_reference.csv</code></a> — full reference with categories, UCoD ICD-10/ICD-11 codes, and coding notes</li>
+<li>Use the <strong>CSV</strong> / <strong>Excel</strong> export buttons above to download a filtered subset of the table</li>
+</ul>
+</section>
+<section id="coverage-note" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="coverage-note"><span class="header-section-number">4</span> Coverage note</h2>
+<p>This reference covers <strong>58 NMC/IDSR conditions</strong> across <strong>4 reporting categories</strong>. One NMC condition — <em>Waterborne illness outbreak – undefined</em> — has no assigned UCoD ICD-10 code in the source map and is therefore excluded from ICD-based matching (e.g.&nbsp;in the MACOD comparison).</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

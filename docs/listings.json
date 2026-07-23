@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/projects/icd_nmc_explorer/index.html",
       "/projects/poisoning_ucod/index.html",
       "/projects/nmc_macod_comparison/index.html",
       "/projects/district_variable_veracity/index.html",

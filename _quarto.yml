@@ -55,6 +55,18 @@ website:
             href: projects/heat_excess_mortality/index.qmd
           - text: "Poisoning Deaths"
             href: projects/poisoning_deaths/index.qmd
+          - text: "Poisoning: Why UCOD Matters"
+            href: projects/poisoning_ucod/index.qmd
+          - text: "Cancer Mortality"
+            href: projects/cancer_deaths/index.qmd
+          - text: "YLL Comparison (NMC)"
+            href: projects/yll_comparison/index.qmd
+          - text: "District QA: Deaths & Rates"
+            href: projects/district_variable_veracity/index.qmd
+          - text: "NMC & MACOD Comparison"
+            href: projects/nmc_macod_comparison/index.qmd
+          - text: "ICD-10 ↔ NMC / IDSR Explorer"
+            href: projects/icd_nmc_explorer/index.qmd
           - text: "---"
           - text: "CI Modelling Methods"
             href: projects/ci_modelling/index.qmd

@@ -1,0 +1,116 @@
+---
+title: "ICD-10 ↔ NMC / IDSR Condition Explorer"
+description: "Searchable reference linking Notifiable Medical Conditions (NMC) to their verified ICD-10 / ICD-11 codes, with coding pitfalls and MACOD data-quality notes"
+date: "2026-07-23"
+categories: [NMC, IDSR, ICD-10, ICD-11, reference, data-quality]
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+toc: true
+resources:
+  - "../../outputs/nmc_icd_full_reference.csv"
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(DT)
+  library(here)
+})
+
+knitr::opts_knit$set(root.dir = here::here())
+
+ref <- read_csv(here("outputs/nmc_icd_full_reference.csv"), show_col_types = FALSE)
+```
+
+## What this is
+
+A single reference table answering, for **each Notifiable Medical Condition (NMC)** — South Africa's IDSR-aligned notification list — the question: *"if this condition were the underlying cause of death, what ICD-10 and ICD-11 code should be assigned?"* Alongside the verified **UCoD (underlying cause of death) ICD-10 and ICD-11 codes**, the table lists known **coding pitfalls** and how the condition tends to actually appear (or not) in **MACOD** vital-registration data.
+
+Use the search box or per-column filters below to find a condition, category, or ICD code. Columns wrap long text — click a cell to expand, or use the **CSV / Excel** buttons to export the full table.
+
+::: callout-note
+This table is generated from the SA NMC ICD Reference (v3) and rebuilt by `nmc_icd10_verifier/build_verified_nmc_table.R`. It is also used as the source map for the [NMC & MACOD Comparison](../nmc_macod_comparison/index.qmd) project, where the counts and MACOD sensitivity analysis derived from this map are presented.
+:::
+
+## Definitions & cause-of-death coding
+
+Medical certification of death (the WHO/MCCD form) records causes in a structured sequence, and only one cause per death is coded as the statistic used in mortality reporting.
+
+| Term | Definition |
+|---|---|
+| **Underlying cause of death (UCoD)** | "The disease or injury which initiated the train of morbid events leading directly to death." This is the single cause selected for national/international mortality statistics (WHO ICD-10/ICD-11 rules), and is the code shown in the **UCoD ICD-10 / UCoD ICD-11** columns below. |
+| **Immediate cause of death** | The final disease or condition directly causing death (death certificate **Part I(a)**) — e.g. "septic shock" — which is usually a *consequence* of the underlying cause, not the underlying cause itself. |
+| **Antecedent / intervening causes** | Conditions reported in Part I(b)/(c) that link the immediate cause back to the underlying cause (the causal chain). |
+| **Multiple cause of death (MCOD) coding** | All conditions listed on the certificate (Part I chain **and** Part II contributory conditions) are coded, not just the UCoD. MCOD analysis can reveal a notifiable condition even when it was not selected as the UCoD (e.g. HIV listed as a contributory cause under a UCoD of TB). |
+| **Part II — contributory conditions** | Conditions that contributed to death but were not part of the direct causal chain to the immediate cause (e.g. diabetes, hypertension). These are coded but never selected as UCoD. |
+
+**Why this matters for NMC ↔ MACOD linkage:** the NMC/MACOD comparison and sensitivity tables in this site match on the **UCoD only** — the single cause South Africa's vital statistics report. A notifiable condition that is frequently recorded as an immediate or contributory cause (rather than the UCoD) will therefore appear **under-captured** in MACOD, even if it was mentioned on the death certificate. This is a key reason capture ratios in the [NMC & MACOD Comparison](../nmc_macod_comparison/index.qmd) sensitivity analysis fall below 100% for some conditions — the coding pitfall columns below flag where this is a known issue.
+
+For each row: **UCoD ICD-10** / **UCoD ICD-11** are the codes to assign *when this NMC condition is the underlying cause of death*.
+
+```{r}
+#| label: tbl-icd-nmc-explorer
+#| tbl-cap: "Underlying cause of death (UCoD) ICD-10 / ICD-11 codes for all NMC / IDSR conditions"
+
+ref_display <- ref |>
+  arrange(nmc_category, nmc_condition) |>
+  rename(
+    `Category`                       = nmc_category,
+    `NMC Condition`                  = nmc_condition,
+    `UCoD ICD-10`                    = icd10_code,
+    `UCoD ICD-11`                    = icd11_code,
+    `Pathogen / specificity notes`   = pathogen_notes,
+    `Surveillance artefacts & coding pitfalls` = surveillance_artefacts,
+    `SA MACOD data quality note`     = macod_note,
+    `Reporting timeframe`            = reporting_timeframe
+  )
+
+datatable(
+  ref_display,
+  filter     = "top",
+  extensions = "Buttons",
+  rownames   = FALSE,
+  options    = list(
+    dom        = "Bfrtip",
+    buttons    = c("csv", "excel"),
+    pageLength = 15,
+    scrollX    = TRUE,
+    autoWidth  = FALSE,
+    columnDefs = list(
+      list(width = "80px",  targets = 0),  # Category
+      list(width = "220px", targets = 1),  # NMC Condition
+      list(width = "80px",  targets = 2),  # ICD-10
+      list(width = "80px",  targets = 3),  # ICD-11
+      list(width = "320px", targets = 4),  # Pathogen notes
+      list(width = "320px", targets = 5),  # Surveillance artefacts
+      list(width = "320px", targets = 6),  # MACOD note
+      list(width = "120px", targets = 7)   # Reporting timeframe
+    )
+  )
+)
+```
+
+## Download the raw map
+
+The underlying two-column verified map (NMC condition → primary UCoD ICD-10 code) used for joining to MACOD/VR data is available here:
+
+- [`nmc_icd_full_reference.csv`](../../outputs/nmc_icd_full_reference.csv) — full reference with categories, UCoD ICD-10/ICD-11 codes, and coding notes
+- Use the **CSV** / **Excel** export buttons above to download a filtered subset of the table
+
+## Coverage note
+
+```{r}
+#| label: coverage-summary
+
+n_conditions <- nrow(ref)
+n_cat <- ref |> distinct(nmc_category) |> nrow()
+```
+
+This reference covers **`r n_conditions` NMC/IDSR conditions** across **`r n_cat` reporting categories**. One NMC condition — *Waterborne illness outbreak – undefined* — has no assigned UCoD ICD-10 code in the source map and is therefore excluded from ICD-based matching (e.g. in the MACOD comparison).
