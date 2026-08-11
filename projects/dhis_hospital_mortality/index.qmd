@@ -256,7 +256,7 @@ Before interpreting any trend, inspect how many facilities were submitting data 
 
 # Three-panel: one per domain
 comp_plot <- ggplot(agg_completeness_monthly,
-          aes(x = period_date, y = n_facilities, colour = domain,
+          aes(x = period_date, y = n_facilities, colour = domain, group = domain,
                         text = paste0("Domain: ", domain,
                                       "<br>Month: ", format(period_date, "%b %Y"),
                                       "<br>Facilities: ", format(n_facilities, big.mark = ",")))) +
