@@ -53,20 +53,92 @@ Medical certification of death (the WHO/MCCD form) records causes in a structure
 
 **Why this matters for NMC ↔ MACOD linkage:** the NMC/MACOD comparison and sensitivity tables in this site match on the **UCoD only** — the single cause South Africa's vital statistics report. A notifiable condition that is frequently recorded as an immediate or contributory cause (rather than the UCoD) will therefore appear **under-captured** in MACOD, even if it was mentioned on the death certificate. This is a key reason capture ratios in the [NMC & MACOD Comparison](../nmc_macod_comparison/index.qmd) sensitivity analysis fall below 100% for some conditions — the coding pitfall columns below flag where this is a known issue.
 
-For each row: **UCoD ICD-10** / **UCoD ICD-11** are the codes to assign *when this NMC condition is the underlying cause of death*.
+For each row: **UCoD ICD-10** / **UCoD ICD-11** are the codes to assign *when this NMC condition is the underlying cause of death*. The **Likely immediate-cause / miscode ICD-10s** column lists specific proxy codes that tend to appear in MACOD instead — i.e. what the death is actually coded as when the notifiable condition is not correctly identified/documented as the UCoD (e.g. Measles deaths often carry an immediate cause of `J18.9` "pneumonia, unspecified" rather than the measles-specific code).
 
 ```{r}
 #| label: tbl-icd-nmc-explorer
 #| tbl-cap: "Underlying cause of death (UCoD) ICD-10 / ICD-11 codes for all NMC / IDSR conditions"
 
+# ── Curated lookup: likely immediate-cause / miscode ICD-10 codes ───────────
+# For each NMC condition, the specific proxy/terminal-event ICD-10 codes that
+# tend to appear in MACOD in place of the correct UCoD, when the notifiable
+# condition itself is not documented on the death certificate (e.g. Measles
+# deaths often carry an immediate cause of J18.9 "pneumonia, unspecified"
+# rather than B05.2 "measles with pneumonia"). Curated from the surveillance
+# artefact / MACOD notes above.
+miscode_lookup <- tibble::tribble(
+  ~nmc_condition, ~likely_miscodes,
+  "Acute flaccid paralysis", "G83.9 retained even when polio (A80) confirmed",
+  "Acute rheumatic fever", "I05\u2013I09 (chronic valvular/RHD); BA80 (ICD-11 terminal RHD)",
+  "Anthrax", "A41.9 (sepsis, unspecified)",
+  "Botulism", "J96 (respiratory failure); G83.9 (AFP); P28.5 (newborn resp. failure)",
+  "Cholera", "A09 (gastroenteritis NOS); E86 (dehydration)",
+  "Diphtheria", "I51.4 (myocarditis, unspecified)",
+  "Enteric fever (typhoid / paratyphoid)", "R50.9 (fever NOS); A09 (gastroenteritis NOS); K63.1 (intestinal perforation as UCoD)",
+  "Food-borne disease outbreak", "A09; A05.9 (no outbreak linkage flag)",
+  "Haemolytic uraemic syndrome (HUS)", "D59.3 used as UCoD instead of A04.3 (STEC) \u2014 sequencing reversed",
+  "Listeriosis", "P36.9 (neonatal sepsis, unspecified)",
+  "Malaria", "R50.9 (fever NOS); G93.6 (cerebral oedema)",
+  "Measles", "J18.9 (pneumonia, unspecified); G04.9 (encephalitis, unspecified)",
+  "Meningococcal disease", "A41.9 (sepsis NOS); G03.9 (meningitis NOS); D65 (DIC, terminal event)",
+  "Pertussis", "J18.9; J21.9; J96.0 (respiratory failure, infants)",
+  "Plague", "A41.9 (sepsis NOS); J15.9 (pneumonia NOS, pneumonic form)",
+  "Poliomyelitis", "J96 (respiratory failure)",
+  "Rabies (human)", "G04.9 (encephalitis NOS); A86 (viral encephalitis NOS); G61.0 (Guillain-Barr\u00e9, dumb rabies mistaken)",
+  "Respiratory disease \u2014 novel pathogen", "J18.9 (pneumonia NOS); B34.2 (coronavirus NOS); R99 (ill-defined)",
+  "Rift Valley fever (human)", "A99 (haemorrhagic fever NOS); A86 (viral encephalitis NOS)",
+  "Smallpox", "Miscoded as B04 (mpox) or B01 (varicella)",
+  "Viral haemorrhagic fever diseases", "A41.9 (sepsis NOS); D65 (DIC); R68.89 (multi-organ failure)",
+  "Yellow fever", "K72.0 (liver failure); A99 (haemorrhagic fever NOS)",
+  "Agricultural/stock remedy poisoning", "J96 (respiratory failure); I46.9 (cardiac arrest)",
+  "Bilharzia (schistosomiasis)", "K74.6 (cirrhosis); K76.6 (portal hypertension); K92.2 (UGI bleed)",
+  "Brucellosis", "R50.9 (fever NOS); A41.9 (sepsis NOS); I38 (endocarditis)",
+  "Congenital rubella syndrome", "Q20\u2013Q24 (structural cardiac defects); Q12 (ophthalmic defects)",
+  "Congenital syphilis", "P36.9 (neonatal sepsis NOS); P07 (preterm)",
+  "Coronavirus disease (COVID-19)", "J18.9 (pneumonia NOS); B34.2 (coronavirus NOS); R99 (ill-defined)",
+  "Haemophilus influenzae type B", "G03.9 (meningitis NOS); J18.9 (pneumonia NOS); A41.9 (sepsis NOS)",
+  "Hepatitis A", "K72.0 (liver failure); K72.9 (hepatic encephalopathy)",
+  "Hepatitis B", "K74.6 (cirrhosis); K72.1 (chronic liver failure); C22.0 (HCC) without B18.1 linked",
+  "Hepatitis C", "K74.6 (cirrhosis); C22.0 (HCC) without B18.2 linked",
+  "Hepatitis E", "O26.6 (liver disorder in pregnancy); O95 (maternal death NOS)",
+  "Lead poisoning", "N18.5 (ESRD); G93.4 (encephalopathy NOS); D64.9 (anaemia)",
+  "Legionellosis", "J18.9; J15.9 (pneumonia, unspecified)",
+  "Leprosy", "N18.5 (ESRD); A41.9 (sepsis NOS); terminal complication codes",
+  "Maternal death", "A15/B20 (TB/HIV coded outside O-chapter when indirect cause); conversely O95 over-coded for non-obstetric deaths",
+  "Mercury poisoning", "N18.9 (CKD NOS); G62.2 (toxic polyneuropathy); R99 (ill-defined)",
+  "Soil-transmitted helminths", "D50 (anaemia); E44 (malnutrition); K56.6 (bowel obstruction)",
+  "Tetanus", "J96 (respiratory failure); J69.0 (aspiration pneumonia); P36.9 (neonatal sepsis NOS)",
+  "Tuberculosis: MDR-TB", "Identical to DS-TB (A15.0) \u2014 resistance invisible without NHLS linkage",
+  "Tuberculosis: XDR-TB", "Identical to DS-TB (A15.0) \u2014 resistance invisible without NHLS linkage",
+  "Tuberculosis: extra-pulmonary", "I31 (pericardial disease NOS); G03.9 (meningitis NOS); A41.9/J80 (ARDS, miliary TB)",
+  "Tuberculosis: pulmonary", "B20/B22.1 (HIV disease) coded instead of A15.0 in TB/HIV coinfection",
+  "Endemic arboviral diseases (West Nile/Sindbis/Chikungunya)", "G04.9 (encephalitis NOS); A86 (viral encephalitis NOS); I51.4 (myocarditis NOS)",
+  "Gonorrhoea (ceftriaxone-resistant N.gonorrhoeae)", "A41.89 (other sepsis NOS, no AMR flag)",
+  "Non-endemic arboviral diseases (Dengue/other imported)", "D69.6 (thrombocytopaenia); K72.0 (liver failure); A99 (haemorrhagic fever NOS)",
+  "Non-typhoidal Salmonellosis (NTS)", "B20/B22 (HIV disease); A41.89 (sepsis NOS)",
+  "Rubella", "A86 (viral encephalitis NOS); CRS (P35.0) more common entry point",
+  "Shiga toxin-producing E.coli (STEC)", "D59.3 (HUS); N17.9 (AKI) used as UCoD instead of A04.3",
+  "Shigellosis", "A09 (gastroenteritis NOS); E86 (dehydration); K52.9 (haemorrhagic colitis)",
+  "HCAI/MDRO \u2014 CPE (Carbapenemase-producing Enterobacteriaceae)", "A41.5 (Gram-negative sepsis NOS, WHO ICD-10 collapses to this)",
+  "HCAI/MDRO \u2014 Clostridioides difficile (CDI)", "K52.1 (pseudomembranous colitis NOS); K57.2 (toxic megacolon); sepsis codes",
+  "HCAI/MDRO \u2014 Colistin-resistant Acinetobacter baumannii", "A41.5 (Gram-negative sepsis NOS); J15.9 (bacterial pneumonia NOS)",
+  "HCAI/MDRO \u2014 Colistin-resistant Pseudomonas aeruginosa", "A41.5 (Gram-negative sepsis NOS, no organism ID)",
+  "HCAI/MDRO \u2014 S.aureus (MRSA/hGISA/GISA)", "A41.0 (S.aureus sepsis) \u2014 MRSA indistinguishable from MSSA"
+)
+
+ref <- ref |>
+  left_join(miscode_lookup, by = "nmc_condition")
+
 ref_display <- ref |>
   arrange(nmc_category, nmc_condition) |>
+  mutate(likely_miscodes = tidyr::replace_na(likely_miscodes, "Not documented")) |>
   rename(
     `Category`                       = nmc_category,
     `NMC Condition`                  = nmc_condition,
     `UCoD ICD-10`                    = icd10_code,
     `UCoD ICD-11`                    = icd11_code,
     `Pathogen / specificity notes`   = pathogen_notes,
+    `Likely immediate-cause / miscode ICD-10s` = likely_miscodes,
     `Surveillance artefacts & coding pitfalls` = surveillance_artefacts,
     `SA MACOD data quality note`     = macod_note,
     `Reporting timeframe`            = reporting_timeframe
@@ -88,10 +160,11 @@ datatable(
       list(width = "220px", targets = 1),  # NMC Condition
       list(width = "80px",  targets = 2),  # ICD-10
       list(width = "80px",  targets = 3),  # ICD-11
-      list(width = "320px", targets = 4),  # Pathogen notes
-      list(width = "320px", targets = 5),  # Surveillance artefacts
-      list(width = "320px", targets = 6),  # MACOD note
-      list(width = "120px", targets = 7)   # Reporting timeframe
+      list(width = "260px", targets = 4),  # Pathogen notes
+      list(width = "260px", targets = 5),  # Likely miscodes
+      list(width = "320px", targets = 6),  # Surveillance artefacts
+      list(width = "320px", targets = 7),  # MACOD note
+      list(width = "120px", targets = 8)   # Reporting timeframe
     )
   )
 )

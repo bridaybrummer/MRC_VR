@@ -26,6 +26,14 @@ if (!file.exists(rda_path)) {
 }
 load(rda_path)
 
+# Monthly provincial aggregate used to prioritize month-level province views.
+if (!exists("agg_prov_monthly")) {
+  agg_prov_monthly <- dhis_monthly[!is.na(province) & province != "",
+    .(value = sum(value, na.rm = TRUE)),
+    by = .(domain, indicator, short_label, province, year, month, period_date)
+  ][order(domain, indicator, province, period_date)]
+}
+
 # ── Colour palette (consistent across all tabs) ───────────────────────────────
 PROV_COLOURS <- c(
   "Eastern Cape"  = "#e41a1c",
@@ -99,9 +107,19 @@ make_small_multiples <- function(dt, time_col,
 # ── Province explorer builder ─────────────────────────────────────────────────
 # One indicator at a time (dropdown) across all provinces, with a Linear/Log
 # y-axis toggle so small provinces remain interpretable against large ones.
-# Unified hover compares all provinces at the selected year.
-make_province_explorer <- function(dt, domain_label) {
+# Works for annual or monthly series.
+make_province_explorer <- function(dt, domain_label,
+                                   x_col = "year",
+                                   date_axis = FALSE) {
   dt        <- dt[!is.na(province)]
+  dt[, x_plot := get(x_col)]
+  dt[, hover_text := if (date_axis) {
+    paste0("<b>", province, "</b><br>", short_label,
+           "<br>", format(x_plot, "%b %Y"), ": ", format(value, big.mark = ","))
+  } else {
+    paste0("<b>", province, "</b><br>", short_label,
+           "<br>", x_plot, ": ", format(value, big.mark = ","))
+  }]
   indicators <- unique(dt$short_label)
   provs     <- sort(unique(dt$province))
   n_provs   <- length(provs)
@@ -114,7 +132,8 @@ make_province_explorer <- function(dt, domain_label) {
       fig <- add_trace(
         fig,
         data        = df_p,
-        x = ~year, y = ~value,
+        x = ~x_plot, y = ~value,
+        text        = ~hover_text,
         name        = pv,
         type = "scatter", mode = "lines+markers",
         visible     = (ind == indicators[1]),
@@ -122,8 +141,7 @@ make_province_explorer <- function(dt, domain_label) {
         showlegend  = (ind == indicators[1]),
         line   = list(color = unname(PROV_COLOURS[pv]), width = 2),
         marker = list(color = unname(PROV_COLOURS[pv]), size = 5),
-        hovertemplate = paste0("<b>", pv, "</b><br>", ind,
-                               "<br>%{x}: %{y:,}<extra></extra>")
+        hovertemplate = "%{text}<extra></extra>"
       )
     }
   }
@@ -152,8 +170,13 @@ make_province_explorer <- function(dt, domain_label) {
     layout(
       title     = paste0(domain_label, ": ", indicators[1], " — by province"),
       hovermode = "x unified",
-      xaxis     = list(title = "", dtick = 1, showspikes = TRUE,
-                       spikemode = "across", spikethickness = 1),
+      xaxis     = if (date_axis) {
+        list(title = "", tickformat = "%b %y", showspikes = TRUE,
+             spikemode = "across", spikethickness = 1)
+      } else {
+        list(title = "", dtick = 1, showspikes = TRUE,
+             spikemode = "across", spikethickness = 1)
+      },
       yaxis     = list(title = "Count", tickformat = ","),
       legend    = list(orientation = "h", y = -0.22),
       margin    = list(t = 90),
@@ -224,28 +247,29 @@ datatable(
 
 ## Reporting completeness {#sec-completeness}
 
-Before interpreting any trend, inspect how many facilities were submitting data in each period. Spikes or drops in counts indicate data quality issues rather than true events.
+Before interpreting any trend, inspect how many facilities were submitting data in each month. Spikes or drops in counts indicate data quality issues rather than true events.
 
 ```{r}
 #| label: fig-completeness
-#| fig-cap: "Annual reporting completeness — number of distinct facility–province–district combinations submitting data per year and domain. Expect stable or slowly growing counts; sudden drops signal missing data."
+#| fig-cap: "Monthly reporting completeness — number of distinct facility–province–district combinations submitting data per month and domain (Apr 2024 – Mar 2026)."
 #| fig-height: 5
 
 # Three-panel: one per domain
-comp_plot <- ggplot(agg_completeness_annual,
-                    aes(x = year, y = n_facilities, fill = domain,
+comp_plot <- ggplot(agg_completeness_monthly,
+          aes(x = period_date, y = n_facilities, colour = domain,
                         text = paste0("Domain: ", domain,
-                                      "<br>Year: ", year,
+                                      "<br>Month: ", format(period_date, "%b %Y"),
                                       "<br>Facilities: ", format(n_facilities, big.mark = ",")))) +
-  geom_col(show.legend = FALSE) +
+  geom_line(show.legend = FALSE, linewidth = 0.8) +
+  geom_point(show.legend = FALSE, size = 1.2) +
   facet_wrap(~domain, ncol = 3, scales = "free_y",
              labeller = labeller(domain = c(
                births = "Births / deliveries / BCG",
                deaths = "Deaths",
                contra = "Contraception / reproductive"
              ))) +
-  scale_x_continuous(breaks = 2015:2025) +
-  scale_fill_manual(values = c(births = "#2196F3", deaths = "#f44336", contra = "#4CAF50")) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %y") +
+  scale_colour_manual(values = c(births = "#2196F3", deaths = "#f44336", contra = "#4CAF50")) +
   labs(x = NULL, y = "Facilities reporting") +
   theme_mrc +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -259,7 +283,36 @@ ggplotly(comp_plot, tooltip = "text") |>
 
 ## Births, deliveries & BCG {#sec-births}
 
-### National annual trends
+### National monthly trends (primary)
+
+```{r}
+#| label: fig-births-monthly
+#| fig-cap: "Monthly national counts for births/delivery/BCG indicators (Apr 2024 – Mar 2026), independent y-axes."
+#| fig-height: 7
+
+make_small_multiples(
+  agg_national_monthly[domain == "births"],
+  time_col  = "period_date",
+  date_axis = TRUE,
+  line_col  = "#1f6eb5"
+)
+```
+
+### By province (monthly)
+
+```{r}
+#| label: fig-births-province-monthly
+#| fig-cap: "Provincial monthly births/delivery counts. Pick an indicator from the dropdown and toggle Linear / Log on the y-axis."
+
+make_province_explorer(
+  agg_prov_monthly[domain == "births"],
+  domain_label = "Births / deliveries",
+  x_col = "period_date",
+  date_axis = TRUE
+)
+```
+
+### Annual context
 
 ```{r}
 #| label: fig-births-national
@@ -273,39 +326,13 @@ make_small_multiples(
 )
 ```
 
-### By province
-
-```{r}
-#| label: fig-births-province
-#| fig-cap: "Provincial annual counts. Pick an indicator from the dropdown and toggle Linear / Log on the y-axis — the log view keeps low-volume provinces (e.g. Northern Cape) interpretable against high-volume ones (Gauteng, KZN). Hover compares all provinces at a year."
-
-make_province_explorer(
-  agg_prov_annual[domain == "births"],
-  domain_label = "Births / deliveries"
-)
-```
-
 ---
 
 ## Deaths {#sec-deaths}
 
-### National annual trends
+### Monthly trend (Apr 2024 – Mar 2026, primary)
 
-```{r}
-#| label: fig-deaths-national
-#| fig-cap: "National annual counts for each death indicator, 2015–2025, on independent (free) y-axes so low-count indicators (maternal death, 7–28 day deaths) are interpretable alongside the much larger total. 2026 is excluded (incomplete year). Note: 'Inpatient deaths (total)' is a separately reported aggregate and is NOT the sum of the age-specific panels."
-#| fig-height: 7
-
-make_small_multiples(
-  agg_national_annual[domain == "deaths"],
-  time_col = "year",
-  line_col = "#c0392b"
-)
-```
-
-### Monthly trend (Apr 2024 – Mar 2026)
-
-Monthly data from the second file allow finer temporal resolution over the most recent period. Each indicator is shown on its own scale so seasonality and short-term shifts are visible regardless of magnitude.
+Monthly data allow finer temporal resolution over the most recent period. Each indicator is shown on its own scale so seasonality and short-term shifts are visible regardless of magnitude.
 
 ```{r}
 #| label: fig-deaths-monthly
@@ -320,15 +347,31 @@ make_small_multiples(
 )
 ```
 
-### By province
+### By province (monthly)
 
 ```{r}
-#| label: fig-deaths-province
-#| fig-cap: "Provincial annual death counts. Pick an indicator and toggle Linear / Log. Log view recommended when comparing provinces of very different size."
+#| label: fig-deaths-province-monthly
+#| fig-cap: "Provincial monthly death counts. Pick an indicator and toggle Linear / Log to compare high- and low-volume provinces."
 
 make_province_explorer(
-  agg_prov_annual[domain == "deaths"],
-  domain_label = "Deaths"
+  agg_prov_monthly[domain == "deaths"],
+  domain_label = "Deaths",
+  x_col = "period_date",
+  date_axis = TRUE
+)
+```
+
+### Annual context
+
+```{r}
+#| label: fig-deaths-national
+#| fig-cap: "National annual counts for each death indicator, 2015–2025, on independent (free) y-axes so low-count indicators (maternal death, 7–28 day deaths) are interpretable alongside the much larger total. 2026 is excluded (incomplete year). Note: 'Inpatient deaths (total)' is a separately reported aggregate and is NOT the sum of the age-specific panels."
+#| fig-height: 7
+
+make_small_multiples(
+  agg_national_annual[domain == "deaths"],
+  time_col = "year",
+  line_col = "#c0392b"
 )
 ```
 
@@ -336,21 +379,59 @@ make_province_explorer(
 
 ## Contraception & reproductive {#sec-contra}
 
-### National annual trends
+::: {.callout-note collapse="false"}
+## Methods: facility counts, couple-years of protection, and monthly QA
+
+**Facility counts.** A facility is counted as "reporting" for the contraception
+domain in a given period (year or month) if it has at least one non-missing
+service record for **any** contraceptive/reproductive indicator in that
+period. Facilities are identified by the combination of `province + district
++ facility name` — the source files carry no separate facility ID/code, so
+name clashes across districts are not resolved beyond this key. The same
+definition underlies the [reporting completeness](#sec-completeness) panel
+above and the monthly reporting-rate analysis below.
+
+**Couple-years of protection (CYP).** Raw commodity/procedure counts are not
+directly comparable across methods (e.g. one implant insertion protects for
+years; one oral-pill cycle protects for a month). CYP converts each service
+into a common annual-protection unit using standard USAID/FP2030 conversion
+factors:
 
 ```{r}
-#| label: fig-contra-national
-#| fig-cap: "National annual counts for each contraception / reproductive indicator, 2015–2025, on independent (free) y-axes so rarer procedures (e.g. male sterilisation, TOP) are interpretable alongside high-volume methods (oral pill, injectables). 2026 is excluded (incomplete year)."
-#| fig-height: 8
+#| label: tbl-cyp-factors
+#| tbl-cap: "CYP conversion factors applied to each contraceptive service/procedure."
 
-make_small_multiples(
-  agg_national_annual[domain == "contra"],
-  time_col = "year",
-  line_col = "#1e8449"
+datatable(
+  cyp_factors[, .(short_label,
+                  cyp_factor = round(cyp_factor, 3),
+                  interpretation = fifelse(
+                    short_label == "Medroxyprogesterone", "4 injections (3-monthly) = 1 CYP",
+                    fifelse(short_label == "Norethisterone", "6 injections (2-monthly) = 1 CYP",
+                    fifelse(short_label == "Oral pill", "15 cycles = 1 CYP",
+                    fifelse(short_label == "IUCD", "1 insertion = 4.6 CYP (avg use-life)",
+                    fifelse(short_label == "Sub-dermal implant", "1 insertion = 3.5 CYP (avg use-life)",
+                    "1 procedure = 10 CYP"))))))],
+  colnames = c("Method", "CYP factor", "Interpretation"),
+  rownames = FALSE,
+  options  = list(pageLength = 10, dom = "t")
 )
 ```
 
-### Monthly trend (Apr 2024 – Mar 2026)
+Termination of pregnancy is **not** a contraceptive method and is excluded
+from CYP. Sterilisation and TOP counts remain shown separately in raw-count
+form throughout this section.
+
+**Monthly data-quality checks.** Two checks are applied to the Apr 2024 – Mar
+2026 monthly file: (1) a district-level **reporting rate**, comparing each
+month's number of reporting facilities against that district's own
+highest-observed facility count in the window (so district size doesn't bias
+the comparison); and (2) a **within-facility outlier flag**, using a robust
+(median/MAD-based) z-score computed separately for each facility × indicator
+series, so a facility is only ever compared against its own history. Points
+with $|z| > 3.5$ (the Iglewicz–Hoaglin threshold) are flagged as outliers.
+:::
+
+### Monthly trend (Apr 2024 – Mar 2026, primary)
 
 ```{r}
 #| label: fig-contra-monthly
@@ -365,15 +446,225 @@ make_small_multiples(
 )
 ```
 
-### By province
+### By province (monthly)
 
 ```{r}
-#| label: fig-contra-province
-#| fig-cap: "Provincial annual contraception counts. Pick an indicator and toggle Linear / Log on the y-axis."
+#| label: fig-contra-province-monthly
+#| fig-cap: "Provincial monthly contraception counts. Pick an indicator and toggle Linear / Log on the y-axis."
 
 make_province_explorer(
-  agg_prov_annual[domain == "contra"],
-  domain_label = "Contraception"
+  agg_prov_monthly[domain == "contra"],
+  domain_label = "Contraception",
+  x_col = "period_date",
+  date_axis = TRUE
+)
+```
+
+### Annual context
+
+```{r}
+#| label: fig-contra-national
+#| fig-cap: "National annual counts for each contraception / reproductive indicator, 2015–2025, on independent (free) y-axes so rarer procedures (e.g. male sterilisation, TOP) are interpretable alongside high-volume methods (oral pill, injectables). 2026 is excluded (incomplete year)."
+#| fig-height: 8
+
+make_small_multiples(
+  agg_national_annual[domain == "contra"],
+  time_col = "year",
+  line_col = "#1e8449"
+)
+```
+
+### Couple-years of protection (CYP)
+
+National annual CYP, by method and combined. TOP and raw commodity counts are shown elsewhere in this section; this view expresses only methods with a defined CYP conversion factor (see Methods above).
+
+```{r}
+#| label: fig-contra-cyp-national
+#| fig-cap: "National couple-years of protection (CYP) by method, 2015–2025. Each panel has its own y-axis."
+#| fig-height: 6
+
+cyp_plot_dt <- copy(agg_cyp_national_annual)
+setnames(cyp_plot_dt, "cyp", "value")
+make_small_multiples(cyp_plot_dt, time_col = "year", line_col = "#6a3d9a")
+```
+
+```{r}
+#| label: fig-contra-cyp-total
+#| fig-cap: "Total national CYP across all methods, 2015–2025."
+
+cyp_total_plot <- ggplot(agg_cyp_national_annual_total, aes(x = year, y = cyp,
+      text = paste0("Year: ", year, "<br>Total CYP: ", format(round(cyp), big.mark = ",")))) +
+  geom_col(fill = "#6a3d9a") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = 2015:2025) +
+  labs(x = NULL, y = "Couple-years of protection") +
+  theme_mrc
+
+ggplotly(cyp_total_plot, tooltip = "text") |> ply_config()
+```
+
+### Monthly reporting quality (Apr 2024 – Mar 2026)
+
+Districts are ranked by their **mean monthly reporting rate** (facilities reporting that month ÷ that district's own peak facility count in the window). None fall below the conventional 70% "poor reporting" threshold in this dataset; the table and chart below show the 15 lowest-ranked districts for transparency.
+
+```{r}
+#| label: tbl-contra-poor-reporting
+#| tbl-cap: "Districts with the lowest mean monthly reporting rate for contraception indicators, Apr 2024 – Mar 2026 (worst 15 shown)."
+
+datatable(
+  head(agg_contra_district_poor_reporting, 15)[
+    , .(province, district,
+        mean_reporting_rate = percent(mean_reporting_rate, accuracy = 1),
+        min_reporting_rate  = percent(min_reporting_rate, accuracy = 1),
+        n_months)],
+  colnames = c("Province", "District", "Mean reporting rate", "Min reporting rate", "Months observed"),
+  rownames = FALSE,
+  options  = list(pageLength = 15, dom = "ftp")
+)
+```
+
+```{r}
+#| label: fig-contra-district-reporting
+#| fig-cap: "Monthly reporting rate for the 8 lowest-ranked districts (facilities reporting ÷ district's peak facility count). The dashed line marks the conventional 70% threshold — no district drops below it in this dataset, but relative dips are still visible."
+#| fig-height: 6
+
+worst_districts <- head(agg_contra_district_poor_reporting, 8)$district
+
+rep_plot_dt <- agg_contra_completeness_district_monthly[district %in% worst_districts]
+
+rep_plot <- ggplot(rep_plot_dt, aes(x = period_date, y = reporting_rate,
+      colour = district, group = interaction(province, district),
+      text = paste0(district, " (", province, ")<br>",
+                    format(period_date, "%b %Y"), "<br>",
+                    "Reporting rate: ", percent(reporting_rate, accuracy = 1)))) +
+  geom_hline(yintercept = 0.7, linetype = "dashed", colour = "grey50") +
+  geom_line(linewidth = 0.5, alpha = 0.8) +
+  scale_y_continuous(labels = percent) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %y") +
+  labs(x = NULL, y = "Reporting rate", colour = NULL) +
+  theme_mrc +
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(rep_plot, tooltip = "text") |> ply_config()
+```
+
+### Reporting heatmaps
+
+Heatmaps make gaps and outlier months visible at a glance, without pre-selecting "worst" districts.
+
+**All districts, national overview.** Rows are sorted by mean reporting rate (worst at the top). Green = fully reporting that month relative to the district's own peak; red = a large share of facilities went silent.
+
+```{r}
+#| label: fig-contra-heatmap-district
+#| fig-cap: "District x month reporting-rate heatmap, Apr 2024 – Mar 2026. Reporting rate = facilities reporting that month ÷ district's own peak facility count in the window."
+#| fig-height: 9
+
+dist_mat_dt <- dcast(agg_contra_heatmap_district, district_label ~ period_date,
+                     value.var = "reporting_rate")
+dist_labels <- dist_mat_dt$district_label
+dist_mat    <- as.matrix(dist_mat_dt[, -1, with = FALSE])
+rownames(dist_mat) <- dist_labels
+month_labs  <- format(as.Date(colnames(dist_mat)), "%b %y")
+
+plot_ly(
+  z = dist_mat, x = month_labs, y = dist_labels, type = "heatmap",
+  colorscale = list(c(0, "#b2182b"), c(0.5, "#f7f7f7"), c(1, "#1a9850")),
+  zmin = 0, zmax = 1,
+  hovertemplate = paste0("%{y}<br>%{x}<br>Reporting rate: %{z:.0%}<extra></extra>"),
+  colorbar = list(title = "Reporting<br>rate", tickformat = ".0%")
+) |>
+  layout(
+    xaxis  = list(title = NULL, tickangle = -45),
+    yaxis  = list(title = NULL, tickfont = list(size = 8)),
+    margin = list(l = 160)
+  ) |>
+  ply_config()
+```
+
+**Facility level, one district at a time.** Colour = **percentage of that facility's own maximum monthly volume**, calculated as:
+
+$$
+\%\ of\ own\ max_{i,t} = \frac{\text{total contraceptive volume, facility } i,\ \text{month } t}{\max_{t}(\text{total contraceptive volume, facility } i)} \times 100
+$$
+
+100% therefore always marks a facility's own single best-reporting month in the window — it is **not** a fixed national or district target, so facilities are only ever judged against their own history, never against each other. A month sitting at, say, 20% means that facility reported only a fifth of the volume it is capable of reporting, which is an immediate, self-scaled signal of a completeness gap or genuine outlier — regardless of whether the facility is large or small. Blank cells are months with **no reported service at all** for that facility — the clearest signal of under-recording.
+
+```{r}
+#| label: fig-contra-heatmap-facility
+#| fig-cap: "Facility x month heatmap for a selected district. Colour = monthly volume as a percentage of that facility's own maximum monthly volume in the window (100% = facility's own best month; 0% = reported nothing). Blank = facility reported nothing that month. Use the dropdown to switch district."
+#| fig-height: 7
+
+fac_grid <- agg_contra_facility_monthly_grid
+fac_grid[, district_prov := paste0(district, " (", province, ")")]
+fac_grid[, facility_label := facility]
+
+districts_avail <- fac_grid[, .(n_fac = uniqueN(facility)), by = district_prov][
+  order(district_prov)
+]$district_prov
+month_labs_fac <- format(all_months <- sort(unique(fac_grid$period_date)), "%b %y")
+
+fig_fac <- plot_ly()
+for (i in seq_along(districts_avail)) {
+  d <- districts_avail[i]
+  sub <- fac_grid[district_prov == d]
+  wide <- dcast(sub, facility_label ~ period_date, value.var = "pct_of_max")
+  fac_labels <- wide$facility_label
+  mat <- as.matrix(wide[, -1, with = FALSE])
+  # Align columns to the full month range (some districts may be missing an
+  # early/late month if no facility in that district reported at all then)
+  mat_full <- matrix(NA_real_, nrow = nrow(mat), ncol = length(all_months),
+                     dimnames = list(fac_labels, as.character(all_months)))
+  mat_full[, colnames(mat)] <- mat
+
+  fig_fac <- add_trace(
+    fig_fac,
+    z = mat_full, x = month_labs_fac, y = fac_labels, type = "heatmap",
+    visible = (i == 1),
+    colorscale = list(c(0, "#b2182b"), c(0.5, "#f7f7f7"), c(1, "#1a9850")),
+    zmin = 0, zmax = 100,
+    hovertemplate = paste0("%{y}<br>%{x}<br>% of own max: %{z:.0f}%<extra></extra>"),
+    colorbar = list(title = "% of own<br>max month", ticksuffix = "%")
+  )
+}
+
+dist_buttons <- lapply(seq_along(districts_avail), function(i) {
+  vis <- rep(FALSE, length(districts_avail))
+  vis[i] <- TRUE
+  list(method = "update", label = districts_avail[i],
+       args = list(list(visible = vis),
+                   list(title = paste0("Facility reporting: ", districts_avail[i]))))
+})
+
+fig_fac |>
+  layout(
+    title  = paste0("Facility reporting: ", districts_avail[1]),
+    xaxis  = list(title = NULL, tickangle = -45),
+    yaxis  = list(title = NULL, tickfont = list(size = 8)),
+    margin = list(l = 140, t = 80),
+    updatemenus = list(
+      list(type = "dropdown", x = 0, xanchor = "left", y = 1.15,
+           buttons = dist_buttons, showactive = TRUE)
+    )
+  ) |>
+  ply_config()
+```
+
+### Monthly outlier flags
+
+Facility-months where a contraceptive indicator deviates sharply (robust $|z| > 3.5$) from that same facility's own history — likely data-entry errors, stockouts, or reporting artefacts rather than true service-delivery shifts.
+
+```{r}
+#| label: tbl-contra-outliers
+#| tbl-cap: "Flagged facility-month outliers for contraception indicators, Apr 2024 – Mar 2026 (largest deviations first)."
+
+datatable(
+  agg_contra_outliers_monthly[, .(province, district, facility, short_label,
+                                   period = format(period_date, "%b %Y"),
+                                   value, z_robust = round(z_robust, 1))],
+  colnames  = c("Province", "District", "Facility", "Indicator", "Period", "Value", "Robust z"),
+  rownames  = FALSE,
+  filter    = "top",
+  options   = list(pageLength = 15, dom = "ftp", scrollX = TRUE)
 )
 ```
 
@@ -427,5 +718,5 @@ datatable(
 - Annual counts in the main file are calendar-year aggregates; months within a year are not individually available before April 2024.
 - The annual series ends in 2025; 2026 is excluded as incomplete. The monthly figures extend to Mar 2026.
 - The `Inpatient deaths - total` indicator is a separately reported aggregate that may not equal the sum of age-specific death indicators — they are shown together but not summed.
-- Facility coverage varies by year (see [Reporting completeness](#sec-completeness)). Declining counts in recent years are likely incomplete reporting, not true declines.
+- Facility coverage varies by year and month (see [Reporting completeness](#sec-completeness)). Declining counts are often incomplete reporting, not true declines.
 - These data have not been validated against the official MACOD or StatsSA vital registration series.

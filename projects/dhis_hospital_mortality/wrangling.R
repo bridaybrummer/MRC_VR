@@ -105,8 +105,9 @@ indicator_meta <- data.table(
   ),
   domain = c(
     rep("births", 9),
-    rep("deaths", 9),
-    rep("contra", 10)
+    rep("deaths", 8),   # 8 death indicators (was mistakenly 9, which pushed
+                         # "Medroxyprogesterone injection" into "deaths")
+    rep("contra", 11)
   ),
   short_label = c(
     # births
@@ -390,6 +391,175 @@ agg_facility_totals <- dhis_annual[,
 ][order(domain, indicator, -total_value)]
 
 
+# ─── 7f. FACILITY COUNT METHOD (contraception domain) ────────────────────────
+# "Number of facilities" for the contra domain is defined the same way as the
+# reporting-completeness metric used elsewhere in this script: a facility is
+# counted for a given period if it has at least one non-missing, non-zero
+# service record for ANY contraceptive/reproductive indicator in that period
+# (province + district + facility name form the unique facility key — there is
+# no separate facility ID/code in the source files, so name clashes across
+# districts are NOT de-duplicated further than this key).
+CONTRA_FACILITY_KEY <- c("province", "district", "facility")
+
+agg_contra_completeness_annual <- dhis_annual[domain == "contra",
+  .(n_facilities = uniqueN(paste(province, district, facility))),
+  by = .(year)
+][order(year)]
+
+agg_contra_completeness_monthly <- dhis_monthly[domain == "contra" & !is.na(period_date),
+  .(n_facilities = uniqueN(paste(province, district, facility))),
+  by = .(year, month, period_date)
+][order(period_date)]
+
+# District-level monthly facility counts, used to flag poorly-reporting districts
+agg_contra_completeness_district_monthly <- dhis_monthly[
+  domain == "contra" & !is.na(period_date) & !is.na(district) & district != "",
+  .(n_facilities = uniqueN(paste(province, district, facility))),
+  by = .(province, district, year, month, period_date)
+][order(province, district, period_date)]
+
+# Each district's OWN maximum facility count in the monthly window is used as
+# its reporting denominator (rather than a fixed national count), because
+# district size varies enormously. reporting_rate = facilities this month /
+# facility's own max facilities ever seen reporting in the window.
+agg_contra_completeness_district_monthly[
+  , facilities_max := max(n_facilities), by = .(province, district)
+][, reporting_rate := n_facilities / facilities_max]
+
+# Districts with chronically poor reporting: mean reporting rate < 70% across
+# the monthly window (Apr 2024 – Mar 2026).
+agg_contra_district_poor_reporting <- agg_contra_completeness_district_monthly[,
+  .(mean_reporting_rate = mean(reporting_rate, na.rm = TRUE),
+    min_reporting_rate  = min(reporting_rate, na.rm = TRUE),
+    n_months            = .N),
+  by = .(province, district)
+][order(mean_reporting_rate)]
+
+
+# ─── 7g. COUPLE-YEARS OF PROTECTION (CYP) ─────────────────────────────────────
+# Standard USAID/FP2030 conversion factors — service-to-CYP multipliers used to
+# convert raw commodity/procedure counts into a common "couple-years of
+# protection" unit. Termination of pregnancy is NOT a contraceptive method and
+# is excluded from CYP.
+cyp_factors <- data.table(
+  short_label = c("Medroxyprogesterone", "Norethisterone", "Oral pill",
+                  "IUCD", "Sub-dermal implant",
+                  "Sterilisation (F)", "Sterilisation (M)"),
+  cyp_factor  = c(1/4,     # DMPA: 4 injections (3-monthly) = 1 CYP
+                  1/6,     # NET-EN: 6 injections (2-monthly) = 1 CYP
+                  1/15,    # oral pill: 15 cycles = 1 CYP
+                  4.6,     # IUCD insertion: 4.6 CYP per device (avg use life)
+                  3.5,     # implant insertion: 3.5 CYP per device
+                  10,      # female sterilisation: 10 CYP per procedure
+                  10)      # male sterilisation: 10 CYP per procedure
+)
+setkey(cyp_factors, short_label)
+
+dhis_contra_cyp <- cyp_factors[dhis_contra, on = "short_label", nomatch = 0]
+dhis_contra_cyp[, cyp := value * cyp_factor]
+
+agg_cyp_national_annual <- dhis_contra_cyp[,
+  .(cyp = sum(cyp, na.rm = TRUE)),
+  by = .(short_label, year)
+][order(short_label, year)]
+
+agg_cyp_national_annual_total <- dhis_contra_cyp[,
+  .(cyp = sum(cyp, na.rm = TRUE)),
+  by = .(year)
+][order(year)]
+
+agg_cyp_prov_annual <- dhis_contra_cyp[!is.na(province) & province != "",
+  .(cyp = sum(cyp, na.rm = TRUE)),
+  by = .(province, year)
+][order(province, year)]
+
+
+# ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
+# Robust (median/MAD-based) z-scores computed WITHIN each facility × indicator
+# monthly series, so a facility is only ever compared against its own history
+# — this normalises for facility size and flags sudden reporting spikes/drops
+# rather than simply large facilities. Facilities need >= 6 months of data to
+# be scored (MAD is unstable on very short series).
+dhis_contra_monthly <- dhis_monthly[domain == "contra" & !is.na(period_date)]
+
+robust_z <- function(x) {
+  m   <- stats::median(x, na.rm = TRUE)
+  mad <- stats::mad(x, na.rm = TRUE)
+  if (is.na(mad) || mad == 0) return(rep(NA_real_, length(x)))
+  (x - m) / mad
+}
+
+dhis_contra_monthly[
+  , n_months := .N, by = .(province, district, facility, short_label)
+][
+  , z_robust := if (n_months[1] >= 6) robust_z(value) else NA_real_,
+  by = .(province, district, facility, short_label)
+]
+
+# Flagged as an outlier if |robust z| > 3.5 (Iglewicz & Hoaglin threshold)
+agg_contra_outliers_monthly <- dhis_contra_monthly[
+  !is.na(z_robust) & abs(z_robust) > 3.5,
+  .(province, district, facility, short_label, period_date, value, z_robust)
+][order(-abs(z_robust))]
+
+
+# ─── 7i. REPORTING HEATMAP GRIDS (contraception domain) ──────────────────────
+# Two heatmap-ready grids so gaps/outliers are visible at a glance:
+#   (i)  district x month reporting rate — one row per district, whole country
+#   (ii) facility x month grid WITHIN a district — total contra volume per
+#        facility per month, with a robust z-score for colour and TRUE blanks
+#        (no row at all) for months the facility didn't report anything.
+
+# (i) District x month reporting-rate matrix, ordered worst-reporting first.
+agg_contra_heatmap_district <- copy(agg_contra_completeness_district_monthly)
+agg_contra_heatmap_district[
+  , district_label := paste0(district, " (", province, ")")
+]
+district_order <- agg_contra_district_poor_reporting[
+  , district_label := paste0(district, " (", province, ")")
+][order(mean_reporting_rate), district_label]
+agg_contra_heatmap_district[
+  , district_label := factor(district_label, levels = rev(district_order))
+]
+
+# (ii) Facility x month grid. Build the FULL cross of every facility that ever
+# reported any contra indicator against every month in the monthly window, so
+# months with a genuine gap (no row in the source data at all) are explicit
+# NAs rather than silently absent.
+fac_keys    <- unique(dhis_contra_monthly[, .(province, district, facility)])
+all_months  <- sort(unique(dhis_contra_monthly$period_date))
+
+fac_month_totals <- dhis_contra_monthly[,
+  .(total_value = sum(value, na.rm = TRUE)),
+  by = .(province, district, facility, period_date)
+]
+fac_grid <- fac_keys[, .(period_date = all_months), by = .(province, district, facility)]
+fac_grid <- fac_month_totals[fac_grid, on = c("province", "district", "facility", "period_date")]
+
+fac_grid[
+  , n_reported_months := sum(!is.na(total_value)), by = .(province, district, facility)
+][
+  , z_robust := if (n_reported_months[1] >= 6) robust_z(total_value) else NA_real_,
+  by = .(province, district, facility)
+]
+
+# pct_of_max = this month's volume ÷ the SAME facility's own highest-ever
+# monthly volume in the window, x100. This mirrors the district reporting_rate
+# definition above (own-peak denominator, not a fixed/national one), so
+# 100% = facility's best month on record, 0% = reported nothing. Because it is
+# always scaled to the facility's own history, a facility that consistently
+# reports low volumes is not penalised for being small — only genuine
+# within-facility drops (data-quality gaps) pull the value down.
+fac_grid[
+  , facility_max := max(total_value, na.rm = TRUE), by = .(province, district, facility)
+][
+  , pct_of_max := fifelse(is.finite(facility_max) & facility_max > 0,
+                          total_value / facility_max * 100, NA_real_)
+]
+
+agg_contra_facility_monthly_grid <- fac_grid[order(province, district, facility, period_date)]
+
+
 # ─── 8. AUDIT RECORD ──────────────────────────────────────────────────────────
 audit <- list(
   run_timestamp      = Sys.time(),
@@ -440,6 +610,19 @@ save(
   agg_completeness_annual,
   agg_completeness_monthly,
   agg_facility_totals,
+  # Contraception domain: facility-count method, CYP, monthly QA
+  CONTRA_FACILITY_KEY,
+  agg_contra_completeness_annual,
+  agg_contra_completeness_monthly,
+  agg_contra_completeness_district_monthly,
+  agg_contra_district_poor_reporting,
+  cyp_factors,
+  agg_cyp_national_annual,
+  agg_cyp_national_annual_total,
+  agg_cyp_prov_annual,
+  agg_contra_outliers_monthly,
+  agg_contra_heatmap_district,
+  agg_contra_facility_monthly_grid,
   # Provenance
   audit,
   file = OUTPUT_RDA
@@ -447,4 +630,4 @@ save(
 
 cat("\n✓ Saved to:", OUTPUT_RDA, "\n")
 cat("  Objects: dhis_births, dhis_deaths, dhis_contra, dhis_annual, dhis_monthly,\n")
-cat("           indicator_meta, agg_*, audit\n")
+cat("           indicator_meta, agg_*, cyp_factors, audit\n")
