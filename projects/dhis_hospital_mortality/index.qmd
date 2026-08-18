@@ -256,7 +256,7 @@ Before interpreting any trend, inspect how many facilities were submitting data 
 
 # Three-panel: one per domain
 comp_plot <- ggplot(agg_completeness_monthly,
-          aes(x = period_date, y = n_facilities, colour = domain, group = domain,
+          aes(x = period_date, y = n_facilities, colour = domain,
                         text = paste0("Domain: ", domain,
                                       "<br>Month: ", format(period_date, "%b %Y"),
                                       "<br>Facilities: ", format(n_facilities, big.mark = ",")))) +
@@ -410,7 +410,9 @@ datatable(
                     fifelse(short_label == "Oral pill", "15 cycles = 1 CYP",
                     fifelse(short_label == "IUCD", "1 insertion = 4.6 CYP (avg use-life)",
                     fifelse(short_label == "Sub-dermal implant", "1 insertion = 3.5 CYP (avg use-life)",
-                    "1 procedure = 10 CYP"))))))],
+                    fifelse(short_label %in% c("Male condom", "Female condom"),
+                            "120 units distributed = 1 CYP (standard factor; not method-specific)",
+                    "1 procedure = 10 CYP")))))))],
   colnames = c("Method", "CYP factor", "Interpretation"),
   rownames = FALSE,
   options  = list(pageLength = 10, dom = "t")
@@ -420,6 +422,22 @@ datatable(
 Termination of pregnancy is **not** a contraceptive method and is excluded
 from CYP. Sterilisation and TOP counts remain shown separately in raw-count
 form throughout this section.
+
+**Condoms — separate source file, mixed reporting grain.** Male/female condom
+distribution comes from a second DHIS2 export (`ANC_DHIS DATA 2015_2026 2.xls`)
+with a data-quality issue of its own: reporting is at **facility level**
+from 2015-2017, then collapses to a **single row per district/municipality**
+from 2018 onwards (named `"<Municipality> Primary Condom Distribution
+Site"` — not a real facility). Facility-level totals are therefore **not**
+comparable across the 2017/2018 boundary, so condom volumes are summed to
+province + district + year for the whole series (this collapse is safe —
+aggregating real facilities to their district gives the same district total
+as the later single row) and are excluded from the facility-count
+completeness, outlier and heatmap checks elsewhere in this section, which
+assume a stable facility identity over time. The standard USAID/FP2030 CYP
+factor for condoms (120 units = 1 CYP) is applied to male and female counts
+separately; no official method-specific factor exists for female condoms, so
+this is a working assumption rather than a verified national standard.
 
 **Monthly data-quality checks.** Two checks are applied to the Apr 2024 – Mar
 2026 monthly file: (1) a district-level **reporting rate**, comparing each
@@ -503,6 +521,55 @@ cyp_total_plot <- ggplot(agg_cyp_national_annual_total, aes(x = year, y = cyp,
 ggplotly(cyp_total_plot, tooltip = "text") |> ply_config()
 ```
 
+**Method mix.** The chart above shows the total volume of protection delivered, but not which methods drive it. The stacked view below shows each method's **share of total national CYP** per year — useful for spotting a shift towards/away from long-acting methods (implant, IUCD) versus short-acting ones (injectables, pill).
+
+```{r}
+#| label: fig-contra-cyp-share
+#| fig-cap: "Share of total national CYP contributed by each contraceptive method, 2015–2025. Each bar sums to 100%."
+#| fig-height: 6
+
+CYP_METHOD_COLOURS <- c(
+  "Medroxyprogesterone" = "#1b9e77", "Norethisterone"     = "#66c2a5",
+  "Oral pill"           = "#a6d854", "IUCD"                = "#377eb8",
+  "Sub-dermal implant"  = "#984ea3", "Sterilisation (F)"   = "#e6ab02",
+  "Sterilisation (M)"   = "#d95f02", "Male condom"         = "#4d4d4d",
+  "Female condom"       = "#bdbdbd"
+)
+
+cyp_share_dt <- copy(agg_cyp_national_annual)
+cyp_share_dt[, share := cyp / sum(cyp), by = year]
+cyp_share_dt[, short_label := factor(short_label, levels = names(CYP_METHOD_COLOURS))]
+
+cyp_share_plot <- ggplot(cyp_share_dt, aes(x = year, y = share, fill = short_label,
+      text = paste0(short_label, "<br>Year: ", year,
+                    "<br>Share of total CYP: ", percent(share, accuracy = 0.1),
+                    "<br>CYP: ", format(round(cyp), big.mark = ",")))) +
+  geom_col(position = "fill", width = 0.8) +
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  scale_x_continuous(breaks = 2015:2025) +
+  scale_fill_manual(values = CYP_METHOD_COLOURS, name = "Method") +
+  labs(x = NULL, y = "Share of total CYP") +
+  theme_mrc
+
+ggplotly(cyp_share_plot, tooltip = "text") |>
+  layout(legend = list(orientation = "h", y = -0.25)) |>
+  ply_config()
+```
+
+```{r}
+#| label: tbl-contra-cyp-share-latest
+#| tbl-cap: "Method mix (share of total national CYP) for the most recent annual data year."
+
+latest_year <- max(cyp_share_dt$year)
+datatable(
+  cyp_share_dt[year == latest_year][order(-share),
+    .(short_label, cyp = round(cyp), share = percent(share, accuracy = 0.1))],
+  colnames = c("Method", paste0("CYP (", latest_year, ")"), "Share of total CYP"),
+  rownames = FALSE,
+  options  = list(pageLength = 10, dom = "t")
+)
+```
+
 ### Monthly reporting quality (Apr 2024 – Mar 2026)
 
 Districts are ranked by their **mean monthly reporting rate** (facilities reporting that month ÷ that district's own peak facility count in the window). None fall below the conventional 70% "poor reporting" threshold in this dataset; the table and chart below show the 15 lowest-ranked districts for transparency.
@@ -581,17 +648,11 @@ plot_ly(
   ply_config()
 ```
 
-**Facility level, one district at a time.** Colour = **percentage of that facility's own maximum monthly volume**, calculated as:
-
-$$
-\%\ of\ own\ max_{i,t} = \frac{\text{total contraceptive volume, facility } i,\ \text{month } t}{\max_{t}(\text{total contraceptive volume, facility } i)} \times 100
-$$
-
-100% therefore always marks a facility's own single best-reporting month in the window — it is **not** a fixed national or district target, so facilities are only ever judged against their own history, never against each other. A month sitting at, say, 20% means that facility reported only a fifth of the volume it is capable of reporting, which is an immediate, self-scaled signal of a completeness gap or genuine outlier — regardless of whether the facility is large or small. Blank cells are months with **no reported service at all** for that facility — the clearest signal of under-recording.
+**Facility level, one district at a time.** Colour shows each facility's own robust z-score for total monthly contraceptive volume (so facilities are compared against their own history, not against each other). Blank cells are months with **no reported service at all** for that facility — the clearest signal of under-recording.
 
 ```{r}
 #| label: fig-contra-heatmap-facility
-#| fig-cap: "Facility x month heatmap for a selected district. Colour = monthly volume as a percentage of that facility's own maximum monthly volume in the window (100% = facility's own best month; 0% = reported nothing). Blank = facility reported nothing that month. Use the dropdown to switch district."
+#| fig-cap: "Facility x month heatmap for a selected district. Colour = robust z-score of total monthly contraceptive volume (own-facility baseline); blank = facility reported nothing that month. Use the dropdown to switch district."
 #| fig-height: 7
 
 fac_grid <- agg_contra_facility_monthly_grid
@@ -607,7 +668,7 @@ fig_fac <- plot_ly()
 for (i in seq_along(districts_avail)) {
   d <- districts_avail[i]
   sub <- fac_grid[district_prov == d]
-  wide <- dcast(sub, facility_label ~ period_date, value.var = "pct_of_max")
+  wide <- dcast(sub, facility_label ~ period_date, value.var = "z_robust")
   fac_labels <- wide$facility_label
   mat <- as.matrix(wide[, -1, with = FALSE])
   # Align columns to the full month range (some districts may be missing an
@@ -620,10 +681,10 @@ for (i in seq_along(districts_avail)) {
     fig_fac,
     z = mat_full, x = month_labs_fac, y = fac_labels, type = "heatmap",
     visible = (i == 1),
-    colorscale = list(c(0, "#b2182b"), c(0.5, "#f7f7f7"), c(1, "#1a9850")),
-    zmin = 0, zmax = 100,
-    hovertemplate = paste0("%{y}<br>%{x}<br>% of own max: %{z:.0f}%<extra></extra>"),
-    colorbar = list(title = "% of own<br>max month", ticksuffix = "%")
+    colorscale = "RdBu", reversescale = TRUE, zmid = 0,
+    zmin = -4, zmax = 4,
+    hovertemplate = paste0("%{y}<br>%{x}<br>Robust z: %{z:.1f}<extra></extra>"),
+    colorbar = list(title = "Robust z")
   )
 }
 
@@ -644,6 +705,105 @@ fig_fac |>
     updatemenus = list(
       list(type = "dropdown", x = 0, xanchor = "left", y = 1.15,
            buttons = dist_buttons, showactive = TRUE)
+    )
+  ) |>
+  ply_config()
+```
+
+### CYP data-quality deep dive
+
+The outlier checks above pool **every** contraception indicator (including TOP, which is not a contraceptive method) into one facility-level total, so a spike or dropout in a single method can be diluted by the other methods reported at the same facility. This deep dive restricts to only the **facility-based methods that actually feed the CYP calculation** (Medroxyprogesterone, Norethisterone, Oral pill, IUCD, Sub-dermal implant, Sterilisation F/M — condoms are excluded here as they have no monthly facility-level data; see the CYP methods note above) and keeps the **method dimension separate**, so an outlier in one method is never masked by the others.
+
+**Which methods are noisiest to report?** Injectables (Norethisterone, Medroxyprogesterone) and the oral pill have the highest facility-month outlier rates — consistent with their high service frequency (monthly/bi-monthly re-supply means more opportunities for a data-entry slip) — while the two sterilisation procedures, which are rare, single-event procedures per facility, are the most stable.
+
+```{r}
+#| label: fig-cyp-outlier-rate-method
+#| fig-cap: "Share of facility-months flagged as outliers (robust |z| > 3.5), by CYP-eligible method."
+
+rate_plot_dt <- copy(agg_cyp_outlier_rate_method)
+rate_plot_dt[, short_label := factor(short_label, levels = rev(short_label))]
+
+rate_plot <- ggplot(rate_plot_dt, aes(x = short_label, y = outlier_rate,
+      text = paste0(short_label, "<br>Outlier rate: ", percent(outlier_rate, accuracy = 0.1),
+                    "<br>", n_outliers, " of ", format(n_facility_months, big.mark = ","),
+                    " facility-months"))) +
+  geom_col(fill = "#6a3d9a") +
+  coord_flip() +
+  scale_y_continuous(labels = percent) +
+  labs(x = NULL, y = "Facility-months flagged as outliers") +
+  theme_mrc
+
+ggplotly(rate_plot, tooltip = "text") |> ply_config()
+```
+
+**Facility x month x method outlier table.** Every flagged facility-month for a CYP-eligible method, largest deviation first — the same underlying flags as @tbl-contra-outliers, filtered to CYP methods only. The single largest deviation (Sub-dermal implant, one facility, one month) is two orders of magnitude above that facility's own typical volume — almost certainly a data-entry error (e.g. a unit or decimal-place slip) rather than a genuine service surge, and a candidate for exclusion or correction before using that facility-month in any CYP total.
+
+```{r}
+#| label: tbl-cyp-outliers
+#| tbl-cap: "Flagged facility-month outliers for CYP-eligible contraceptive methods only, Apr 2024 – Mar 2026 (largest deviations first)."
+
+datatable(
+  agg_cyp_outliers_monthly[, .(province, district, facility, short_label,
+                                period = format(period_date, "%b %Y"),
+                                value, z_robust = round(z_robust, 1))],
+  colnames  = c("Province", "District", "Facility", "Method", "Period", "Value", "Robust z"),
+  rownames  = FALSE,
+  filter    = "top",
+  options   = list(pageLength = 15, dom = "ftp", scrollX = TRUE)
+)
+```
+
+**Facility x month heatmap, one method at a time.** Scoped to `r cyp_worst_district$district` (`r cyp_worst_district$province`) — the single district with the most flagged CYP outlier facility-months (`r cyp_worst_district$N`) — so the picture stays legible; the table above covers all districts. Colour is each facility's own robust z-score for that method (own-facility baseline); blank cells are months with no reported service for that method at that facility.
+
+```{r}
+#| label: fig-cyp-facility-method-heatmap
+#| fig-cap: "Facility x month heatmap by contraceptive method, for the district with the most flagged CYP outliers. Colour = robust z-score (own-facility, own-method baseline); blank = no service reported that month. Use the dropdown to switch method."
+#| fig-height: 7
+
+cyp_grid <- agg_cyp_facility_method_monthly_grid
+cyp_months <- sort(unique(cyp_grid$period_date))
+cyp_month_labs <- format(cyp_months, "%b %y")
+
+fig_cyp <- plot_ly()
+for (i in seq_along(CYP_ELIGIBLE_METHODS)) {
+  m <- CYP_ELIGIBLE_METHODS[i]
+  sub <- cyp_grid[short_label == m]
+  wide <- dcast(sub, facility ~ period_date, value.var = "z_robust")
+  fac_labels_cyp <- wide$facility
+  mat <- as.matrix(wide[, -1, with = FALSE])
+  mat_full <- matrix(NA_real_, nrow = nrow(mat), ncol = length(cyp_months),
+                     dimnames = list(fac_labels_cyp, as.character(cyp_months)))
+  mat_full[, colnames(mat)] <- mat
+
+  fig_cyp <- add_trace(
+    fig_cyp,
+    z = mat_full, x = cyp_month_labs, y = fac_labels_cyp, type = "heatmap",
+    visible = (i == 1),
+    colorscale = "RdBu", reversescale = TRUE, zmid = 0,
+    zmin = -4, zmax = 4,
+    hovertemplate = paste0("%{y}<br>%{x}<br>Robust z: %{z:.1f}<extra></extra>"),
+    colorbar = list(title = "Robust z")
+  )
+}
+
+method_buttons <- lapply(seq_along(CYP_ELIGIBLE_METHODS), function(i) {
+  vis <- rep(FALSE, length(CYP_ELIGIBLE_METHODS))
+  vis[i] <- TRUE
+  list(method = "update", label = CYP_ELIGIBLE_METHODS[i],
+       args = list(list(visible = vis),
+                   list(title = paste0(CYP_ELIGIBLE_METHODS[i], " — ",
+                                        cyp_worst_district$district))))
+})
+
+fig_cyp |>
+  layout(
+    title  = paste0(CYP_ELIGIBLE_METHODS[1], " — ", cyp_worst_district$district),
+    xaxis  = list(title = NULL, tickangle = -45),
+    yaxis  = list(title = NULL, tickfont = list(size = 8)),
+    margin = list(l = 160, t = 80),
+    updatemenus = list(
+      list(type = "dropdown", x = 0, xanchor = "left", y = 1.15,
+           buttons = method_buttons, showactive = TRUE)
     )
   ) |>
   ply_config()

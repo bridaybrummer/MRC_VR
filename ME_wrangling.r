@@ -245,12 +245,13 @@ new_master[
     by = .(year)
 ] -> nmc_SA_poisoning_agric
 
-# Poisoning deaths from VR data (ICD-10 codes X40-X49: Accidental poisoning)
-# Also includes X60-X69 (Intentional self-poisoning) and other poisoning codes
+# Poisoning deaths from VR data - limited to pesticide-poisoning codes only
+# (X48 accidental, X68 intentional self-poisoning, X87 assault, Y18 undetermined
+# intent), so the VR comparison matches NMC's agricultural/pesticide scope.
 dt[
     , 
     poison_pos := fifelse(
-        grepl("^X4[0-9]|^X6[0-9]|^X8[5-9]|^Y1[0-9]", UnderlyingCause), 
+        UnderlyingCause %in% c("X48", "X68", "X87", "Y18"), 
         TRUE, FALSE
     )
 ][
@@ -550,7 +551,7 @@ p_poisoning <- dt_poisoning[year %in% 1997:2025] %>%
   )) +
   labs(x = "Year", y = "Count", color = "Data Source",
        title = "Poisoning Deaths & Notifications Comparison",
-       subtitle = "VR poisoning codes (X40-X49, X60-X69) vs NMC Agricultural poisoning notifications & deaths") +
+       subtitle = "VR pesticide-poisoning codes (X48, X68, X87, Y18) vs NMC Agricultural poisoning notifications & deaths") +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "bottom",
@@ -684,6 +685,8 @@ library(ggplot2)
 library(scales)
 
 df_plot <- mcod_statssa %>%
+  # M+E review (Aug 2026): restrict to the most recent 10 death-year cohorts
+  filter(year_of_death %in% ((max(year_of_death) - 9):max(year_of_death))) %>%
   mutate(
     death_year_end = ymd(paste0(year_of_death, "-12-31")),
     delay_days     = as.numeric(release_date - death_year_end),
@@ -700,41 +703,27 @@ df_plot <- mcod_statssa %>%
 
   
 df_plot
-ggplot(df_plot, 
-    aes(y = factor(year_of_death, levels = rev(sort(unique(year_of_death)))))) +
-    geom_segment(
-        aes(
-            color = delay_years,
-            x = death_year_end, 
-        xend = release_date,
-         yend = factor(year_of_death, levels = rev(sort(unique(year_of_death)))))) +
-    geom_point(aes(
-        x = release_date, 
-        color = delay_years,
-        text = hover_text)
-     ) +
-        scale_color_gradient(low = "blue", high = "red") +
-    # label the dealy 
+
+# Single-dimension vertical bar chart: bars anchored at y=0, height = delay in
+# years, with value labels so outlier years (e.g. 2019) jump out immediately.
+ggplot(df_plot, aes(x = factor(year_of_death), y = delay_years,
+                     text = hover_text)) +
+    geom_col(fill = "#2E86AB", width = 0.65) +
     geom_text(
-        aes( 
-            x = release_date+years( 2), 
-            label = paste0(round(delay_years, 1), " years"), 
-            )  , 
-    )+ 
-    scale_x_date(date_breaks = "1 years", date_labels = "%Y", expand = expansion(mult = c(0.05, 0.2))) +
+        aes(label = paste0(delay_years, " yr")),
+        vjust = -0.4, size = 3.3, colour = "grey20"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     labs(
-        x = "Date",
-        y = "Deaths occurring in year",
-        color = "Delay (years)",
-        #title = "Delay between end of death year and Stats SA release date",
-        #subtitle = "Segment length indicates reporting delay (from 31 Dec of death year to embargo/release date)"
+        x = "Deaths occurring in year",
+        y = "Delay to publication (years)"
     ) +
     theme_minimal(
     
     ) + 
     theme(
-     axis.text.x = element_text(angle = 45, hjust = 1), 
-     aspect.ratio = 0.7
+     axis.text.x = element_text(angle = 45, hjust = 1),
+     panel.grid.minor = element_blank()
     )-> p_timeliness
 
 # stylise for dashboard 
@@ -744,7 +733,7 @@ p_timeliness %>%
     ) %>%
     plotly::style(
         customdata = df_plot$url,
-        traces = 2  # The geom_point trace (after geom_segment)
+        traces = 1  # The geom_col trace (bars)
     ) %>%
     plotly::layout(
         hoverlabel = list(
@@ -823,18 +812,35 @@ p_overview_instance <- dt_instance_overview %>%
   )
 
 # ============================================================================
-# NON-HOSPITAL DEATHS BY PROVINCE
+# Non-hospital deaths by province
 # ============================================================================
+
+# Facility-type classification (matches index.qmd's dq-data-load chunk):
+# In-hospital = Hospital, Emergency room/Outpatient
+# Out-of-hospital = Home, Nursing home, Dead on arrival, Other
+# Unspecified/Unknown deaths are excluded from this denominator (not counted
+# as non-hospital), consistent with the dashboard's Non-Hospital Deaths section.
+dt[, facility_type := fcase(
+  Death_instance %in% c("Hospital", "Emergency room/Outpatient"),       "In-hospital",
+  Death_instance %in% c("Home", "Nursing home", "Dead on arrival",
+                        "Other"),                                       "Out-of-hospital",
+  default = "Unspecified/Unknown"
+)]
 
 # Calculate non-hospital deaths by province and year
 dt_nonhospital_province <- dt[
-  Death_instance != "Hospital",
+  facility_type == "Out-of-hospital",
   .(non_hospital_deaths = .N),
   by = .(epi_year, DeathProvince)
 ]
 
-# Also get total deaths per province per year for percentage
-dt_total_by_prov_year <- dt[, .(total_deaths = .N), by = .(epi_year, DeathProvince)]
+# Also get total deaths per province per year for percentage, excluding
+# Unspecified/Unknown facility type from the denominator
+dt_total_by_prov_year <- dt[
+  facility_type != "Unspecified/Unknown",
+  .(total_deaths = .N),
+  by = .(epi_year, DeathProvince)
+]
 
 # Merge and calculate percentage
 dt_nonhospital_province <- merge(
@@ -866,7 +872,7 @@ p_nonhospital_province <- dt_nonhospital_summary %>%
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
   labs(x = NULL, y = "Non-Hospital Deaths (1997-2022)",
        title = "Non-Hospital Deaths by Province",
-       subtitle = "Deaths occurring outside hospitals (Home, Nursing Home, etc.)") +
+       subtitle = "Home, Nursing Home, Dead on Arrival, Other; excludes Unspecified/Unknown facility type") +
   theme_minimal(base_size = 11) +
   theme(
     plot.title = element_text(face = "bold", size = 13),

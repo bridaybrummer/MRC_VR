@@ -51,12 +51,18 @@ OUTPUT_RDA     <- file.path(PROJECT_DIR, "dhis_results.rda")
 
 FILE_ANNUAL    <- file.path(DATA_DIR, "DHIS DATA 2015_2026 (2).xls")
 FILE_MONTHLY   <- file.path(DATA_DIR, "DHIS DATA APR 2024_MAR 2026_test.xls")
+# Condom distribution data — separate source file, separate quality profile
+# (see section 4b): facility-level reporting 2015-2017, then a single
+# synthetic "<Municipality> Primary Condom Distribution Site" row per district
+# from 2018 onwards, so condoms are only usable at district+year granularity.
+FILE_CONDOM    <- file.path(DATA_DIR, "ANC_DHIS DATA 2015_2026 2.xls")
 
 stopifnot(
   "Annual file not found"  = file.exists(FILE_ANNUAL),
-  "Monthly file not found" = file.exists(FILE_MONTHLY)
+  "Monthly file not found" = file.exists(FILE_MONTHLY),
+  "Condom file not found"  = file.exists(FILE_CONDOM)
 )
-cat("Source files confirmed:\n  ", FILE_ANNUAL, "\n  ", FILE_MONTHLY, "\n\n")
+cat("Source files confirmed:\n  ", FILE_ANNUAL, "\n  ", FILE_MONTHLY, "\n  ", FILE_CONDOM, "\n\n")
 
 
 # ─── 1. INDICATOR DOMAIN MAP ──────────────────────────────────────────────────
@@ -101,13 +107,18 @@ indicator_meta <- data.table(
     "Termination of pregnancy 0-12 weeks",
     "Termination of pregnancy 13-20 weeks",
     "Termination of pregnancy 10-19 years",
-    "Termination of pregnancy 20 years and older"
+    "Termination of pregnancy 20 years and older",
+    # ── condom domain (separate source file; district+year granularity only,
+    #    see section 4b) ────────────────────────────────────────────────────
+    "Male condoms distributed",
+    "Female condoms distributed"
   ),
   domain = c(
     rep("births", 9),
     rep("deaths", 8),   # 8 death indicators (was mistakenly 9, which pushed
                          # "Medroxyprogesterone injection" into "deaths")
-    rep("contra", 11)
+    rep("contra", 11),
+    rep("condom", 2)
   ),
   short_label = c(
     # births
@@ -121,7 +132,9 @@ indicator_meta <- data.table(
     # contra
     "Medroxyprogesterone", "Norethisterone", "Oral pill",
     "IUCD", "Sub-dermal implant", "Sterilisation (F)", "Sterilisation (M)",
-    "TOP 0-12wk", "TOP 13-20wk", "TOP 10-19y", "TOP 20+y"
+    "TOP 0-12wk", "TOP 13-20wk", "TOP 10-19y", "TOP 20+y",
+    # condom
+    "Male condom", "Female condom"
   )
 )
 setkey(indicator_meta, indicator)
@@ -292,6 +305,42 @@ dhis_monthly_raw <- unique(dhis_monthly_raw,
 cat("  Monthly raw rows:", nrow(dhis_monthly_raw), "\n")
 cat("  Period range:", format(min(dhis_monthly_raw$period_date, na.rm = TRUE)),
     "–", format(max(dhis_monthly_raw$period_date, na.rm = TRUE)), "\n")
+
+
+# ─── 4b. READ CONDOM FILE (annual only) ──────────────────────────────────────
+# Same wide layout as FILE_ANNUAL (Province | District | Sub-district |
+# Facility | Data | <year1> ... on sheet "2015_2026"), so the same reader can
+# be reused. BUT the reporting unit changes partway through the series:
+#   • 2015-2017 : one row per real facility (thousands of rows/year)
+#   • 2018+     : one row per district/municipality, disguised as a single
+#                 facility named "<Municipality> Primary Condom Distribution
+#                 Site" (row counts collapse from ~7,000-9,500/year pre-2018
+#                 to ~600-700/year from 2018 onwards, with distinct facility
+#                 names ≈ distinct sub-districts, confirmed by inspection).
+# Facility-level totals are therefore NOT comparable across the 2017/2018
+# boundary. Condoms are summed up to province + district + year for the WHOLE
+# series (safe either way — collapsing real facilities to their district gives
+# the same district total as the later synthetic single row), and kept OUT of
+# dhis_annual / dhis_contra so they never enter the facility-count
+# completeness, outlier or heatmap logic built for the other contra indicators
+# (which assumes a stable facility identity over time).
+cat("\nReading condom file...\n")
+condom_annual_raw <- read_annual_sheet(FILE_CONDOM, "2015_2026")
+condom_annual_raw <- condom_annual_raw[
+  indicator %in% c("Male condoms distributed", "Female condoms distributed")
+]
+condom_annual_raw <- condom_annual_raw[year <= ANNUAL_MAX_YEAR]  # drop incomplete 2026
+cat("  Condom rows (facility/district mixed grain):", nrow(condom_annual_raw), "\n")
+
+dhis_condom_annual <- condom_annual_raw[
+  !is.na(district) & district != "",
+  .(value = sum(value, na.rm = TRUE)),
+  by = .(province, district, indicator, year)
+][order(province, district, indicator, year)]
+dhis_condom_annual <- indicator_meta[dhis_condom_annual, on = "indicator"]
+
+cat("  Condom district-year rows:", nrow(dhis_condom_annual), "\n")
+cat("  Condom year range:", min(dhis_condom_annual$year), "–", max(dhis_condom_annual$year), "\n")
 
 
 # ─── 5. ATTACH DOMAIN METADATA ───────────────────────────────────────────────
@@ -473,6 +522,45 @@ agg_cyp_prov_annual <- dhis_contra_cyp[!is.na(province) & province != "",
   by = .(province, year)
 ][order(province, year)]
 
+# ── Condoms: fold into the CYP aggregates above ──────────────────────────────
+# Standard USAID/FP2030 CYP factor for condoms is 120 units = 1 CYP; applied to
+# male and female condoms separately (no separate published factor exists for
+# female condoms — this is a working assumption, flagged in the report methods
+# note, not a verified national standard).
+cyp_factors <- rbindlist(list(
+  cyp_factors,
+  data.table(short_label = c("Male condom", "Female condom"), cyp_factor = c(1/120, 1/120))
+))
+setkey(cyp_factors, short_label)
+
+dhis_condom_cyp <- cyp_factors[dhis_condom_annual, on = "short_label", nomatch = 0]
+dhis_condom_cyp[, cyp := value * cyp_factor]
+
+agg_cyp_national_annual <- rbindlist(list(
+  agg_cyp_national_annual,
+  dhis_condom_cyp[, .(cyp = sum(cyp, na.rm = TRUE)), by = .(short_label, year)]
+))[order(short_label, year)]
+
+agg_cyp_national_annual_total <- agg_cyp_national_annual[
+  , .(cyp = sum(cyp, na.rm = TRUE)), by = .(year)
+][order(year)]
+
+agg_cyp_prov_annual <- rbindlist(list(
+  agg_cyp_prov_annual,
+  dhis_condom_cyp[!is.na(province) & province != "",
+    .(cyp = sum(cyp, na.rm = TRUE)), by = .(province, year)]
+))[, .(cyp = sum(cyp, na.rm = TRUE)), by = .(province, year)][order(province, year)]
+
+# National/provincial condom volume trend (own aggregates — kept separate from
+# the facility-grain contra aggregates, for a dedicated condoms sub-section).
+agg_condom_national_annual <- dhis_condom_annual[,
+  .(value = sum(value, na.rm = TRUE)), by = .(short_label, year)
+][order(short_label, year)]
+
+agg_condom_prov_annual <- dhis_condom_annual[!is.na(province) & province != "",
+  .(value = sum(value, na.rm = TRUE)), by = .(province, short_label, year)
+][order(province, short_label, year)]
+
 
 # ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
 # Robust (median/MAD-based) z-scores computed WITHIN each facility × indicator
@@ -543,21 +631,54 @@ fac_grid[
   by = .(province, district, facility)
 ]
 
-# pct_of_max = this month's volume ÷ the SAME facility's own highest-ever
-# monthly volume in the window, x100. This mirrors the district reporting_rate
-# definition above (own-peak denominator, not a fixed/national one), so
-# 100% = facility's best month on record, 0% = reported nothing. Because it is
-# always scaled to the facility's own history, a facility that consistently
-# reports low volumes is not penalised for being small — only genuine
-# within-facility drops (data-quality gaps) pull the value down.
-fac_grid[
-  , facility_max := max(total_value, na.rm = TRUE), by = .(province, district, facility)
-][
-  , pct_of_max := fifelse(is.finite(facility_max) & facility_max > 0,
-                          total_value / facility_max * 100, NA_real_)
-]
-
 agg_contra_facility_monthly_grid <- fac_grid[order(province, district, facility, period_date)]
+
+
+# ─── 7j. CYP DATA-QUALITY DEEP DIVE (facility x month x method) ──────────────
+# The heatmaps/outliers above pool ALL contra indicators (including TOP,
+# which is not a contraceptive method) into one facility-level total. This
+# section restricts to the facility-based methods that actually feed CYP
+# (excludes TOP; excludes condoms, which have no monthly facility data — see
+# section 4b) and keeps the METHOD dimension separate, since a spike in one
+# method at a facility can be masked by summing across methods.
+CYP_ELIGIBLE_METHODS <- setdiff(cyp_factors$short_label, c("Male condom", "Female condom"))
+
+dhis_cyp_monthly <- dhis_contra_monthly[short_label %in% CYP_ELIGIBLE_METHODS]
+
+# Outlier rate by method — which CYP-feeding methods are noisiest to report?
+agg_cyp_outlier_rate_method <- dhis_cyp_monthly[
+  , .(n_facility_months = .N,
+      n_outliers = sum(!is.na(z_robust) & abs(z_robust) > 3.5)),
+  by = short_label
+][, outlier_rate := n_outliers / n_facility_months][order(-outlier_rate)]
+
+# Facility x month x method outlier table, CYP-eligible methods only (subset
+# of the all-indicator table already computed in section 7h).
+agg_cyp_outliers_monthly <- agg_contra_outliers_monthly[short_label %in% CYP_ELIGIBLE_METHODS]
+
+# The single district with the most flagged CYP outliers, used to scope a
+# facility x month x method heatmap to a legible size (a full national
+# district x method combination heatmap would need 50+ districts x 7 methods
+# of traces, too large to render usefully in one figure).
+cyp_worst_district <- agg_cyp_outliers_monthly[, .N, by = .(province, district)][order(-N)][1]
+
+cyp_deepdive_raw <- dhis_cyp_monthly[
+  province == cyp_worst_district$province & district == cyp_worst_district$district
+]
+all_months_cyp <- sort(unique(dhis_cyp_monthly$period_date))
+grid_cyp <- CJ(
+  facility    = unique(cyp_deepdive_raw$facility),
+  short_label = CYP_ELIGIBLE_METHODS,
+  period_date = all_months_cyp,
+  sorted      = FALSE
+)
+agg_cyp_facility_method_monthly_grid <- cyp_deepdive_raw[
+  grid_cyp, on = c("facility", "short_label", "period_date")
+][, .(facility, short_label, period_date, value, z_robust,
+      province = cyp_worst_district$province, district = cyp_worst_district$district)]
+
+cat("\nCYP deep-dive district:", cyp_worst_district$district,
+    "(", cyp_worst_district$province, ") —", cyp_worst_district$N, "flagged outlier facility-months\n")
 
 
 # ─── 8. AUDIT RECORD ──────────────────────────────────────────────────────────
@@ -575,9 +696,12 @@ audit <- list(
   year_range_annual  = range(dhis_annual$year, na.rm = TRUE),
   period_range_monthly = range(dhis_monthly$period_date, na.rm = TRUE),
   n_indicators       = uniqueN(dhis_annual$indicator),
-  domains            = c("births", "deaths", "contra"),
+  domains            = c("births", "deaths", "contra", "condom"),
   unmapped_indicators = unmapped,
-  dedup_monthly_removed = nrow(rbindlist(monthly_parts)) - nrow(dhis_monthly_raw)
+  dedup_monthly_removed = nrow(rbindlist(monthly_parts)) - nrow(dhis_monthly_raw),
+  source_condom      = normalizePath(FILE_CONDOM),
+  condom_year_range  = range(dhis_condom_annual$year, na.rm = TRUE),
+  cyp_deepdive_district = paste0(cyp_worst_district$district, " (", cyp_worst_district$province, ")")
 )
 # clean up the temp paste column used for facility count
 dhis_annual[, paste := NULL]
@@ -623,6 +747,16 @@ save(
   agg_contra_outliers_monthly,
   agg_contra_heatmap_district,
   agg_contra_facility_monthly_grid,
+  # CYP data-quality deep dive (facility x month x method, CYP-eligible only)
+  CYP_ELIGIBLE_METHODS,
+  agg_cyp_outlier_rate_method,
+  agg_cyp_outliers_monthly,
+  agg_cyp_facility_method_monthly_grid,
+  cyp_worst_district,
+  # Condoms (district+year grain, separate source file — see section 4b)
+  dhis_condom_annual,
+  agg_condom_national_annual,
+  agg_condom_prov_annual,
   # Provenance
   audit,
   file = OUTPUT_RDA
@@ -630,4 +764,4 @@ save(
 
 cat("\n✓ Saved to:", OUTPUT_RDA, "\n")
 cat("  Objects: dhis_births, dhis_deaths, dhis_contra, dhis_annual, dhis_monthly,\n")
-cat("           indicator_meta, agg_*, cyp_factors, audit\n")
+cat("           dhis_condom_annual, indicator_meta, agg_*, cyp_factors, audit\n")
