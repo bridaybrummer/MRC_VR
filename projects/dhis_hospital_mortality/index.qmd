@@ -251,33 +251,55 @@ Before interpreting any trend, inspect how many facilities were submitting data 
 
 ```{r}
 #| label: fig-completeness
-#| fig-cap: "Monthly reporting completeness — number of distinct facility–province–district combinations submitting data per month and domain (Apr 2024 – Mar 2026)."
+#| fig-cap: "Figure 1. Monthly reporting completeness: the solid line connects observed monthly counts and the points mark each observed monthly count of distinct facility–province–district combinations submitting data for each domain (Apr 2024 – Mar 2026)."
 #| fig-height: 5
 
-# Three-panel: one per domain
-comp_plot <- ggplot(agg_completeness_monthly,
-          aes(x = period_date, y = n_facilities, colour = domain,
-                        text = paste0("Domain: ", domain,
-                                      "<br>Month: ", format(period_date, "%b %Y"),
-                                      "<br>Facilities: ", format(n_facilities, big.mark = ",")))) +
-  geom_line(show.legend = FALSE, linewidth = 0.8) +
-  geom_point(show.legend = FALSE, size = 1.2) +
-  facet_wrap(~domain, ncol = 3, scales = "free_y",
-             labeller = labeller(domain = c(
-               births = "Births / deliveries / BCG",
-               deaths = "Deaths",
-               contra = "Contraception / reproductive"
-             ))) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %y") +
-  scale_colour_manual(values = c(births = "#2196F3", deaths = "#f44336", contra = "#4CAF50")) +
-  labs(x = NULL, y = "Facilities reporting") +
-  theme_mrc +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+fig_completeness <- plot_ly()
+for (d in c("births", "deaths", "contra")) {
+  dt <- agg_completeness_monthly[domain == d]
+  fig_completeness <- fig_completeness |>
+    add_trace(
+      data = dt,
+      x = ~period_date,
+      y = ~n_facilities,
+      type = "scatter",
+      mode = "lines+markers",
+      name = switch(d,
+        births = "Births / deliveries / BCG",
+        deaths = "Deaths",
+        contra = "Contraception / reproductive"
+      ),
+      line = list(color = switch(d,
+        births = "#2196F3",
+        deaths = "#f44336",
+        contra = "#4CAF50"
+      ), width = 2),
+      marker = list(color = switch(d,
+        births = "#2196F3",
+        deaths = "#f44336",
+        contra = "#4CAF50"
+      ), size = 6),
+      hovertemplate = paste0(
+        "<b>%{fullData.name}</b><br>",
+        "Month: %{x|%b %Y}<br>",
+        "Facilities reporting: %{y:,}<extra></extra>"
+      )
+    )
+}
 
-ggplotly(comp_plot, tooltip = "text") |>
-  layout(margin = list(b = 60)) |>
+fig_completeness <- fig_completeness |>
+  layout(
+    xaxis = list(title = "", type = "date", tickformat = "%b %y"),
+    yaxis = list(title = "Facilities reporting"),
+    margin = list(b = 60),
+    legend = list(orientation = "h", x = 0, y = 1.12)
+  ) |>
   ply_config()
+
+fig_completeness
 ```
+
+This first figure reports the monthly number of distinct facility–province–district combinations that submitted at least one valid observation for each domain. The solid line traces the pattern through time and the points show the observed monthly counts themselves; a fall in either value suggests lower reporting completeness rather than necessarily a true change in service volume.
 
 ---
 
@@ -438,6 +460,10 @@ assume a stable facility identity over time. The standard USAID/FP2030 CYP
 factor for condoms (120 units = 1 CYP) is applied to male and female counts
 separately; no official method-specific factor exists for female condoms, so
 this is a working assumption rather than a verified national standard.
+Condom counts also measure *distribution*, not confirmed use — see the
+[condom CYP sensitivity analysis](condom_sensitivity.qmd) for how assuming
+lower real-world utilization (or excluding condoms entirely) affects total
+CYP.
 
 **Monthly data-quality checks.** Two checks are applied to the Apr 2024 – Mar
 2026 monthly file: (1) a district-level **reporting rate**, comparing each
@@ -568,6 +594,62 @@ datatable(
   rownames = FALSE,
   options  = list(pageLength = 10, dom = "t")
 )
+```
+
+**Full underlying data.** Raw DHIS counts (post-cleaning, national annual) alongside the CYP factor applied and the resulting CYP, for every method and year — exportable for colleagues to build on directly.
+
+```{r}
+#| label: tbl-cyp-raw-full
+#| tbl-cap: "Raw DHIS national annual counts (post-cleaning) and derived CYP, by contraceptive method and year, 2015–2025."
+
+raw_contra_dt <- agg_national_annual[
+  domain == "contra" & short_label %in% cyp_factors$short_label,
+  .(short_label, year, raw_value = value)
+]
+raw_condom_dt <- agg_condom_national_annual[, .(short_label, year, raw_value = value)]
+raw_all_dt    <- rbindlist(list(raw_contra_dt, raw_condom_dt))
+
+cyp_raw_full <- merge(raw_all_dt, agg_cyp_national_annual, by = c("short_label", "year"), all = TRUE)
+cyp_raw_full <- merge(cyp_raw_full, cyp_factors, by = "short_label", all.x = TRUE)
+setorder(cyp_raw_full, short_label, year)
+
+datatable(
+  cyp_raw_full[, .(short_label, year,
+                   raw_value  = round(raw_value),
+                   cyp_factor = round(cyp_factor, 4),
+                   cyp        = round(cyp))],
+  colnames   = c("Method", "Year", "Raw DHIS count", "CYP factor", "CYP"),
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  options    = list(pageLength = 15, dom = "Bfrtip", buttons = list("csv", "excel"), scrollX = TRUE)
+) |>
+  formatCurrency(c("raw_value", "cyp"), currency = "", interval = 3, mark = ",", digits = 0)
+```
+
+**Condom sensitivity check.** The table below shows the same national annual CYP total under alternative assumptions about real-world condom use, while holding the 120-units-per-CYP conversion factor fixed. This is a robustness check for colleagues; the default report keeps the standard 100% use assumption.
+
+```{r}
+#| label: tbl-condom-sensitivity-summary
+#| tbl-cap: "National annual CYP under alternative condom-utilization assumptions, most recent year shown."
+
+latest_sens_year <- max(agg_condom_sensitivity_annual$year)
+sens_latest <- agg_condom_sensitivity_annual[year == latest_sens_year]
+standard_total <- sens_latest[scenario == "Standard (100% used, current default)", total_cyp]
+sens_latest[, pct_vs_standard := (total_cyp - standard_total) / standard_total]
+
+datatable(
+  sens_latest[order(scenario),
+    .(scenario,
+      condom_cyp = round(condom_cyp),
+      total_cyp  = round(total_cyp),
+      pct_vs_standard = percent(pct_vs_standard, accuracy = 0.1))],
+  colnames = c("Scenario", "Condom CYP", "Total CYP", "% vs Standard"),
+  rownames = FALSE,
+  extensions = "Buttons",
+  options = list(pageLength = 10, dom = "Bfrtip", buttons = list("csv", "excel"), scrollX = TRUE)
+) |>
+  formatCurrency(c("condom_cyp", "total_cyp"), currency = "", interval = 3, mark = ",", digits = 0)
 ```
 
 ### Monthly reporting quality (Apr 2024 – Mar 2026)

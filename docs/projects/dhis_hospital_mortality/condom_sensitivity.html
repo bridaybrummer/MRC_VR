@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-01-20">
-<meta name="description" content="National observed vs expected deaths analysis with provincial breakdowns">
+<meta name="dcterms.date" content="2026-08-20">
+<meta name="description" content="How much does total national CYP change if we assume distributed condoms are not all actually used?">
 
-<title>National Excess Mortality Overview – MRC Vital Registration Analysis</title>
+<title>Sensitivity: Condom Utilization in Couple-Years of Protection – MRC Vital Registration Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -72,36 +72,21 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../../site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<script src="../../site_libs/plotly-binding-4.12.0/plotly.js"></script>
+<script src="../../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="../../site_libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../../site_libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -265,7 +250,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">National Excess Mortality Overview</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sensitivity: Condom Utilization in Couple-Years of Protection</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -291,26 +276,10 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
-  <li><a href="#national-picture" id="toc-national-picture" class="nav-link" data-scroll-target="#national-picture"><span class="header-section-number">2</span> National Picture</a>
-  <ul class="collapse">
-  <li><a href="#observed-vs-expected-deaths" id="toc-observed-vs-expected-deaths" class="nav-link" data-scroll-target="#observed-vs-expected-deaths"><span class="header-section-number">2.1</span> Observed vs Expected Deaths</a></li>
-  <li><a href="#observed-vs-expected-by-icd-code" id="toc-observed-vs-expected-by-icd-code" class="nav-link" data-scroll-target="#observed-vs-expected-by-icd-code"><span class="header-section-number">2.2</span> Observed vs Expected by ICD Code</a></li>
-  <li><a href="#difference-by-icd-code" id="toc-difference-by-icd-code" class="nav-link" data-scroll-target="#difference-by-icd-code"><span class="header-section-number">2.3</span> Difference by ICD Code</a></li>
-  <li><a href="#cause-heatmap" id="toc-cause-heatmap" class="nav-link" data-scroll-target="#cause-heatmap"><span class="header-section-number">2.4</span> Cause Heatmap</a></li>
-  </ul></li>
-  <li><a href="#provincial-level-modelling" id="toc-provincial-level-modelling" class="nav-link" data-scroll-target="#provincial-level-modelling"><span class="header-section-number">3</span> Provincial Level Modelling</a>
-  <ul class="collapse">
-  <li><a href="#national-vs-provincial-model-comparison" id="toc-national-vs-provincial-model-comparison" class="nav-link" data-scroll-target="#national-vs-provincial-model-comparison"><span class="header-section-number">3.1</span> National vs Provincial Model Comparison</a></li>
-  <li><a href="#provincial-observed-vs-expected" id="toc-provincial-observed-vs-expected" class="nav-link" data-scroll-target="#provincial-observed-vs-expected"><span class="header-section-number">3.2</span> Provincial Observed vs Expected</a></li>
-  </ul></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">4</span> Methods</a>
-  <ul class="collapse">
-  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources"><span class="header-section-number">4.1</span> Data Sources</a></li>
-  <li><a href="#statistical-model" id="toc-statistical-model" class="nav-link" data-scroll-target="#statistical-model"><span class="header-section-number">4.2</span> Statistical Model</a></li>
-  </ul></li>
-  <li><a href="#key-findings" id="toc-key-findings" class="nav-link" data-scroll-target="#key-findings"><span class="header-section-number">5</span> Key Findings</a></li>
-  <li><a href="#related-projects" id="toc-related-projects" class="nav-link" data-scroll-target="#related-projects"><span class="header-section-number">6</span> Related Projects</a></li>
+  <li><a href="#why-this-check" id="toc-why-this-check" class="nav-link active" data-scroll-target="#why-this-check"><span class="header-section-number">1</span> Why this check?</a></li>
+  <li><a href="#scenarios" id="toc-scenarios" class="nav-link" data-scroll-target="#scenarios"><span class="header-section-number">2</span> Scenarios</a></li>
+  <li><a href="#total-national-cyp-under-each-scenario" id="toc-total-national-cyp-under-each-scenario" class="nav-link" data-scroll-target="#total-national-cyp-under-each-scenario"><span class="header-section-number">3</span> Total national CYP under each scenario</a></li>
+  <li><a href="#latest-year-comparison" id="toc-latest-year-comparison" class="nav-link" data-scroll-target="#latest-year-comparison"><span class="header-section-number">4</span> Latest-year comparison</a></li>
   </ul>
 </nav>
     </div>
@@ -319,18 +288,18 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">National Excess Mortality Overview</h1>
+<h1 class="title">Sensitivity: Condom Utilization in Couple-Years of Protection</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">excess-mortality</div>
-    <div class="quarto-category">national</div>
-    <div class="quarto-category">provincial</div>
-    <div class="quarto-category">modelling</div>
+    <div class="quarto-category">DHIS2</div>
+    <div class="quarto-category">contraception</div>
+    <div class="quarto-category">CYP</div>
+    <div class="quarto-category">sensitivity</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    National observed vs expected deaths analysis with provincial breakdowns
+    How much does total national CYP change if we assume distributed condoms are not all actually used?
   </div>
 </div>
 
@@ -341,7 +310,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 20, 2026</p>
+      <p class="date">August 20, 2026</p>
     </div>
   </div>
   
@@ -353,187 +322,75 @@ window.Quarto = {
 </header>
 
 
-<section id="overview" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
-<p>This analysis presents national and provincial excess mortality estimates for South Africa, comparing observed deaths against model-predicted expected deaths.</p>
-<p>Use the table of contents to navigate to cause-specific analyses, or see the detailed <a href="../../projects/cause_codes/index.html">Cause Code Analysis</a> project.</p>
-</section>
-<section id="national-picture" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="national-picture"><span class="header-section-number">2</span> National Picture</h2>
-<section id="observed-vs-expected-deaths" class="level3" data-number="2.1">
-<h3 data-number="2.1" class="anchored" data-anchor-id="observed-vs-expected-deaths"><span class="header-section-number">2.1</span> Observed vs Expected Deaths</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-national-model" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-national-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-national-model-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-national-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: National observed vs expected deaths, 2015-2022 (TM’s National Negative Binomial Model converted from Stata to R)
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="observed-vs-expected-by-icd-code" class="level3" data-number="2.2">
-<h3 data-number="2.2" class="anchored" data-anchor-id="observed-vs-expected-by-icd-code"><span class="header-section-number">2.2</span> Observed vs Expected by ICD Code</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-national-icd-ove" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-national-icd-ove-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-national-icd-ove-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-national-icd-ove-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: National observed vs expected deaths 2019-2022 by ICD code
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="difference-by-icd-code" class="level3" data-number="2.3">
-<h3 data-number="2.3" class="anchored" data-anchor-id="difference-by-icd-code"><span class="header-section-number">2.3</span> Difference by ICD Code</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-national-diff" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-national-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-national-diff-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-national-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: National observed vs expected deaths difference 2019-2022 by ICD code
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="cause-heatmap" class="level3" data-number="2.4">
-<h3 data-number="2.4" class="anchored" data-anchor-id="cause-heatmap"><span class="header-section-number">2.4</span> Cause Heatmap</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-heatmap" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-heatmap-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: National observed vs expected deaths difference heatmap 2019-2022 by ICD code and year
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="provincial-level-modelling" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="provincial-level-modelling"><span class="header-section-number">3</span> Provincial Level Modelling</h2>
-<p>TM’s NB model with interaction terms takes a relatively longer time and similar results can be achieved with no interaction terms but adding provincial terms. The models appear to do well at the national level compared to Tom’s model.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Model Specification
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The provincial simple model did not perform meaningfully better when adding:</p>
-<ul>
-<li>Interaction terms</li>
-<li>Population offsets</li>
-<li>Fourier terms for seasonality</li>
-</ul>
-</div>
-</div>
-<section id="national-vs-provincial-model-comparison" class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="national-vs-provincial-model-comparison"><span class="header-section-number">3.1</span> National vs Provincial Model Comparison</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-prov-diff" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-prov-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-prov-diff-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prov-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Difference between provincial simple model and national model
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="provincial-observed-vs-expected" class="level3" data-number="3.2">
-<h3 data-number="3.2" class="anchored" data-anchor-id="provincial-observed-vs-expected"><span class="header-section-number">3.2</span> Provincial Observed vs Expected</h3>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div id="fig-prov-ove" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-prov-ove-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-prov-ove-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prov-ove-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Provincial observed vs expected deaths 2015-2022 (Provincial Negative Binomial Model without interaction terms)
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>The provincial model doesn’t appear to do well with ICD groupings at the provincial level; this can be viewed when inspecting the provincial model ICD observed vs expected plots in the <a href="../../projects/cause_codes/index.html">Cause Code Analysis</a> project.</p>
-</section>
-</section>
-<section id="methods" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="methods"><span class="header-section-number">4</span> Methods</h2>
-<section id="data-sources" class="level3" data-number="4.1">
-<h3 data-number="4.1" class="anchored" data-anchor-id="data-sources"><span class="header-section-number">4.1</span> Data Sources</h3>
-<ul>
-<li><strong>Vital Registration</strong>: Death records from 2015-2022</li>
-<li><strong>Population</strong>: Mid-year population estimates from Stats SA</li>
-</ul>
-</section>
-<section id="statistical-model" class="level3" data-number="4.2">
-<h3 data-number="4.2" class="anchored" data-anchor-id="statistical-model"><span class="header-section-number">4.2</span> Statistical Model</h3>
-<p>We use a negative binomial generalized linear model:</p>
-<p><span class="math display">\[
-Y_t \sim \text{NegBin}(\mu_t, \theta)
-\]</span></p>
-<p><span class="math display">\[
-\log(\mu_t) = \beta_0 + \beta_{\text{week}} \cdot \text{week}_t + \beta_{\text{time}} \cdot t + \log(\text{pop}_t)
-\]</span></p>
-<p>See the <a href="../../projects/ci_modelling/index.html">CI Modelling Methods</a> project for detailed methodology on confidence interval construction.</p>
-</section>
-</section>
-<section id="key-findings" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="key-findings"><span class="header-section-number">5</span> Key Findings</h2>
+<section id="why-this-check" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="why-this-check"><span class="header-section-number">1</span> Why this check?</h2>
+<p>Couple-years of protection (CYP) treats every distributed condom as if it were used correctly for its full protective purpose. Two things make that assumption shakier for condoms than for clinic-administered methods (injectables, implants, IUCD, sterilisation): the DHIS2 figure is <strong>units distributed to facilities</strong>, not confirmed use, and there is no data here on whether distributed condoms were used correctly (or at all).</p>
+<p>This page holds the standard USAID/FP2030 factor (120 units = 1 CYP) fixed and instead varies <strong>assumed real-world utilization</strong> — the share of distributed condoms assumed actually used — to show how sensitive total national CYP is to that assumption.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Summary
+Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<ul>
-<li>Excess mortality peaked during COVID-19 waves (2020-2022)</li>
-<li>Provincial patterns show significant heterogeneity</li>
-<li>J-coded (respiratory) deaths show the largest excess</li>
-</ul>
+<p>The primary report (<a href="../../projects/dhis_hospital_mortality/index.html">DHIS2 Hospital Indicators</a>) always uses the <strong>“Standard (100% used, current default)”</strong> scenario below. This page is a supplementary robustness check — it does not change any number reported elsewhere.</p>
 </div>
 </div>
 </section>
-<section id="related-projects" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="related-projects"><span class="header-section-number">6</span> Related Projects</h2>
-<ul>
-<li><a href="../../projects/cause_codes/index.html">Cause Code Analysis</a> - Detailed ICD code-specific analyses by age group, province, and multiple cause sequences</li>
-<li><a href="../../projects/j_code_modelling/index.html">J-Code Modelling</a> - In-depth analysis of respiratory (J-coded) mortality</li>
-<li><a href="../../projects/ci_modelling/index.html">CI Modelling Methods</a> - Statistical methods for uncertainty quantification</li>
-</ul>
+<section id="scenarios" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="scenarios"><span class="header-section-number">2</span> Scenarios</h2>
+<div class="cell">
+<div id="tbl-scenarios" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-scenarios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
+</figcaption>
+<div aria-describedby="tbl-scenarios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6308d5070074aba69195" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6308d5070074aba69195">{"x":{"filter":"none","vertical":false,"data":[["Excluded","Conservative (50% used)","Standard (100% used, current default)"],["0%","50%","100%"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Scenario<\/th>\n      <th>Assumed condom utilization<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[{"name":"scenario","targets":0},{"name":"utilization","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="total-national-cyp-under-each-scenario" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="total-national-cyp-under-each-scenario"><span class="header-section-number">3</span> Total national CYP under each scenario</h2>
+<div class="cell">
+<div id="fig-condom-sensitivity-total" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-condom-sensitivity-total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-798ab4d08bdc7e8d9329" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-798ab4d08bdc7e8d9329">{"x":{"data":[{"x":[2015,null,2016,null,2017,null,2018,null,2019,null,2020,null,2021,null,2022,null,2023,null,2024,null,2025],"y":[3018679.6166666662,null,2909768.9833333343,null,3280648.1500000004,null,3624750.1833333359,null,3451710.516666668,null,3278219.6000000029,null,3647863.5500000031,null,4338771.6999999983,null,4506070.5333333332,null,4947161.7666666666,null,5384259.8666666634],"text":["Excluded<br>Year: 2015<br>Total CYP:  3,018,680<br>Condom CYP:         0",null,"Excluded<br>Year: 2016<br>Total CYP:  2,909,769<br>Condom CYP:         0",null,"Excluded<br>Year: 2017<br>Total CYP:  3,280,648<br>Condom CYP:         0",null,"Excluded<br>Year: 2018<br>Total CYP:  3,624,750<br>Condom CYP:         0",null,"Excluded<br>Year: 2019<br>Total CYP:  3,451,711<br>Condom CYP:         0",null,"Excluded<br>Year: 2020<br>Total CYP:  3,278,220<br>Condom CYP:         0",null,"Excluded<br>Year: 2021<br>Total CYP:  3,647,864<br>Condom CYP:         0",null,"Excluded<br>Year: 2022<br>Total CYP:  4,338,772<br>Condom CYP:         0",null,"Excluded<br>Year: 2023<br>Total CYP:  4,506,071<br>Condom CYP:         0",null,"Excluded<br>Year: 2024<br>Total CYP:  4,947,162<br>Condom CYP:         0",null,"Excluded<br>Year: 2025<br>Total CYP:  5,384,260<br>Condom CYP:         0"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(217,95,2,1)","dash":"solid"},"hoveron":"points","name":"Excluded","legendgroup":"Excluded","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2015,null,2016,null,2017,null,2018,null,2019,null,2020,null,2021,null,2022,null,2023,null,2024,null,2025],"y":[6657688.7666666657,null,6684346.6041666679,null,6423796.416666667,null,6806613.9541666694,null,6187588.6750000007,null,5682603.137500003,null,6124450.1000000034,null,6090352.9458333319,null,6855447.7750000004,null,7932402.8083333336,null,7655765.6041666633],"text":["Conservative (50% used)<br>Year: 2015<br>Total CYP:  6,657,689<br>Condom CYP: 3,639,009",null,"Conservative (50% used)<br>Year: 2016<br>Total CYP:  6,684,347<br>Condom CYP: 3,774,578",null,"Conservative (50% used)<br>Year: 2017<br>Total CYP:  6,423,796<br>Condom CYP: 3,143,148",null,"Conservative (50% used)<br>Year: 2018<br>Total CYP:  6,806,614<br>Condom CYP: 3,181,864",null,"Conservative (50% used)<br>Year: 2019<br>Total CYP:  6,187,589<br>Condom CYP: 2,735,878",null,"Conservative (50% used)<br>Year: 2020<br>Total CYP:  5,682,603<br>Condom CYP: 2,404,384",null,"Conservative (50% used)<br>Year: 2021<br>Total CYP:  6,124,450<br>Condom CYP: 2,476,587",null,"Conservative (50% used)<br>Year: 2022<br>Total CYP:  6,090,353<br>Condom CYP: 1,751,581",null,"Conservative (50% used)<br>Year: 2023<br>Total CYP:  6,855,448<br>Condom CYP: 2,349,377",null,"Conservative (50% used)<br>Year: 2024<br>Total CYP:  7,932,403<br>Condom CYP: 2,985,241",null,"Conservative (50% used)<br>Year: 2025<br>Total CYP:  7,655,766<br>Condom CYP: 2,271,506"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(117,112,179,1)","dash":"solid"},"hoveron":"points","name":"Conservative (50% used)","legendgroup":"Conservative (50% used)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2015,null,2016,null,2017,null,2018,null,2019,null,2020,null,2021,null,2022,null,2023,null,2024,null,2025],"y":[10296697.916666666,null,10458924.225000001,null,9566944.6833333336,null,9988477.7250000034,null,8923466.833333334,null,8086986.6750000026,null,8601036.6500000022,null,7841934.1916666646,null,9204825.0166666657,null,10917643.85,null,9927271.3416666631],"text":["Standard (100% used, current default)<br>Year: 2015<br>Total CYP: 10,296,698<br>Condom CYP: 7,278,018",null,"Standard (100% used, current default)<br>Year: 2016<br>Total CYP: 10,458,924<br>Condom CYP: 7,549,155",null,"Standard (100% used, current default)<br>Year: 2017<br>Total CYP:  9,566,945<br>Condom CYP: 6,286,297",null,"Standard (100% used, current default)<br>Year: 2018<br>Total CYP:  9,988,478<br>Condom CYP: 6,363,728",null,"Standard (100% used, current default)<br>Year: 2019<br>Total CYP:  8,923,467<br>Condom CYP: 5,471,756",null,"Standard (100% used, current default)<br>Year: 2020<br>Total CYP:  8,086,987<br>Condom CYP: 4,808,767",null,"Standard (100% used, current default)<br>Year: 2021<br>Total CYP:  8,601,037<br>Condom CYP: 4,953,173",null,"Standard (100% used, current default)<br>Year: 2022<br>Total CYP:  7,841,934<br>Condom CYP: 3,503,162",null,"Standard (100% used, current default)<br>Year: 2023<br>Total CYP:  9,204,825<br>Condom CYP: 4,698,754",null,"Standard (100% used, current default)<br>Year: 2024<br>Total CYP: 10,917,644<br>Condom CYP: 5,970,482",null,"Standard (100% used, current default)<br>Year: 2025<br>Total CYP:  9,927,271<br>Condom CYP: 4,543,011"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(27,158,119,1)","dash":"solid"},"hoveron":"points","name":"Standard (100% used, current default)","legendgroup":"Standard (100% used, current default)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"y":[3018679.6166666662,2909768.9833333343,3280648.1500000004,3624750.1833333359,3451710.516666668,3278219.6000000029,3647863.5500000031,4338771.6999999983,4506070.5333333332,4947161.7666666666,5384259.8666666634],"text":["Excluded<br>Year: 2015<br>Total CYP:  3,018,680<br>Condom CYP:         0","Excluded<br>Year: 2016<br>Total CYP:  2,909,769<br>Condom CYP:         0","Excluded<br>Year: 2017<br>Total CYP:  3,280,648<br>Condom CYP:         0","Excluded<br>Year: 2018<br>Total CYP:  3,624,750<br>Condom CYP:         0","Excluded<br>Year: 2019<br>Total CYP:  3,451,711<br>Condom CYP:         0","Excluded<br>Year: 2020<br>Total CYP:  3,278,220<br>Condom CYP:         0","Excluded<br>Year: 2021<br>Total CYP:  3,647,864<br>Condom CYP:         0","Excluded<br>Year: 2022<br>Total CYP:  4,338,772<br>Condom CYP:         0","Excluded<br>Year: 2023<br>Total CYP:  4,506,071<br>Condom CYP:         0","Excluded<br>Year: 2024<br>Total CYP:  4,947,162<br>Condom CYP:         0","Excluded<br>Year: 2025<br>Total CYP:  5,384,260<br>Condom CYP:         0"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(217,95,2,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(217,95,2,1)"}},"hoveron":"points","name":"Excluded","legendgroup":"Excluded","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"y":[6657688.7666666657,6684346.6041666679,6423796.416666667,6806613.9541666694,6187588.6750000007,5682603.137500003,6124450.1000000034,6090352.9458333319,6855447.7750000004,7932402.8083333336,7655765.6041666633],"text":["Conservative (50% used)<br>Year: 2015<br>Total CYP:  6,657,689<br>Condom CYP: 3,639,009","Conservative (50% used)<br>Year: 2016<br>Total CYP:  6,684,347<br>Condom CYP: 3,774,578","Conservative (50% used)<br>Year: 2017<br>Total CYP:  6,423,796<br>Condom CYP: 3,143,148","Conservative (50% used)<br>Year: 2018<br>Total CYP:  6,806,614<br>Condom CYP: 3,181,864","Conservative (50% used)<br>Year: 2019<br>Total CYP:  6,187,589<br>Condom CYP: 2,735,878","Conservative (50% used)<br>Year: 2020<br>Total CYP:  5,682,603<br>Condom CYP: 2,404,384","Conservative (50% used)<br>Year: 2021<br>Total CYP:  6,124,450<br>Condom CYP: 2,476,587","Conservative (50% used)<br>Year: 2022<br>Total CYP:  6,090,353<br>Condom CYP: 1,751,581","Conservative (50% used)<br>Year: 2023<br>Total CYP:  6,855,448<br>Condom CYP: 2,349,377","Conservative (50% used)<br>Year: 2024<br>Total CYP:  7,932,403<br>Condom CYP: 2,985,241","Conservative (50% used)<br>Year: 2025<br>Total CYP:  7,655,766<br>Condom CYP: 2,271,506"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(117,112,179,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(117,112,179,1)"}},"hoveron":"points","name":"Conservative (50% used)","legendgroup":"Conservative (50% used)","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"y":[10296697.916666666,10458924.225000001,9566944.6833333336,9988477.7250000034,8923466.833333334,8086986.6750000026,8601036.6500000022,7841934.1916666646,9204825.0166666657,10917643.85,9927271.3416666631],"text":["Standard (100% used, current default)<br>Year: 2015<br>Total CYP: 10,296,698<br>Condom CYP: 7,278,018","Standard (100% used, current default)<br>Year: 2016<br>Total CYP: 10,458,924<br>Condom CYP: 7,549,155","Standard (100% used, current default)<br>Year: 2017<br>Total CYP:  9,566,945<br>Condom CYP: 6,286,297","Standard (100% used, current default)<br>Year: 2018<br>Total CYP:  9,988,478<br>Condom CYP: 6,363,728","Standard (100% used, current default)<br>Year: 2019<br>Total CYP:  8,923,467<br>Condom CYP: 5,471,756","Standard (100% used, current default)<br>Year: 2020<br>Total CYP:  8,086,987<br>Condom CYP: 4,808,767","Standard (100% used, current default)<br>Year: 2021<br>Total CYP:  8,601,037<br>Condom CYP: 4,953,173","Standard (100% used, current default)<br>Year: 2022<br>Total CYP:  7,841,934<br>Condom CYP: 3,503,162","Standard (100% used, current default)<br>Year: 2023<br>Total CYP:  9,204,825<br>Condom CYP: 4,698,754","Standard (100% used, current default)<br>Year: 2024<br>Total CYP: 10,917,644<br>Condom CYP: 5,970,482","Standard (100% used, current default)<br>Year: 2025<br>Total CYP:  9,927,271<br>Condom CYP: 4,543,011"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(27,158,119,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(27,158,119,1)"}},"hoveron":"points","name":"Standard (100% used, current default)","legendgroup":"Standard (100% used, current default)","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":23.970112079701121,"r":7.9701120797011216,"b":24.707347447073481,"l":91.656288916562929},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402241},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2014.5,2025.5],"tickmode":"array","ticktext":["2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.9850560398505603,"tickwidth":0.72455564360919278,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919278,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402241}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2509375.2400000012,11318037.593333334],"tickmode":"array","ticktext":["4,000,000","6,000,000","8,000,000","10,000,000"],"tickvals":[4000000,6000000,8000000,10000000],"categoryorder":"array","categoryarray":["4,000,000","6,000,000","8,000,000","10,000,000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.9850560398505608,"tickwidth":0.72455564360919289,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919289,"zeroline":false,"anchor":"x","title":{"text":"Total couple-years of protection","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402241}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"rgba(255,255,255,1)","line":{"color":"rgba(51,51,51,1)","width":0.72455564360919289,"linetype":"solid"},"yref":"paper","xref":"paper","layer":"below","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":2.0615604867573372,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218},"title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402241}},"orientation":"h","y":-0.20000000000000001},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["lasso2d","select2d"]},"source":"A","attrs":{"d7df141ad5c4":{"x":{},"y":{},"colour":{},"text":{},"type":"scatter"},"d7df6dc8412b":{"x":{},"y":{},"colour":{},"text":{}}},"cur_data":"d7df141ad5c4","visdat":{"d7df141ad5c4":["function (y) ","x"],"d7df6dc8412b":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-condom-sensitivity-total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Total national CYP by year, under each condom utilization scenario. Non-condom methods are unaffected in every scenario.
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="latest-year-comparison" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="latest-year-comparison"><span class="header-section-number">4</span> Latest-year comparison</h2>
+<div class="cell">
+<div id="tbl-condom-sensitivity-latest" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-condom-sensitivity-latest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Total national CYP by scenario, most recent year, with % difference from the Standard (current default) scenario.
+</figcaption>
+<div aria-describedby="tbl-condom-sensitivity-latest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-49459267384410fc4091" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-49459267384410fc4091">{"x":{"filter":"none","vertical":false,"data":[["Excluded","Conservative (50% used)","Standard (100% used, current default)"],[0,2271506,4543011],[5384260,7655766,9927271],["-45.8%","-22.9%","0.0%"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Scenario<\/th>\n      <th>Condom CYP (2025)<\/th>\n      <th>Total CYP (2025)<\/th>\n      <th>% vs Standard<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2]},{"name":"scenario","targets":0},{"name":"condom_cyp","targets":1},{"name":"total_cyp","targets":2},{"name":"pct_vs_standard","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</figure>
+</div>
+</div>
 
 
 </section>

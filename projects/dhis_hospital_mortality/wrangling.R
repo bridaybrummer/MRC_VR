@@ -562,6 +562,36 @@ agg_condom_prov_annual <- dhis_condom_annual[!is.na(province) & province != "",
 ][order(province, short_label, year)]
 
 
+# ─── 7g-ii. CONDOM CYP SENSITIVITY (national) ────────────────────────────────
+# Condom counts measure distribution, not confirmed use — these scenarios vary
+# assumed real-world utilization of distributed condoms while holding the
+# 120-units-per-CYP factor fixed. Purely additive: does not alter
+# agg_cyp_national_annual/_total/_prov, which stay at the 100%-used default.
+noncondom_cyp_annual <- agg_cyp_national_annual[
+  !short_label %in% c("Male condom", "Female condom"),
+  .(noncondom_cyp = sum(cyp, na.rm = TRUE)), by = year
+]
+
+condom_units_annual <- dhis_condom_annual[, .(units = sum(value, na.rm = TRUE)), by = year]
+
+CONDOM_CYP_SCENARIOS <- data.table(
+  scenario    = c("Excluded", "Conservative (50% used)", "Standard (100% used, current default)"),
+  utilization = c(0, 0.5, 1.0)
+)
+
+agg_condom_sensitivity_annual <- CJ(
+  scenario = CONDOM_CYP_SCENARIOS$scenario,
+  year     = noncondom_cyp_annual$year
+)
+agg_condom_sensitivity_annual <- CONDOM_CYP_SCENARIOS[agg_condom_sensitivity_annual, on = "scenario"]
+agg_condom_sensitivity_annual <- condom_units_annual[agg_condom_sensitivity_annual, on = "year"]
+agg_condom_sensitivity_annual <- noncondom_cyp_annual[agg_condom_sensitivity_annual, on = "year"]
+agg_condom_sensitivity_annual[, condom_cyp := units * utilization / 120]
+agg_condom_sensitivity_annual[, total_cyp := noncondom_cyp + condom_cyp]
+agg_condom_sensitivity_annual[, scenario := factor(scenario, levels = CONDOM_CYP_SCENARIOS$scenario)]
+setorder(agg_condom_sensitivity_annual, scenario, year)
+
+
 # ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
 # Robust (median/MAD-based) z-scores computed WITHIN each facility × indicator
 # monthly series, so a facility is only ever compared against its own history
@@ -757,6 +787,9 @@ save(
   dhis_condom_annual,
   agg_condom_national_annual,
   agg_condom_prov_annual,
+  # Condom CYP sensitivity (utilization-discount scenarios, national only)
+  CONDOM_CYP_SCENARIOS,
+  agg_condom_sensitivity_annual,
   # Provenance
   audit,
   file = OUTPUT_RDA

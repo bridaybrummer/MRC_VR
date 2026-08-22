@@ -82,6 +82,8 @@ website:
           - text: "---"
           - text: " DHIS2 Hospital Indicators"
             href: projects/dhis_hospital_mortality/index.qmd
+          - text: "  ↳ Condom CYP sensitivity"
+            href: projects/dhis_hospital_mortality/condom_sensitivity.qmd
           - text: "---"
           - text: "🔍 Data Explorer (Shiny)"
             href: projects/data_explorer/index.qmd
