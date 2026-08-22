@@ -627,6 +627,33 @@ datatable(
   formatCurrency(c("raw_value", "cyp"), currency = "", interval = 3, mark = ",", digits = 0)
 ```
 
+**Province-level grouped method data.** This table is the province-by-year version of the national method data above, aggregating the raw DHIS counts and CYP contribution for each method within each province and year. It is intended for colleagues to reproduce provincial CYP trends without needing the facility-level source file.
+
+```{r}
+#| label: tbl-cyp-province-method
+#| tbl-cap: "Province-level grouped raw counts and CYP by contraceptive method and year, 2015–2025."
+
+prov_cyp_method_dt <- agg_cyp_prov_method_annual[, .(
+  province,
+  year,
+  short_label,
+  raw_value  = round(raw_value),
+  cyp_factor = round(cyp_factor, 4),
+  cyp        = round(cyp)
+)]
+setorder(prov_cyp_method_dt, province, year, short_label)
+
+datatable(
+  prov_cyp_method_dt,
+  colnames = c("Province", "Year", "Method", "Raw DHIS count", "CYP factor", "CYP"),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 15, dom = "Bfrtip", buttons = list("csv", "excel"), scrollX = TRUE)
+) |>
+  formatCurrency(c("raw_value", "cyp"), currency = "", interval = 3, mark = ",", digits = 0)
+```
+
 **Condom sensitivity check.** The table below shows the same national annual CYP total under alternative assumptions about real-world condom use, while holding the 120-units-per-CYP conversion factor fixed. This is a robustness check for colleagues; the default report keeps the standard 100% use assumption.
 
 ```{r}

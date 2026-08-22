@@ -536,6 +536,18 @@ setkey(cyp_factors, short_label)
 dhis_condom_cyp <- cyp_factors[dhis_condom_annual, on = "short_label", nomatch = 0]
 dhis_condom_cyp[, cyp := value * cyp_factor]
 
+agg_cyp_prov_method_annual <- rbindlist(list(
+  dhis_contra_cyp[!is.na(province) & province != "",
+    .(raw_value = sum(value, na.rm = TRUE), cyp = sum(cyp, na.rm = TRUE)),
+    by = .(province, short_label, year)
+  ],
+  dhis_condom_cyp[!is.na(province) & province != "",
+    .(raw_value = sum(value, na.rm = TRUE), cyp = sum(cyp, na.rm = TRUE)),
+    by = .(province, short_label, year)
+  ]
+))[order(province, short_label, year)]
+agg_cyp_prov_method_annual <- merge(agg_cyp_prov_method_annual, cyp_factors, by = "short_label", all.x = TRUE)
+
 agg_cyp_national_annual <- rbindlist(list(
   agg_cyp_national_annual,
   dhis_condom_cyp[, .(cyp = sum(cyp, na.rm = TRUE)), by = .(short_label, year)]
@@ -774,6 +786,7 @@ save(
   agg_cyp_national_annual,
   agg_cyp_national_annual_total,
   agg_cyp_prov_annual,
+  agg_cyp_prov_method_annual,
   agg_contra_outliers_monthly,
   agg_contra_heatmap_district,
   agg_contra_facility_monthly_grid,
