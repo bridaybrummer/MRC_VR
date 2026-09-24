@@ -1,0 +1,475 @@
+---
+title: "Sensitivity: Adjusted CYP and Recorded Births"
+description: "Redistributing long-acting contraceptive protection across calendar years and comparing it with recorded births."
+date: "2026-09-21"
+categories: [DHIS2, births, contraception, CYP, sensitivity]
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(data.table)
+  library(ggplot2)
+  library(plotly)
+  library(scales)
+  library(DT)
+})
+
+rda_path <- here::here("projects/dhis_hospital_mortality/dhis_results.rda")
+if (!file.exists(rda_path)) {
+  stop("Run projects/dhis_hospital_mortality/wrangling.R first.")
+}
+load(rda_path)
+
+theme_mrc <- theme_bw(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "#e8edf2"),
+    legend.position = "bottom"
+  )
+
+ply_config <- function(plot) {
+  plot |> config(
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c("lasso2d", "select2d")
+  )
+}
+```
+
+## Measures compared
+
+The **old measure** is the standard CYP presented in the main DHIS report. It
+credits all expected protection from a long-acting method in its insertion
+year. The **new measure** spreads implant and IUCD protection across the
+calendar years in which it is expected to remain active and applies the
+proposed pill and implant factors.
+
+A bridge measure, **timing only**, redistributes implant and IUCD protection
+while preserving every old standard factor, isolating the timing change from
+the additional factor changes in the full proposal.
+
+::: {.callout-important}
+This is an exploratory ecological comparison of two national annual series. A
+correlation does not estimate contraceptive effectiveness or establish that
+contraception caused the observed birth trend. Both series may be affected by
+reporting completeness, method mix, population size and unmeasured changes over
+time.
+:::
+
+Recorded births are defined as **live births in facilities plus births born
+alive before arrival**. Stillbirths are excluded. The standard CYP series is
+unchanged from the main report.
+
+```{r}
+#| label: tbl-old-new-summary
+#| tbl-cap: "The three CYP definitions compared in this analysis."
+
+definition_comparison <- data.table(
+  measure = c("Old: standard CYP", "Bridge: timing only", "New: full proposal"),
+  calendar_allocation = c(
+    "All CYP credited in service year",
+    "Implant and IUCD spread across protection years",
+    "Implant and IUCD spread across protection years"
+  ),
+  pill_factor = c("15 cycles = 1 CYP", "15 cycles = 1 CYP", "12 cycles = 1 CYP"),
+  implant_total = c("3.5 CYP", "3.5 CYP", "2.5 CYP"),
+  purpose = c(
+    "Previous analysis and baseline",
+    "Isolates the effect of changing timing",
+    "Tests all proposed changes together"
+  )
+)
+
+datatable(
+  definition_comparison,
+  colnames = c(
+    "Measure", "Calendar allocation", "Pill factor",
+    "Implant total", "Role in comparison"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t", scrollX = TRUE)
+)
+```
+
+## Allocation assumptions
+
+The adjusted measure applies each year's method-specific weight to services
+recorded in year $N-k$, where $k$ is the protection-year offset. Thus, adjusted
+protection in calendar year $N$ is
+
+$$
+\operatorname{Adjusted\ CYP}_N =
+\sum_m \sum_k \operatorname{Services}_{m,N-k} w_{m,k}.
+$$
+
+The full proposal uses an implant profile of $1.00, 0.80, 0.70$, totalling 2.5
+CYP. For the timing-only bridge, the same relative profile is scaled to total
+3.5 CYP so that only timing changes. The working IUCD profile starts at 0.85
+and 0.75 and declines over ten years, totalling 4.6 CYP in both new measures.
+Pills use 12 cycles per CYP in the full proposal and the old 15-cycle factor in
+the timing-only bridge. These are scenario assumptions, not locally estimated
+continuation rates.
+
+::: {.callout-warning}
+The full old-versus-new difference combines a timing change with two factor
+changes: pill credit rises by 25% per cycle and total implant credit falls by
+28.6% per insertion. It must not be interpreted as the effect of continuation
+allocation alone. The timing-only bridge provides that separate comparison.
+:::
+
+```{r}
+#| label: tbl-adjusted-cyp-matrix
+#| tbl-cap: "Calendar-year allocation weights used for adjusted CYP. Offset 0 is the distribution or insertion year."
+
+matrix_display <- copy(ADJUSTED_CYP_MATRIX)
+matrix_display[, protection_year := paste0("N+", protection_year)]
+
+datatable(
+  matrix_display,
+  colnames = c("Method", "Protection year", "CYP per service"),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 15, dom = "Bfrtip", buttons = list("csv", "excel"))
+) |>
+  formatRound("adjusted_cyp", digits = 3)
+```
+
+```{r}
+#| label: tbl-adjusted-cyp-matrix-audit
+#| tbl-cap: "Check that calendar-year weights sum to the intended total CYP per service."
+
+datatable(
+  adjusted_cyp_matrix_audit[, .(
+    short_label,
+    protection_years,
+    adjusted_total_cyp = round(adjusted_total_cyp, 3),
+    standard_cyp_factor = round(standard_cyp_factor, 3),
+    difference_from_standard = round(difference_from_standard, 3)
+  )],
+  colnames = c(
+    "Method", "Allocated years", "Adjusted total CYP",
+    "Standard CYP factor", "Adjusted minus standard"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 10)
+)
+```
+
+## Pre-2015 cohorts
+
+The DHIS series begins in 2015. Consequently, active implant and IUCD cohorts
+inserted before 2015 cannot be observed. Two versions of the full proposal show
+the effect of this boundary:
+
+- **Observed cohorts only:** uses only insertions observed from 2015 onward and
+  is therefore left-truncated in early years.
+- **Steady-state initialization:** assumes the 2015 method-specific count
+  also occurred in each required pre-2015 year. This is a transparent warm-up
+  assumption, not an estimate of historical insertions.
+
+The steady-state version is used for the main old-versus-new comparison. The
+observed-cohort version is retained only as a boundary sensitivity check.
+
+```{r}
+#| label: fig-adjusted-cyp-trend
+#| fig-cap: "Old standard CYP, timing-only redistribution, and the full proposed new CYP, 2015–2025. The observed-cohort series shows sensitivity to missing pre-2015 cohorts."
+
+cyp_trend <- copy(cyp_births_aligned_annual)
+cyp_trend[, series := fifelse(cyp_definition == "Standard", "Old: standard CYP", scenario)]
+
+trend_plot <- ggplot(
+  cyp_trend,
+  aes(
+    x = year, y = cyp_value, colour = series,
+    text = paste0(series, "<br>Year: ", year,
+                  "<br>CYP: ", format(round(cyp_value), big.mark = ","))
+  )
+) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.5) +
+  scale_x_continuous(breaks = 2015:2025) +
+  scale_y_continuous(labels = comma) +
+  scale_colour_manual(
+    values = c(
+      "Old: standard CYP" = "#6a3d9a",
+      "Timing only: standard factors redistributed" = "#1f78b4",
+      "Proposed new: steady-state initialization" = "#1b9e77",
+      "Proposed new: observed cohorts only" = "#d95f02"
+    ),
+    name = NULL
+  ) +
+  labs(x = NULL, y = "Couple-years of protection") +
+  theme_mrc
+
+ggplotly(trend_plot, tooltip = "text") |> ply_config()
+```
+
+## Differences from old standard CYP
+
+The timing-only columns isolate the change from moving protection across
+calendar years. The full-proposal columns add the changed pill and implant
+factors.
+
+```{r}
+#| label: tbl-annual-old-new-difference
+#| tbl-cap: "Annual absolute and percentage differences from old standard CYP."
+
+annual_comparison <- merge(
+  agg_cyp_national_annual_total[, .(year, old_standard_cyp = cyp)],
+  dcast(
+    agg_adjusted_cyp_annual[
+      scenario %in% c(
+        "Timing only: standard factors redistributed",
+        "Proposed new: steady-state initialization"
+      )
+    ],
+    year ~ scenario,
+    value.var = "adjusted_cyp"
+  ),
+  by = "year"
+)
+setnames(
+  annual_comparison,
+  c(
+    "Timing only: standard factors redistributed",
+    "Proposed new: steady-state initialization"
+  ),
+  c("timing_only_cyp", "new_proposed_cyp")
+)
+annual_comparison[, `:=`(
+  timing_difference = timing_only_cyp - old_standard_cyp,
+  new_difference = new_proposed_cyp - old_standard_cyp
+)]
+annual_comparison[, `:=`(
+  timing_pct_difference = 100 * timing_difference / old_standard_cyp,
+  new_pct_difference = 100 * new_difference / old_standard_cyp
+)]
+
+datatable(
+  annual_comparison[, .(
+    year,
+    old_standard_cyp = round(old_standard_cyp),
+    timing_only_cyp = round(timing_only_cyp),
+    timing_difference = round(timing_difference),
+    timing_pct_difference = round(timing_pct_difference, 1),
+    new_proposed_cyp = round(new_proposed_cyp),
+    new_difference = round(new_difference),
+    new_pct_difference = round(new_pct_difference, 1)
+  )],
+  colnames = c(
+    "Year", "Old standard", "Timing only", "Timing difference",
+    "Timing %", "Full proposal", "Full difference", "Full %"
+  ),
+  rownames = FALSE,
+  extensions = "Buttons",
+  options = list(
+    pageLength = 12, dom = "Bfrtip", buttons = list("csv", "excel"),
+    scrollX = TRUE
+  )
+) |>
+  formatCurrency(
+    c("old_standard_cyp", "timing_only_cyp", "timing_difference",
+      "new_proposed_cyp", "new_difference"),
+    currency = "", interval = 3, mark = ",", digits = 0
+  )
+```
+
+```{r}
+#| label: fig-method-old-new-difference
+#| fig-cap: "Method-level contribution to the difference from old standard CYP in 2025. Positive values increase total CYP; negative values reduce it."
+
+latest_comparison_year <- max(agg_cyp_national_annual$year)
+standard_method_latest <- agg_cyp_national_annual[
+  year == latest_comparison_year,
+  .(short_label, old_cyp = cyp)
+]
+alternative_method_latest <- dcast(
+  agg_adjusted_cyp_method_annual[
+    year == latest_comparison_year &
+      scenario %in% c(
+        "Timing only: standard factors redistributed",
+        "Proposed new: steady-state initialization"
+      )
+  ],
+  short_label ~ scenario,
+  value.var = "adjusted_cyp"
+)
+method_difference <- merge(
+  standard_method_latest, alternative_method_latest,
+  by = "short_label"
+)
+setnames(
+  method_difference,
+  c(
+    "Timing only: standard factors redistributed",
+    "Proposed new: steady-state initialization"
+  ),
+  c("timing_only_cyp", "new_proposed_cyp")
+)
+method_difference_long <- melt(
+  method_difference,
+  id.vars = c("short_label", "old_cyp"),
+  measure.vars = c("timing_only_cyp", "new_proposed_cyp"),
+  variable.name = "comparison",
+  value.name = "alternative_cyp"
+)
+method_difference_long[, difference := alternative_cyp - old_cyp]
+method_difference_long[, comparison := factor(
+  comparison,
+  levels = c("timing_only_cyp", "new_proposed_cyp"),
+  labels = c("Timing only minus old", "Full proposal minus old")
+)]
+
+method_plot <- ggplot(
+  method_difference_long,
+  aes(
+    x = reorder(short_label, difference), y = difference, fill = comparison,
+    text = paste0(
+      short_label, "<br>", comparison,
+      "<br>Difference: ", format(round(difference), big.mark = ","), " CYP"
+    )
+  )
+) +
+  geom_hline(yintercept = 0, colour = "grey45") +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values = c("#1f78b4", "#1b9e77"), name = NULL) +
+  labs(x = NULL, y = paste0("Difference from old standard CYP in ", latest_comparison_year)) +
+  theme_mrc
+
+ggplotly(method_plot, tooltip = "text") |> ply_config()
+```
+
+## Alignment with recorded births
+
+Two temporal alignments are evaluated with Pearson's correlation coefficient:
+
+- **Previous-year births:** CYP in year $N$ versus births in year $N-1$, the
+  relationship motivating this sensitivity analysis.
+- **Following-year births:** CYP in year $N$ versus births in year $N+1$, the
+  hypothesised forecasting relationship.
+
+Each estimate uses ten annual pairs. No p-values are reported because the short,
+serially ordered time series does not satisfy the independence assumption of a
+simple correlation test.
+
+```{r}
+#| label: tbl-cyp-birth-correlation
+#| tbl-cap: "Pearson correlations between national CYP and recorded births under the two year alignments."
+
+correlation_display <- copy(cyp_birth_correlation)
+correlation_display[, series := fifelse(
+  cyp_definition == "Standard", "Old: standard CYP", scenario
+)]
+old_correlations <- correlation_display[series == "Old: standard CYP",
+  .(alignment, old_correlation = correlation)]
+correlation_display <- old_correlations[correlation_display, on = "alignment"]
+correlation_display[, difference_from_old := correlation - old_correlation]
+
+datatable(
+  correlation_display[, .(
+    series,
+    alignment,
+    cyp_years = paste0(first_cyp_year, "–", last_cyp_year),
+    n_year_pairs,
+    correlation = round(correlation, 3),
+    difference_from_old = round(difference_from_old, 3)
+  )],
+  colnames = c(
+    "CYP series", "Birth alignment", "CYP years", "Year pairs",
+    "Pearson r", "Difference in r from old"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 10)
+)
+```
+
+```{r}
+#| label: fig-cyp-following-births
+#| fig-cap: "CYP in year N against recorded births in year N+1. Lines are descriptive linear fits, not forecasting models."
+
+following_plot_data <- cyp_births_aligned_annual[!is.na(following_year_births)]
+following_plot_data <- following_plot_data[
+  scenario != "Proposed new: observed cohorts only"
+]
+following_plot_data[, series := fifelse(
+  cyp_definition == "Standard", "Old: standard CYP", scenario
+)]
+
+following_plot <- ggplot(
+  following_plot_data,
+  aes(
+    x = cyp_value, y = following_year_births, colour = series,
+    text = paste0(
+      series, "<br>CYP year: ", year,
+      "<br>CYP: ", format(round(cyp_value), big.mark = ","),
+      "<br>Birth year: ", year + 1L,
+      "<br>Recorded births: ", format(round(following_year_births), big.mark = ",")
+    )
+  )
+) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 0.7) +
+  geom_point(size = 2) +
+  facet_wrap(~series, scales = "free_x") +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = comma) +
+  scale_colour_manual(
+    values = c(
+      "Old: standard CYP" = "#6a3d9a",
+      "Timing only: standard factors redistributed" = "#1f78b4",
+      "Proposed new: steady-state initialization" = "#1b9e77"
+    ),
+    guide = "none"
+  ) +
+  labs(x = "CYP in year N", y = "Recorded births in year N+1") +
+  theme_mrc +
+  theme(strip.text = element_text(size = 9))
+
+ggplotly(following_plot, tooltip = "text") |> ply_config()
+```
+
+## Correlation with births: old versus new
+
+Births in the following year: old standard CYP $r =
+`r sprintf("%.3f", cyp_birth_correlation[cyp_definition == "Standard" & alignment == "Births in following year (N+1)", correlation])`$,
+timing only $r =
+`r sprintf("%.3f", cyp_birth_correlation[scenario == "Timing only: standard factors redistributed" & alignment == "Births in following year (N+1)", correlation])`$,
+full proposal $r =
+`r sprintf("%.3f", cyp_birth_correlation[scenario == "Proposed new: steady-state initialization" & alignment == "Births in following year (N+1)", correlation])`$.
+
+Births in the previous year: old standard CYP $r =
+`r sprintf("%.3f", cyp_birth_correlation[cyp_definition == "Standard" & alignment == "Births in previous year (N-1)", correlation])`$,
+timing only $r =
+`r sprintf("%.3f", cyp_birth_correlation[scenario == "Timing only: standard factors redistributed" & alignment == "Births in previous year (N-1)", correlation])`$,
+full proposal $r =
+`r sprintf("%.3f", cyp_birth_correlation[scenario == "Proposed new: steady-state initialization" & alignment == "Births in previous year (N-1)", correlation])`$.
+
+## Underlying aligned data
+
+```{r}
+#| label: tbl-cyp-birth-aligned-data
+#| tbl-cap: "Exportable annual data used in the CYP–birth alignment analysis."
+
+aligned_export <- copy(cyp_births_aligned_annual)
+aligned_export[, series := fifelse(
+  cyp_definition == "Standard", "Old: standard CYP", scenario
+)]
+
+datatable(
+  aligned_export[, .(
+    series, cyp_year = year,
+    cyp_value = round(cyp_value),
+    previous_year_births = round(previous_year_births),
+    following_year_births = round(following_year_births)
+  )],
+  colnames = c("CYP series", "CYP year", "CYP", "Births in N-1", "Births in N+1"),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 15, dom = "Bfrtip", buttons = list("csv", "excel"))
+)
+```

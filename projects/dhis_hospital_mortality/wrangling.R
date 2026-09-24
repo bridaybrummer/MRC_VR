@@ -332,12 +332,59 @@ condom_annual_raw <- condom_annual_raw[
 condom_annual_raw <- condom_annual_raw[year <= ANNUAL_MAX_YEAR]  # drop incomplete 2026
 cat("  Condom rows (facility/district mixed grain):", nrow(condom_annual_raw), "\n")
 
+condom_grain_audit <- condom_annual_raw[, .(
+  source_rows = .N,
+  reporting_units = uniqueN(paste(province, district, subdistrict, facility, sep = "|")),
+  districts = uniqueN(paste(province, district, sep = "|")),
+  zero_values = sum(value == 0),
+  negative_values = sum(value < 0)
+), by = .(year, indicator)][order(year, indicator)]
+
 dhis_condom_annual <- condom_annual_raw[
   !is.na(district) & district != "",
   .(value = sum(value, na.rm = TRUE)),
   by = .(province, district, indicator, year)
 ][order(province, district, indicator, year)]
 dhis_condom_annual <- indicator_meta[dhis_condom_annual, on = "indicator"]
+
+condom_districts <- unique(dhis_condom_annual[, .(province, district)])
+condom_expected_keys <- condom_districts[
+  , .(short_label = c("Male condom", "Female condom")),
+  by = .(province, district)
+][, .(year = min(dhis_condom_annual$year):max(dhis_condom_annual$year)),
+  by = .(province, district, short_label)]
+condom_missing_district_year <- fsetdiff(
+  condom_expected_keys,
+  dhis_condom_annual[, .(province, district, short_label, year)]
+)[order(year, province, district, short_label)]
+
+condom_clean_audit <- data.table(
+  check = c(
+    "Duplicate district-method-year keys",
+    "Rows with missing province or district",
+    "Negative cleaned values",
+    "Explicit zero cleaned values",
+    "Missing expected district-method-year cells",
+    "Minimum districts represented in any year"
+  ),
+  result = c(
+    nrow(dhis_condom_annual) - uniqueN(dhis_condom_annual,
+      by = c("province", "district", "short_label", "year")),
+    dhis_condom_annual[is.na(province) | province == "" | is.na(district) | district == "", .N],
+    dhis_condom_annual[value < 0, .N],
+    dhis_condom_annual[value == 0, .N],
+    nrow(condom_missing_district_year),
+    dhis_condom_annual[, uniqueN(paste(province, district)), by = year][, min(V1)]
+  ),
+  interpretation = c(
+    "Pass: grouped keys must be unique",
+    "Pass: all retained rows have usable geography",
+    "Pass: negative distribution counts are not present",
+    "Review: zero is retained as reported, not treated as missing",
+    "Review: missing cells remain absent and are not imputed as zero",
+    "Pass: all 52 South African health districts occur in every year"
+  )
+)
 
 cat("  Condom district-year rows:", nrow(dhis_condom_annual), "\n")
 cat("  Condom year range:", min(dhis_condom_annual$year), "–", max(dhis_condom_annual$year), "\n")
@@ -604,6 +651,165 @@ agg_condom_sensitivity_annual[, scenario := factor(scenario, levels = CONDOM_CYP
 setorder(agg_condom_sensitivity_annual, scenario, year)
 
 
+# ─── 7g-iii. ADJUSTED CYP CONTINUATION SENSITIVITY (national) ────────────────
+# Standard CYP credits the full multi-year implant/IUCD factor in the insertion
+# year. This sensitivity instead allocates that protection across calendar
+# years. The supplied implant profile sums to 2.5 CYP; the working 10-year IUCD
+# profile starts at 0.85/0.75 and declines to a total of 4.6 CYP. Methods not
+# specified in the request retain a single-year allocation. Oral pills use the
+# requested 12 cycles per CYP here (the primary standard CYP remains 15).
+ADJUSTED_CYP_MATRIX <- rbindlist(list(
+  data.table(short_label = "Medroxyprogesterone", protection_year = 0L, adjusted_cyp = 1/4),
+  data.table(short_label = "Norethisterone", protection_year = 0L, adjusted_cyp = 1/6),
+  data.table(short_label = "Oral pill", protection_year = 0L, adjusted_cyp = 1/12),
+  data.table(short_label = "Sub-dermal implant", protection_year = 0:2,
+             adjusted_cyp = c(1.00, 0.80, 0.70)),
+  data.table(short_label = "IUCD", protection_year = 0:9,
+             adjusted_cyp = c(0.85, 0.75, 0.65, 0.55, 0.45,
+                              0.40, 0.35, 0.25, 0.20, 0.15)),
+  data.table(short_label = "Sterilisation (F)", protection_year = 0L, adjusted_cyp = 10),
+  data.table(short_label = "Sterilisation (M)", protection_year = 0L, adjusted_cyp = 10),
+  data.table(short_label = "Male condom", protection_year = 0L, adjusted_cyp = 1/120),
+  data.table(short_label = "Female condom", protection_year = 0L, adjusted_cyp = 1/120)
+))
+
+# Bridge scenario for an old-versus-new comparison: use the same continuation
+# shape while preserving every standard CYP factor. This isolates timing from
+# the proposed pill and implant factor changes.
+REDISTRIBUTION_ONLY_CYP_MATRIX <- copy(ADJUSTED_CYP_MATRIX)
+REDISTRIBUTION_ONLY_CYP_MATRIX[short_label == "Oral pill", adjusted_cyp := 1/15]
+REDISTRIBUTION_ONLY_CYP_MATRIX[
+  short_label == "Sub-dermal implant",
+  adjusted_cyp := adjusted_cyp * 3.5 / sum(adjusted_cyp)
+]
+
+adjusted_cyp_matrix_audit <- ADJUSTED_CYP_MATRIX[, .(
+  protection_years = .N,
+  adjusted_total_cyp = sum(adjusted_cyp)
+), by = short_label]
+adjusted_cyp_matrix_audit <- merge(
+  adjusted_cyp_matrix_audit,
+  cyp_factors[, .(short_label, standard_cyp_factor = cyp_factor)],
+  by = "short_label", all.x = TRUE
+)
+adjusted_cyp_matrix_audit[, difference_from_standard :=
+  adjusted_total_cyp - standard_cyp_factor]
+setorder(adjusted_cyp_matrix_audit, short_label)
+
+adjusted_cyp_raw_annual <- rbindlist(list(
+  agg_national_annual[
+    domain == "contra" & short_label %in% ADJUSTED_CYP_MATRIX$short_label,
+    .(raw_value = sum(value, na.rm = TRUE)), by = .(short_label, year)
+  ],
+  agg_condom_national_annual[, .(
+    raw_value = sum(value, na.rm = TRUE)
+  ), by = .(short_label, year)]
+))[, .(raw_value = sum(raw_value, na.rm = TRUE)), by = .(short_label, year)]
+
+adjusted_cyp_first_year <- min(adjusted_cyp_raw_annual$year)
+adjusted_cyp_last_year <- max(adjusted_cyp_raw_annual$year)
+
+# The 2015 start omits earlier implant/IUCD cohorts. A second scenario carries
+# the 2015 insertion count backward solely to initialize the required lags.
+adjusted_cyp_backcast <- ADJUSTED_CYP_MATRIX[protection_year > 0,
+  .(year = (adjusted_cyp_first_year - max(protection_year)):
+            (adjusted_cyp_first_year - 1L)),
+  by = short_label
+]
+adjusted_cyp_backcast <- adjusted_cyp_raw_annual[year == adjusted_cyp_first_year,
+  .(short_label, raw_value)][adjusted_cyp_backcast, on = "short_label"]
+
+allocate_adjusted_cyp <- function(raw_annual, allocation_matrix, scenario_label) {
+  allocated <- merge(raw_annual, allocation_matrix,
+                     by = "short_label", allow.cartesian = TRUE)
+  allocated[, protection_year_calendar := year + protection_year]
+  allocated[, contribution_cyp := raw_value * adjusted_cyp]
+  allocated <- allocated[
+    protection_year_calendar >= adjusted_cyp_first_year &
+      protection_year_calendar <= adjusted_cyp_last_year
+  ]
+  allocated[, scenario := scenario_label]
+  allocated[]
+}
+
+adjusted_cyp_allocations <- rbindlist(list(
+  allocate_adjusted_cyp(
+    adjusted_cyp_raw_annual,
+    ADJUSTED_CYP_MATRIX,
+    "Proposed new: observed cohorts only"
+  ),
+  allocate_adjusted_cyp(
+    rbindlist(list(adjusted_cyp_raw_annual, adjusted_cyp_backcast), fill = TRUE),
+    ADJUSTED_CYP_MATRIX,
+    "Proposed new: steady-state initialization"
+  ),
+  allocate_adjusted_cyp(
+    rbindlist(list(adjusted_cyp_raw_annual, adjusted_cyp_backcast), fill = TRUE),
+    REDISTRIBUTION_ONLY_CYP_MATRIX,
+    "Timing only: standard factors redistributed"
+  )
+))
+
+agg_adjusted_cyp_method_annual <- adjusted_cyp_allocations[, .(
+  adjusted_cyp = sum(contribution_cyp, na.rm = TRUE)
+), by = .(scenario, short_label, year = protection_year_calendar)][
+  order(scenario, short_label, year)
+]
+
+agg_adjusted_cyp_annual <- agg_adjusted_cyp_method_annual[, .(
+  adjusted_cyp = sum(adjusted_cyp, na.rm = TRUE)
+), by = .(scenario, year)][order(scenario, year)]
+
+agg_recorded_births_annual <- agg_national_annual[
+  domain == "births" & short_label %in% c("Live birth", "Born alive (BBA)"),
+  .(recorded_births = sum(value, na.rm = TRUE)), by = year
+][order(year)]
+
+standard_cyp_for_comparison <- copy(agg_cyp_national_annual_total)
+setnames(standard_cyp_for_comparison, "cyp", "cyp_value")
+standard_cyp_for_comparison[, `:=`(
+  scenario = "Standard CYP (credited in distribution year)",
+  cyp_definition = "Standard"
+)]
+
+adjusted_cyp_for_comparison <- copy(agg_adjusted_cyp_annual)
+setnames(adjusted_cyp_for_comparison, "adjusted_cyp", "cyp_value")
+adjusted_cyp_for_comparison[, cyp_definition := "Adjusted"]
+
+cyp_births_aligned_annual <- rbindlist(list(
+  standard_cyp_for_comparison,
+  adjusted_cyp_for_comparison
+), use.names = TRUE, fill = TRUE)
+cyp_births_aligned_annual <- merge(
+  cyp_births_aligned_annual,
+  agg_recorded_births_annual[, .(year = year + 1L, previous_year_births = recorded_births)],
+  by = "year", all.x = TRUE
+)
+cyp_births_aligned_annual <- merge(
+  cyp_births_aligned_annual,
+  agg_recorded_births_annual[, .(year = year - 1L, following_year_births = recorded_births)],
+  by = "year", all.x = TRUE
+)
+setorder(cyp_births_aligned_annual, cyp_definition, scenario, year)
+
+cyp_birth_correlation <- rbindlist(list(
+  cyp_births_aligned_annual[!is.na(previous_year_births), .(
+    alignment = "Births in previous year (N-1)",
+    n_year_pairs = .N,
+    first_cyp_year = min(year),
+    last_cyp_year = max(year),
+    correlation = cor(cyp_value, previous_year_births)
+  ), by = .(cyp_definition, scenario)],
+  cyp_births_aligned_annual[!is.na(following_year_births), .(
+    alignment = "Births in following year (N+1)",
+    n_year_pairs = .N,
+    first_cyp_year = min(year),
+    last_cyp_year = max(year),
+    correlation = cor(cyp_value, following_year_births)
+  ), by = .(cyp_definition, scenario)]
+))[order(alignment, cyp_definition, scenario)]
+
+
 # ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
 # Robust (median/MAD-based) z-scores computed WITHIN each facility × indicator
 # monthly series, so a facility is only ever compared against its own history
@@ -800,9 +1006,21 @@ save(
   dhis_condom_annual,
   agg_condom_national_annual,
   agg_condom_prov_annual,
+  condom_grain_audit,
+  condom_clean_audit,
+  condom_missing_district_year,
   # Condom CYP sensitivity (utilization-discount scenarios, national only)
   CONDOM_CYP_SCENARIOS,
   agg_condom_sensitivity_annual,
+  # Adjusted CYP continuation-allocation sensitivity and birth alignment
+  ADJUSTED_CYP_MATRIX,
+  REDISTRIBUTION_ONLY_CYP_MATRIX,
+  adjusted_cyp_matrix_audit,
+  agg_adjusted_cyp_method_annual,
+  agg_adjusted_cyp_annual,
+  agg_recorded_births_annual,
+  cyp_births_aligned_annual,
+  cyp_birth_correlation,
   # Provenance
   audit,
   file = OUTPUT_RDA

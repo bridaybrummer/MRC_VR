@@ -448,7 +448,8 @@ form throughout this section.
 **Condoms — separate source file, mixed reporting grain.** Male/female condom
 distribution comes from a second DHIS2 export (`ANC_DHIS DATA 2015_2026 2.xls`)
 with a data-quality issue of its own: reporting is at **facility level**
-from 2015-2017, then collapses to a **single row per district/municipality**
+from 2015-2017, then collapses to **named primary distribution sites at
+municipality/sub-district level**
 from 2018 onwards (named `"<Municipality> Primary Condom Distribution
 Site"` — not a real facility). Facility-level totals are therefore **not**
 comparable across the 2017/2018 boundary, so condom volumes are summed to
@@ -464,6 +465,13 @@ Condom counts also measure *distribution*, not confirmed use — see the
 [condom CYP sensitivity analysis](condom_sensitivity.qmd) for how assuming
 lower real-world utilization (or excluding condoms entirely) affects total
 CYP.
+
+Long-acting methods are credited entirely in their insertion year under
+standard CYP. The [adjusted CYP and births sensitivity
+analysis](adjusted_cyp_sensitivity.qmd) compares the old standard measure with
+(1) a timing-only redistribution that preserves the old factors and (2) the
+full proposed pill, implant and IUCD adjustments, then relates all three to
+recorded births in the previous and following years.
 
 **Monthly data-quality checks.** Two checks are applied to the Apr 2024 – Mar
 2026 monthly file: (1) a district-level **reporting rate**, comparing each
@@ -517,6 +525,140 @@ make_small_multiples(
   line_col = "#1e8449"
 )
 ```
+
+### Condom cleaning and external verification
+
+The condom clean was checked directly against the separate DHIS workbook. The
+cleaning step changes only the reporting grain: valid numeric records are summed
+to province + district + method + year. It does not redistribute values between
+districts, impute missing cells, or convert missing values to zero. The source
+contains thousands of facility records per method-year in 2015–2017 and roughly
+300 municipality/sub-district distribution-site records per method-year from
+2018 onward, confirming the structural reporting-unit change.
+
+```{r}
+#| label: tbl-condom-clean-audit
+#| tbl-cap: "Reproducible checks applied to the cleaned DHIS condom series."
+
+datatable(
+  condom_clean_audit,
+  colnames = c("Check", "Result", "Interpretation"),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 10)
+)
+```
+
+One expected cell is absent rather than reported as zero: **Western Cape,
+Central Karoo, female condoms, 2020**. Two further female-condom cells are
+explicit zeros (Namakwa in 2021 and Pixley ka Seme in 2022). These are retained
+as supplied. Male-condom records are present for all 52 districts in every year.
+
+For an external check, the cleaned male-condom totals were compared with the
+province table published by [Spotlight on 2 April
+2024](https://www.spotlightnsp.co.za/2024/04/02/condom-distribution-in-south-africa-has-dropped-dramatically-over-the-last-five-years/),
+which attributes its figures to the [Health Systems Trust District Health
+Barometer](https://www.hst.org.za/publications/Pages/DHB2022-23.aspx). This is a
+published-source cross-check of the DHIS extraction, not an independent count of
+condoms used. The DHB table reports financial years (2018/19–2022/23), whereas
+the supplied workbook labels columns with single years (2018–2022); comparison
+therefore matches on the leading year and should be interpreted as concordance,
+not exact identity.
+
+```{r}
+#| label: tbl-condom-dhb-validation
+#| tbl-cap: "Cleaned DHIS male-condom counts compared with the published HST District Health Barometer province table, matching each financial year to its leading year."
+
+dhb_male_condoms <- data.table(
+  province = rep(c(
+    "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo",
+    "Mpumalanga", "Northern Cape", "North West", "Western Cape"
+  ), each = 5),
+  year = rep(2018:2022, 9),
+  dhb_count = c(
+    73672416, 78817157, 51122509, 45839588, 25490700,
+    50756150, 53246000, 52248000, 55352800, 52469700,
+    172953486, 135857486, 146303254, 129075303, 69220678,
+    111028599, 108503920, 96529200, 106967000, 89664600,
+    82563322, 67818200, 53325900, 52862900, 38910442,
+    67150600, 51749400, 38316000, 31364066, 35627000,
+    13934960, 12959400, 10825929, 9518000, 5194000,
+    50820283, 55579921, 39841971, 42361097, 30810803,
+    103322800, 82055960, 53632226, 72031600, 55420700
+  )
+)
+
+dhis_male_condoms <- dhis_condom_annual[short_label == "Male condom",
+  .(dhis_count = sum(value)), by = .(province, year)]
+condom_validation <- merge(
+  dhb_male_condoms, dhis_male_condoms,
+  by = c("province", "year"), all.x = TRUE
+)
+condom_validation[, financial_year := paste0(year, "/", substr(year + 1L, 3, 4))]
+condom_validation[, difference := dhis_count - dhb_count]
+condom_validation[, pct_difference := 100 * difference / dhb_count]
+
+datatable(
+  condom_validation[order(year, province), .(
+    province, financial_year, dhb_count, dhis_count, difference,
+    pct_difference = round(pct_difference, 1)
+  )],
+  colnames = c(
+    "Province", "DHB financial year", "Published DHB count",
+    "Cleaned DHIS count", "Difference", "% difference"
+  ),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(
+    pageLength = 10, dom = "Bfrtip",
+    buttons = list("csv", "excel"), scrollX = TRUE
+  )
+) |>
+  formatCurrency(
+    c("dhb_count", "dhis_count", "difference"),
+    currency = "", interval = 3, mark = ",", digits = 0
+  )
+```
+
+```{r}
+#| label: tbl-condom-dhb-national
+#| tbl-cap: "National comparison obtained by summing the nine published and cleaned provincial values."
+
+condom_validation_national <- condom_validation[, .(
+  dhb_count = sum(dhb_count),
+  dhis_count = sum(dhis_count),
+  difference = sum(difference)
+), by = .(year, financial_year)]
+condom_validation_national[, pct_difference := 100 * difference / dhb_count]
+
+datatable(
+  condom_validation_national[, .(
+    financial_year, dhb_count, dhis_count, difference,
+    pct_difference = round(pct_difference, 1)
+  )],
+  colnames = c(
+    "DHB financial year", "Published DHB count", "Cleaned DHIS count",
+    "Difference", "% difference"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t")
+) |>
+  formatCurrency(
+    c("dhb_count", "dhis_count", "difference"),
+    currency = "", interval = 3, mark = ",", digits = 0
+  )
+```
+
+Across the five national comparisons, the cleaned series differs from the
+published DHB totals by `r sprintf("%.1f%% to %.1f%%", min(abs(condom_validation_national$pct_difference)), max(abs(condom_validation_national$pct_difference)))`.
+Across all 45 province-period comparisons, the correlation is
+`r sprintf("r = %.3f", cor(condom_validation$dhb_count, condom_validation$dhis_count))`.
+This strongly verifies the scale, geographic allocation and downward trend of
+the **male-condom distribution** series, while the period-definition mismatch
+prevents claiming exact replication. No equivalent public province-by-year
+numeric table for female condoms was identified; the cited source only confirms
+that female-condom supply also declined, less sharply. Distribution counts do
+not verify that condoms reached end users or were used.
 
 ### Couple-years of protection (CYP)
 

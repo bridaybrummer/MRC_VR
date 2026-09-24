@@ -37,6 +37,15 @@ We evaluated **four progressively refined approaches** for estimating the share 
 SA_pop
 ```
 
+## Population density by ward
+
+```{r}
+#| label: ward-population-density-map
+#| fig-width: 10
+#| fig-height: 8
+ward_population_density_map
+```
+
 ## Number of offices by district
 
 ```{r}

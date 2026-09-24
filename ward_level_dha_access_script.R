@@ -59,6 +59,22 @@ if (file.exists("dha_access_summary_gradient.rda")) {
   load("dha_access_summary_gradient.rda")
 }
 
+# Population density at the district scale used in the national overview.
+district_population_density_map <- ggplot(off_pop_shape) +
+  geom_sf(aes(fill = pop_density), color = "white", linewidth = 0.1) +
+  scale_fill_viridis_c(
+    name = "People per km²",
+    option = "viridis",
+    trans = "log1p",
+    labels = comma
+  ) +
+  labs(
+    title = "Population density by district",
+    subtitle = "Stats SA 2025 population divided by district land area"
+  ) +
+  theme_void() +
+  theme(legend.position = "right")
+
 # =============================================================================
 # 2. Method 1: District-Level Office-to-Office Distance
 # =============================================================================
@@ -139,12 +155,29 @@ missing_pop <- sum(is.na(ward_pop_sf$Total))
 
 # Project and compute distances
 ward_pop_prj   <- st_transform(ward_pop_sf, 3857)
+ward_pop_sf$population_density_km2 <- ward_pop_sf$Total /
+  (as.numeric(st_area(ward_pop_prj)) / 1e6)
 ward_centroids <- st_centroid(ward_pop_prj)
 nearest_idx    <- st_nearest_feature(ward_centroids, dha_prj)
 dist_vec       <- st_distance(ward_centroids, dha_prj[nearest_idx, ], by_element = TRUE)
 
 ward_pop_sf$nearest_dha_dist_km <- as.numeric(dist_vec) / 1000
 ward_pop_sf$nearest_dha_name    <- dha_prj$office_name[nearest_idx]
+
+ward_population_density_map <- ggplot(ward_pop_sf) +
+  geom_sf(aes(fill = population_density_km2), color = NA) +
+  scale_fill_viridis_c(
+    name = "People per km²",
+    option = "viridis",
+    trans = "log1p",
+    labels = comma
+  ) +
+  labs(
+    title = "Population density by ward",
+    subtitle = "Stats SA 2025 population within MDB 2020 ward boundaries"
+  ) +
+  theme_void() +
+  theme(legend.position = "right")
 
 # Classify access bands
 ward_pop_sf <- ward_pop_sf %>%
@@ -629,7 +662,13 @@ if (file.exists(dha_mfl_matched_path)) {
   ) +
     geom_line(linewidth = 1) +
     geom_vline(xintercept = c(5, 10, 20, 50), linetype = "dashed", color = "gray60") +
-    scale_x_continuous(breaks = seq(0, 100, 10), limits = c(0, 100)) +
+    annotate(
+      "label",
+      x = c(5, 10, 20, 50), y = c(20, 35, 50, 65),
+      label = c("5 km", "10 km", "20 km", "50 km"),
+      size = 3, fill = "white"
+    ) +
+    scale_x_continuous(breaks = seq(0, 75, 5), limits = c(0, 75)) +
     scale_y_continuous(breaks = seq(0, 100, 10)) +
     scale_color_manual(values = c(
       "Death registration (DHA only)" = "firebrick",
@@ -704,6 +743,7 @@ if (file.exists(dha_mfl_matched_path)) {
 save(
   # Shared / overview
   SA_pop, SA_N_off, p_with_buffers, modelled_population_map,
+  district_population_density_map, ward_population_density_map,
   # Method 1
   m1_national, m1_table,
   # Method 2
