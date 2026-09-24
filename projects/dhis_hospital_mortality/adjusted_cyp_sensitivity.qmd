@@ -183,7 +183,7 @@ cyp_trend[, series := fifelse(cyp_definition == "Standard", "Old: standard CYP",
 trend_plot <- ggplot(
   cyp_trend,
   aes(
-    x = year, y = cyp_value, colour = series,
+    x = year, y = cyp_value, colour = series, group = series,
     text = paste0(series, "<br>Year: ", year,
                   "<br>CYP: ", format(round(cyp_value), big.mark = ","))
   )

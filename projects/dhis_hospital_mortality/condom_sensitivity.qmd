@@ -60,7 +60,7 @@ datatable(
 #| fig-cap: "Total national CYP by year, under each condom utilization scenario. Non-condom methods are unaffected in every scenario."
 
 sens_plot <- ggplot(agg_condom_sensitivity_annual,
-    aes(x = year, y = total_cyp, colour = scenario,
+    aes(x = year, y = total_cyp, colour = scenario, group = scenario,
         text = paste0(scenario, "<br>Year: ", year,
                       "<br>Total CYP: ", format(round(total_cyp), big.mark = ","),
                       "<br>Condom CYP: ", format(round(condom_cyp), big.mark = ",")))) +
