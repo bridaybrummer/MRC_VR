@@ -84,7 +84,7 @@ website:
             href: projects/dhis_hospital_mortality/index.qmd
           - text: "  ↳ Condom CYP sensitivity"
             href: projects/dhis_hospital_mortality/condom_sensitivity.qmd
-          - text: "  ↳ Adjusted CYP & births"
+          - text: "  ↳ Rob's request: adjusted CYP & births"
             href: projects/dhis_hospital_mortality/adjusted_cyp_sensitivity.qmd
           - text: "---"
           - text: "🔍 Data Explorer (Shiny)"

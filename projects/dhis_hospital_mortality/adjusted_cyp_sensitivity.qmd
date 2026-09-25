@@ -1,5 +1,5 @@
 ---
-title: "Sensitivity: Adjusted CYP and Recorded Births"
+title: "Rob's Request: Adjusted CYP and Recorded Births"
 description: "Redistributing long-acting contraceptive protection across calendar years and comparing it with recorded births."
 date: "2026-09-21"
 categories: [DHIS2, births, contraception, CYP, sensitivity]
@@ -36,6 +36,46 @@ ply_config <- function(plot) {
     modeBarButtonsToRemove = c("lasso2d", "select2d")
   )
 }
+```
+
+## At a glance: objectives, adjustments, outputs
+
+This page tests Rob's proposed change to the CYP calculation against the
+original method used in the [main indicators
+report](index.qmd#couple-years-of-protection-cyp), where each service is
+credited its full CYP factor in the year it was delivered.
+
+```{r}
+#| label: tbl-objectives-adjustments-outputs
+#| tbl-cap: "What each part of this analysis tests, what it changes relative to the original CYP method, and where to find the result."
+
+objectives_table <- data.table(
+  objective = c(
+    "Isolate the effect of changing WHEN protection is credited",
+    "Test Rob's full proposal (timing change + revised factors)",
+    "Check sensitivity to the 2015 DHIS start (left-truncation)",
+    "Test whether adjusted CYP tracks recorded births better than the original"
+  ),
+  adjustment = c(
+    "Timing only: spread implant/IUCD protection across protection years, original pill/implant factors kept unchanged",
+    "Full proposal: spread implant/IUCD protection AND revise factors (pill 12 cycles = 1 CYP, implant 2.5 total CYP)",
+    "Compare observed-cohorts-only vs a steady-state warm-up that back-fills pre-2015 insertions",
+    "Correlate each CYP series (original, timing-only, full proposal) against births in year N-1 and N+1"
+  ),
+  output = c(
+    "Trend chart below; 'Timing' columns in the annual difference table",
+    "Trend chart below; 'Full proposal' columns in the annual difference table, method-level difference chart",
+    "Trend chart below (both new series plotted together)",
+    "Correlation table and CYP-vs-births scatter plot, later in this page"
+  )
+)
+
+datatable(
+  objectives_table,
+  colnames = c("Objective", "Adjustment applied", "Output"),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 10, scrollX = TRUE)
+)
 ```
 
 ## Measures compared
@@ -279,7 +319,7 @@ datatable(
 
 ```{r}
 #| label: fig-method-old-new-difference
-#| fig-cap: "Method-level contribution to the difference from old standard CYP in 2025. Positive values increase total CYP; negative values reduce it."
+#| fig-cap: !expr paste0("Method-level contribution to the difference from old standard CYP in ", max(agg_cyp_national_annual$year), ". Positive values increase total CYP; negative values reduce it.")
 
 latest_comparison_year <- max(agg_cyp_national_annual$year)
 standard_method_latest <- agg_cyp_national_annual[
@@ -473,3 +513,68 @@ datatable(
   options = list(pageLength = 15, dom = "Bfrtip", buttons = list("csv", "excel"))
 )
 ```
+
+## Original request
+
+::: {.callout-note collapse="true"}
+## Email from Rob (kept verbatim for reference)
+
+While the couple year protection rate (CYPR) is highly (negatively)
+correlated with the numbers of births in the previous calendar year from
+2016 to 2023 (i.e. when births are high, women go on contraception (and
+vice versa) - sort of justifying the trend in births over this period - but
+this does not hold for the 2024 births (and 2025 CYPR).
+
+Also, ideally, one would prefer to find an association of the CYPR with
+births in the following year, but this is very weak (mainly because of the
+way the CYPR is determined - in particular, for example implants are given a
+weight of 2.5 in the year of implant and then not included in the following
+years).
+
+So I was wondering if you (because you would be much more efficient at doing
+it and it would be useful to have the measure available on your GitHub
+site) could consider computing an Adjusted CYPR where the numerator is
+computed as described below. Then we could check how well it works, and
+consider possible refinements.
+
+**Structuring the adjusted forecasting table**
+
+| Contraceptive method | Raw distribution (Year N) | Standard CYP reporting (credited entirely to Year N) | Adjusted allocation (protection timeline) |
+|---|---|---|---|
+| Oral contraceptive pills | 1200 cycles | 100 CYP (12 cycles = 1 CYP) | 100% credited to Year N (impacts Year N+1 births) |
+| Sub-dermal implant | 100 units | 250 CYP (credited completely to Year N) | Year N: 100 CYP; Year N+1: 80 CYP; Year N+2: 70 CYP |
+| Copper IUD | 100 units | 460 CYP (credited completely to Year N) | Year N: 85 CYP; Year N+1: 75 CYP; ...and so on for 10 years |
+
+**Apply a continuation decay rate (the matrix).** Do not just divide a
+3-year implant evenly by 3 (0.33 per year). Real-world protection decreases
+over time because women have implants removed early due to side effects,
+planning a pregnancy, or reaching menopause. Instead, construct a
+continuation matrix based on local survey data (e.g. Demographic and Health
+Surveys) or standard global drop-out assumptions (see the [IDS Heart CYP
+guide](https://archive.ids.ac.uk/heart/doc_lib/family-planning-couple-years-of-protection-cyp/index.html)
+and the [Data4Impact CYP
+page](https://www.data4impactproject.org/prh/family-planning/fp/couple-years-of-protection-cyp)).
+
+- Sub-dermal implants (3-year total CYP factor = 2.5)
+- Copper T IUD (10-year total CYP factor = 4.6)
+:::
+
+**Open questions before this page is treated as final:**
+
+1. Rob's email uses "CYPR" (a **rate**) throughout, but this page — like
+   the rest of the site — computes CYP (an absolute **count**), with no
+   population denominator. Confirm with Rob whether an actual rate (CYP
+   divided by a population of women of reproductive age, or similar) is
+   needed, or whether "CYPR" is being used loosely to mean CYP.
+2. Rob's worked example lists the *standard* CYP credited for a 100-unit
+   implant cohort as 250 (a factor of 2.5), but the true USAID/FP2030
+   standard factor used everywhere else on this site — and needed to make
+   his own "credit rises/falls" percentages work out — is 3.5. This page
+   treats 3.5 as correct and assumes Rob's "250" was just a simplified
+   illustration; worth a quick confirmation.
+3. The pattern Rob describes (strong negative correlation 2016–2023,
+   breaking down at 2024/2025) is confirmed in the underlying data
+   (r = -0.83 for 2016–2023 alone vs -0.79 pooled 2016–2025), but this page
+   currently only reports the pooled correlation. Consider adding the
+   2016–2023-only estimate alongside the pooled one if that sub-period
+   comparison should be shown explicitly.
