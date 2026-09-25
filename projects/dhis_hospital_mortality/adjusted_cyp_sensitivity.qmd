@@ -442,18 +442,20 @@ following_plot_data[, series := fifelse(
 
 following_plot <- ggplot(
   following_plot_data,
-  aes(
-    x = cyp_value, y = following_year_births, colour = series,
-    text = paste0(
-      series, "<br>CYP year: ", year,
-      "<br>CYP: ", format(round(cyp_value), big.mark = ","),
-      "<br>Birth year: ", year + 1L,
-      "<br>Recorded births: ", format(round(following_year_births), big.mark = ",")
-    )
-  )
+  aes(x = cyp_value, y = following_year_births, colour = series)
 ) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 0.7) +
-  geom_point(size = 2) +
+  geom_point(
+    aes(
+      text = paste0(
+        series, "<br>CYP year: ", year,
+        "<br>CYP: ", format(round(cyp_value), big.mark = ","),
+        "<br>Birth year: ", year + 1L,
+        "<br>Recorded births: ", format(round(following_year_births), big.mark = ",")
+      )
+    ),
+    size = 2
+  ) +
   facet_wrap(~series, scales = "free_x") +
   scale_x_continuous(labels = comma) +
   scale_y_continuous(labels = comma) +
