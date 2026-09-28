@@ -40,6 +40,8 @@ suppressPackageStartupMessages({
   library(data.table)
   library(lubridate)
   library(stringr)
+  # NMCleaner is used via NMCleaner:: only (not attached — its `year` export
+  # conflicts with data.table::year/lubridate::year under `conflicted`).
 })
 
 # ─── 0. PATHS ─────────────────────────────────────────────────────────────────
@@ -809,6 +811,47 @@ cyp_birth_correlation <- rbindlist(list(
   ), by = .(cyp_definition, scenario)]
 ))[order(alignment, cyp_definition, scenario)]
 
+# ─── 7g2. POPULATION DENOMINATOR & RATES (per 1,000 WRA) ─────────────────────
+# Denominator: women 15-49 (WRA), StatsSA Mid-Year Population Estimates via
+# NMCleaner::pop. This is WRA, not MWRA (married/in-union WRA, the FP2030
+# standard) — no marital-status-disaggregated population data exists in this
+# codebase, so WRA is used as a documented approximation pending confirmation.
+wra_age_bands <- c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49")
+
+agg_wra_population_annual <- as.data.table(NMCleaner::pop)[
+  Sex == "Female" & Age %in% wra_age_bands &
+    Year %in% as.character(adjusted_cyp_first_year:adjusted_cyp_last_year),
+  .(wra_population = sum(Population, na.rm = TRUE)),
+  by = .(year = as.integer(Year))
+][order(year)]
+
+cyp_births_rate_aligned_annual <- merge(
+  cyp_births_aligned_annual, agg_wra_population_annual, by = "year", all.x = TRUE
+)
+cyp_births_rate_aligned_annual[, `:=`(
+  cyp_rate_per_1000_wra = cyp_value / wra_population * 1000,
+  previous_year_birth_rate_per_1000_wra = previous_year_births / wra_population * 1000,
+  following_year_birth_rate_per_1000_wra = following_year_births / wra_population * 1000
+)]
+setorder(cyp_births_rate_aligned_annual, cyp_definition, scenario, year)
+
+cyp_birth_rate_correlation <- rbindlist(list(
+  cyp_births_rate_aligned_annual[!is.na(previous_year_birth_rate_per_1000_wra), .(
+    alignment = "Births in previous year (N-1)",
+    n_year_pairs = .N,
+    first_cyp_year = min(year),
+    last_cyp_year = max(year),
+    correlation = cor(cyp_rate_per_1000_wra, previous_year_birth_rate_per_1000_wra)
+  ), by = .(cyp_definition, scenario)],
+  cyp_births_rate_aligned_annual[!is.na(following_year_birth_rate_per_1000_wra), .(
+    alignment = "Births in following year (N+1)",
+    n_year_pairs = .N,
+    first_cyp_year = min(year),
+    last_cyp_year = max(year),
+    correlation = cor(cyp_rate_per_1000_wra, following_year_birth_rate_per_1000_wra)
+  ), by = .(cyp_definition, scenario)]
+))[order(alignment, cyp_definition, scenario)]
+
 
 # ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
 # Robust (median/MAD-based) z-scores computed WITHIN each facility × indicator
@@ -1021,6 +1064,10 @@ save(
   agg_recorded_births_annual,
   cyp_births_aligned_annual,
   cyp_birth_correlation,
+  # Population-denominated rates (WRA 15-49, per 1,000)
+  agg_wra_population_annual,
+  cyp_births_rate_aligned_annual,
+  cyp_birth_rate_correlation,
   # Provenance
   audit,
   file = OUTPUT_RDA

@@ -516,6 +516,166 @@ datatable(
 )
 ```
 
+## Converting to a rate (CYPR)
+
+CYP and recorded births above are both national annual counts, so a shared
+population trend could inflate or deflate their apparent relationship. This
+section repeats the alignment analysis on a rate scale: CYP and births per
+1,000 women of reproductive age (WRA, 15-49), using Stats SA mid-year
+population estimates (`NMCleaner::pop`). This is WRA, not married/in-union
+WRA (MWRA) — the FP2030-standard denominator for CYP rates — because no
+marital-status population breakdown exists in the source data. The values
+below should be treated as a documented approximation pending confirmation
+of the intended denominator.
+
+```{r}
+#| label: tbl-wra-population
+#| tbl-cap: "National female population aged 15-49 (WRA), by year (Stats SA mid-year estimates)."
+
+datatable(
+  agg_wra_population_annual[, .(
+    year, wra_population = format(round(wra_population), big.mark = ",")
+  )],
+  colnames = c("Year", "WRA population (women 15-49)"),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 15)
+)
+```
+
+```{r}
+#| label: fig-cypr-trend
+#| fig-cap: "Old standard CYP, timing-only redistribution, and the full proposed new CYP, expressed as a rate per 1,000 women 15-49, 2015–2025."
+
+cypr_trend <- copy(cyp_births_rate_aligned_annual)
+cypr_trend[, series := fifelse(cyp_definition == "Standard", "Old: standard CYP", scenario)]
+
+cypr_trend_plot <- ggplot(
+  cypr_trend,
+  aes(
+    x = year, y = cyp_rate_per_1000_wra, colour = series, group = series,
+    text = paste0(series, "<br>Year: ", year,
+                  "<br>CYPR: ", round(cyp_rate_per_1000_wra, 1), " per 1,000 WRA")
+  )
+) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.5) +
+  scale_x_continuous(breaks = 2015:2025) +
+  scale_colour_manual(
+    values = c(
+      "Old: standard CYP" = "#6a3d9a",
+      "Timing only: standard factors redistributed" = "#1f78b4",
+      "Proposed new: steady-state initialization" = "#1b9e77",
+      "Proposed new: observed cohorts only" = "#d95f02"
+    ),
+    name = NULL
+  ) +
+  labs(x = NULL, y = "CYP per 1,000 women 15-49 (CYPR)") +
+  theme_mrc
+
+ggplotly(cypr_trend_plot, tooltip = "text") |> ply_config()
+```
+
+```{r}
+#| label: tbl-cypr-birth-rate-correlation
+#| tbl-cap: "Pearson correlations between CYPR (CYP per 1,000 WRA) and the recorded birth rate (per 1,000 WRA), compared with the raw-count correlations reported above."
+
+rate_correlation_display <- copy(cyp_birth_rate_correlation)
+rate_correlation_display[, series := fifelse(
+  cyp_definition == "Standard", "Old: standard CYP", scenario
+)]
+count_correlation_lookup <- cyp_birth_correlation[, .(
+  cyp_definition, scenario, alignment, count_correlation = correlation
+)]
+rate_correlation_display <- merge(
+  rate_correlation_display, count_correlation_lookup,
+  by = c("cyp_definition", "scenario", "alignment")
+)
+
+datatable(
+  rate_correlation_display[, .(
+    series,
+    alignment,
+    n_year_pairs,
+    rate_correlation = round(correlation, 3),
+    count_correlation = round(count_correlation, 3)
+  )],
+  colnames = c(
+    "CYP series", "Birth alignment", "Year pairs",
+    "Pearson r (rate)", "Pearson r (raw counts)"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 10)
+)
+```
+
+```{r}
+#| label: fig-cypr-following-birth-rate
+#| fig-cap: "CYPR in year N against the recorded birth rate in year N+1 (both per 1,000 WRA). Lines are descriptive linear fits, not forecasting models."
+
+rate_following_plot_data <- cyp_births_rate_aligned_annual[!is.na(following_year_birth_rate_per_1000_wra)]
+rate_following_plot_data <- rate_following_plot_data[
+  scenario != "Proposed new: observed cohorts only"
+]
+rate_following_plot_data[, series := fifelse(
+  cyp_definition == "Standard", "Old: standard CYP", scenario
+)]
+
+rate_following_plot <- ggplot(
+  rate_following_plot_data,
+  aes(x = cyp_rate_per_1000_wra, y = following_year_birth_rate_per_1000_wra, colour = series)
+) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 0.7) +
+  geom_point(
+    aes(
+      text = paste0(
+        series, "<br>CYP year: ", year,
+        "<br>CYPR: ", round(cyp_rate_per_1000_wra, 1), " per 1,000 WRA",
+        "<br>Birth year: ", year + 1L,
+        "<br>Birth rate: ", round(following_year_birth_rate_per_1000_wra, 1), " per 1,000 WRA"
+      )
+    ),
+    size = 2
+  ) +
+  facet_wrap(~series, scales = "free_x") +
+  scale_colour_manual(
+    values = c(
+      "Old: standard CYP" = "#6a3d9a",
+      "Timing only: standard factors redistributed" = "#1f78b4",
+      "Proposed new: steady-state initialization" = "#1b9e77"
+    ),
+    guide = "none"
+  ) +
+  labs(
+    x = "CYPR in year N (per 1,000 WRA)",
+    y = "Recorded birth rate in year N+1 (per 1,000 WRA)"
+  ) +
+  theme_mrc +
+  theme(strip.text = element_text(size = 9))
+
+ggplotly(rate_following_plot, tooltip = "text") |> ply_config()
+```
+
+## Correlation with births: rate versus raw counts
+
+Births in the following year, rate scale: old standard CYP $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[cyp_definition == "Standard" & alignment == "Births in following year (N+1)", correlation])`$,
+timing only $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[scenario == "Timing only: standard factors redistributed" & alignment == "Births in following year (N+1)", correlation])`$,
+full proposal $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[scenario == "Proposed new: steady-state initialization" & alignment == "Births in following year (N+1)", correlation])`$.
+
+Births in the previous year, rate scale: old standard CYP $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[cyp_definition == "Standard" & alignment == "Births in previous year (N-1)", correlation])`$,
+timing only $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[scenario == "Timing only: standard factors redistributed" & alignment == "Births in previous year (N-1)", correlation])`$,
+full proposal $r =
+`r sprintf("%.3f", cyp_birth_rate_correlation[scenario == "Proposed new: steady-state initialization" & alignment == "Births in previous year (N-1)", correlation])`$.
+
+The rate-scale correlations are weaker than the raw-count correlations
+reported earlier in every series and alignment, consistent with a shared
+population growth trend inflating the raw-count relationship between CYP
+and recorded births.
+
 ## Original request
 
 ::: {.callout-note collapse="true"}
