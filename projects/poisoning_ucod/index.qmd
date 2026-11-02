@@ -1,8 +1,8 @@
 ---
-title: "Why the underlying cause of death matters: a poisoning case study"
-description: "Comparing four approaches to identifying poisoning deaths — Line 1, Line 4, last reported line, and UCOD — in Gauteng and KwaZulu-Natal vital registration data, 1997–2022"
+title: "Why the underlying cause of death matters: a pesticide poisoning case study"
+description: "Comparing four approaches to identifying pesticide poisoning deaths (ICD-10 X48+X68+X87+Y18; StatsSA MACOD 2022, Table 4.12) — Line 1, Line 4, last reported line, and UCOD — in Gauteng and KwaZulu-Natal vital registration data, 1997–2024"
 date: "2026-06-24"
-categories: [poisoning, UCOD, data-quality, vital-registration, icd10, methodology]
+categories: [pesticide-poisoning, UCOD, data-quality, vital-registration, icd10, methodology]
 bibliography: ../../j_code_modelling.bib
 csl: ../../vancouver.csl
 execute:
@@ -42,17 +42,19 @@ The South African death notification form (DNF) records the **sequence of condit
 
 The **underlying cause of death (UCOD)** is derived by Stats SA by applying ICD-10 Volume 2 selection and modification rules to the complete certificate, starting from the lowest reported line and working back up the causal chain. This is the condition that initiated the train of morbid events, or the external circumstances of injury.
 
-When a researcher wants to identify poisoning deaths from the LGH data, they face a practical choice: **which field to search for the ICD-10 poisoning code?** This case study uses `r format(s$n_gk, big.mark = ",")` death records from **Gauteng** and **KwaZulu-Natal**, `r s$yr_range[1]`–`r s$yr_range[2]`, to show the consequences of each option.
+When a researcher wants to identify pesticide poisoning deaths from the LGH data, they face a practical choice: **which field to search for the ICD-10 pesticide poisoning code?** This case study uses `r format(s$n_gk, big.mark = ",")` death records from **Gauteng** and **KwaZulu-Natal**, `r s$yr_range[1]`–`r s$yr_range[2]`, to show the consequences of each option.
 
 ::: {.callout-note}
-## Poisoning definition applied in all options
+## Pesticide poisoning definition applied in all options
 
-| ICD-10 block | Category |
+Restricted to the four ICD-10 codes StatsSA validates for pesticide poisoning specifically (MACOD 2022, Table 4.12; checked by Debbie Bradshaw — interim pending confirmation in the 2023 release):
+
+| ICD-10 code | Category |
 |:---|:---|
-| X40–X49 | Accidental / unspecified |
-| X60–X69 | Intentional self-poisoning |
-| X85 | Assault by poisoning |
-| Y10–Y19 | Poisoning, undetermined intent |
+| X48 | Accidental / unspecified pesticide poisoning |
+| X68 | Intentional self-poisoning by pesticides |
+| X87 | Assault by pesticides |
+| Y18 | Pesticide poisoning, undetermined intent |
 
 The same pattern is applied identically to every field.
 :::
@@ -61,23 +63,23 @@ The same pattern is applied identically to every field.
 
 ## The decision: which field to use?
 
-There are four candidate approaches for identifying poisoning deaths in the raw LGH data. Here is what each one does and what it produces.
+There are four candidate approaches for identifying pesticide poisoning deaths in the raw LGH data. Here is what each one does and what it produces.
 
 ### Option 1 — Line 1 only (`CauseA`)
 
-Search `CauseA` (the immediate cause field) for a poisoning ICD-10 code.
+Search `CauseA` (the immediate cause field) for a pesticide poisoning ICD-10 code.
 
-**When this would be right:** The certifier has written the external cause (e.g. `X49`) directly on Line 1 as the immediate cause of death, with nothing below it.
+**When this would be right:** The certifier has written the external cause (e.g. `X48`) directly on Line 1 as the immediate cause of death, with nothing below it.
 
-**When this fails:** The certifier correctly records a terminal physiological event on Line 1 — e.g. *cardiac arrest* or *hepatic failure* — and writes the actual poisoning code on a lower line. This is the **intended** structure of a causal chain; it is not a certifier error. Line 1 scanning would silently drop the entire death from the poisoning count.
+**When this fails:** The certifier correctly records a terminal physiological event on Line 1 — e.g. *cardiac arrest* or *hepatic failure* — and writes the actual pesticide poisoning code on a lower line. This is the **intended** structure of a causal chain; it is not a certifier error. Line 1 scanning would silently drop the entire death from the pesticide poisoning count.
 
-**Also:** Line 1 can carry a poisoning code that is *not* ultimately selected as the UCOD — for example when a certifier places an external cause on Line 1 but an underlying chronic disease sits below it. Those records become **false positives**.
+**Also:** Line 1 can carry a pesticide poisoning code that is *not* ultimately selected as the UCOD — for example when a certifier places an external cause on Line 1 but an underlying chronic disease sits below it. Those records become **false positives**.
 
 ---
 
 ### Option 2 — Line 4 only (`CauseD`)
 
-Search `CauseD` (the most distal / antecedent cause field) for a poisoning code.
+Search `CauseD` (the most distal / antecedent cause field) for a pesticide poisoning code.
 
 **When this would be right:** The certifier has recorded the external cause at the bottom of a four-line chain.
 
@@ -91,7 +93,7 @@ Identify the last non-empty line in the Part I chain for each certificate, then 
 
 **When this would be right:** The certifier uses the bottom-most filled line for the root cause, following the standard instruction to proceed from the immediate cause down to its origin.
 
-**When this fails:** Some certifiers record an underlying chronic disease on the last line (e.g. *diabetes mellitus* on Line 3) while the poisoning code sits on an intermediate line (e.g. `X48 — pesticides` on Line 2). The last-line approach picks up the chronic disease, not the poisoning.
+**When this fails:** Some certifiers record an underlying chronic disease on the last line (e.g. *diabetes mellitus* on Line 3) while the pesticide code sits on an intermediate line (e.g. `X48 — pesticides` on Line 2). The last-line approach picks up the chronic disease, not the pesticide poisoning.
 
 ---
 
@@ -105,13 +107,13 @@ Use the `UnderlyingCause` field, which contains the UCOD assigned by Stats SA af
 
 ---
 
-## Decision summary: Gauteng and KwaZulu-Natal poisoning deaths, `r s$yr_range[1]`–`r s$yr_range[2]`
+## Decision summary: Gauteng and KwaZulu-Natal pesticide poisoning deaths, `r s$yr_range[1]`–`r s$yr_range[2]`
 
 The table below shows exactly what each option produces when applied to the `r format(s$n_gk, big.mark = ",")` GP + KZN death records. **UCOD total (`r format(s$n_ucod_pois, big.mark = ",")` deaths) is the reference.**
 
 ```{r}
 #| label: tbl-decision
-#| tbl-cap: "Decision summary: poisoning deaths identified by each approach in GP + KZN, with sensitivity and false-positive rate against the UCOD reference. Green row = recommended approach."
+#| tbl-cap: "Decision summary: pesticide poisoning deaths identified by each approach in GP + KZN, with sensitivity and false-positive rate against the UCOD reference. Green row = recommended approach."
 
 if (exists("tbl_decision")) {
   disp <- as.data.frame(tbl_decision)
@@ -141,7 +143,7 @@ if (exists("tbl_decision")) {
 
 ```{r}
 #| label: fig-capture
-#| fig-cap: "Fig. 1. Poisoning deaths identified by each option, by province. The UCOD bar (Option 4, green) is the reference total."
+#| fig-cap: "Fig. 1. Pesticide poisoning deaths identified by each option, by province. The UCOD bar (Option 4, green) is the reference total."
 #| fig-width: 9
 #| fig-height: 5
 
@@ -165,13 +167,13 @@ If every certifier filled all four lines, Option 2 (Line 4) might recover most c
 if (exists("fig_lines_filled")) fig_lines_filled else message("Run wrangling.R")
 ```
 
-### Where in the chain is the poisoning code recorded?
+### Where in the chain is the pesticide poisoning code recorded?
 
-Among all UCOD-poisoning records, this shows which line the certifier used for the X/Y external cause code — and therefore which option can see it.
+Among all UCOD-pesticide-poisoning records, this shows which line the certifier used for the X/Y external cause code — and therefore which option can see it.
 
 ```{r}
 #| label: fig-chain-pos
-#| fig-cap: "Fig. 3. Position of the poisoning code in the Part I chain for UCOD-identified poisoning deaths."
+#| fig-cap: "Fig. 3. Position of the pesticide poisoning code in the Part I chain for UCOD-identified pesticide poisoning deaths."
 #| fig-width: 7
 #| fig-height: 5
 
@@ -180,7 +182,7 @@ if (exists("fig_chain_pos")) fig_chain_pos else message("Run wrangling.R")
 
 ```{r}
 #| label: tbl-chain-wide
-#| tbl-cap: "Table 2. UCOD-poisoning records by position of poisoning code in Part I chain."
+#| tbl-cap: "Table 2. UCOD-pesticide-poisoning records by position of pesticide poisoning code in Part I chain."
 
 if (exists("tbl_chain_wide")) {
   flextable(as.data.frame(tbl_chain_wide)) |>
@@ -194,7 +196,7 @@ if (exists("tbl_chain_wide")) {
 
 ### Sensitivity and specificity against the UCOD reference
 
-For each option, sensitivity = proportion of UCOD-poisoning deaths correctly captured; specificity = proportion of non-poisoning deaths correctly excluded.
+For each option, sensitivity = proportion of UCOD-pesticide-poisoning deaths correctly captured; specificity = proportion of non-pesticide-poisoning deaths correctly excluded.
 
 ```{r}
 #| label: fig-disc
@@ -207,7 +209,7 @@ if (exists("fig_disc")) fig_disc else message("Run wrangling.R")
 
 ```{r}
 #| label: tbl-discordance
-#| tbl-cap: "Table 3. Sensitivity, specificity, and error counts for each option against the UCOD reference. TP = true positive; FP = false positive (flagged as poisoning but UCOD is not); FN = false negative (not flagged but UCOD is poisoning)."
+#| tbl-cap: "Table 3. Sensitivity, specificity, and error counts for each option against the UCOD reference. TP = true positive; FP = false positive (flagged as pesticide poisoning but UCOD is not); FN = false negative (not flagged but UCOD is pesticide poisoning)."
 
 if (exists("tbl_discordance")) {
   flextable(as.data.frame(tbl_discordance)) |>
@@ -222,26 +224,26 @@ if (exists("tbl_discordance")) {
 ```
 
 ::: {.callout-important}
-## What the numbers mean for a poisoning analyst
+## What the numbers mean for a pesticide poisoning analyst
 
-Of the **`r format(s$n_ucod_pois, big.mark = ",")` poisoning deaths** (UCOD) in GP + KZN:
+Of the **`r format(s$n_ucod_pois, big.mark = ",")` pesticide poisoning deaths** (UCOD) in GP + KZN:
 
 - **Option 1 (Line 1)** misses **`r s$pct_miss_line1`%** (`r format(s$n_ucod_miss_line1, big.mark = ",")` records) and also adds **`r format(s$n_fp_line1, big.mark = ",")` false positives** (`r s$pct_fp_line1`% of its identifications).
-- **Option 3 (last reported line)** still misses **`r s$pct_miss_last`%** (`r format(s$n_ucod_miss_last, big.mark = ",")` records) — the cases where the poisoning code sits on an intermediate line.
-- **`r format(s$n_ucod_no_part1, big.mark = ",")` UCOD-poisoning records** (`r s$pct_ucod_no_part1`%) carry **no X/Y code anywhere in Part I** — invisible to any line-scanning approach and only recoverable via the UCOD.
+- **Option 3 (last reported line)** still misses **`r s$pct_miss_last`%** (`r format(s$n_ucod_miss_last, big.mark = ",")` records) — the cases where the pesticide poisoning code sits on an intermediate line.
+- **`r format(s$n_ucod_no_part1, big.mark = ",")` UCOD-pesticide-poisoning records** (`r s$pct_ucod_no_part1`%) carry **no X/Y code anywhere in Part I** — invisible to any line-scanning approach and only recoverable via the UCOD.
 :::
 
 ---
 
 ## Illustrative examples
 
-### Type 1 — Missed by Option 1: poisoning buried in the chain
+### Type 1 — Missed by Option 1: pesticide poisoning buried in the chain
 
-Line 1 carries a terminal physiological event; the poisoning code appears lower. Line 1 scanning misses the death entirely.
+Line 1 carries a terminal physiological event; the pesticide poisoning code appears lower. Line 1 scanning misses the death entirely.
 
 ```{r}
 #| label: tbl-examples-miss
-#| tbl-cap: "Table 4. Records where UCOD = poisoning but Line 1 (CauseA) is not a poisoning code. Green column = UCOD; '—' = line not filled."
+#| tbl-cap: "Table 4. Records where UCOD = pesticide poisoning but Line 1 (CauseA) is not a pesticide poisoning code. Green column = UCOD; '—' = line not filled."
 
 if (exists("examples_miss") && nrow(examples_miss) > 0) {
   flextable(as.data.frame(examples_miss)) |>
@@ -255,13 +257,13 @@ if (exists("examples_miss") && nrow(examples_miss) > 0) {
 }
 ```
 
-### Type 2 — False positive for Option 1: poisoning code on Line 1 but UCOD differs
+### Type 2 — False positive for Option 1: pesticide poisoning code on Line 1 but UCOD differs
 
-The certifier placed the external cause on Line 1; the ICD-10 selection rules selected a different condition as the true UCOD. Option 1 would count these as poisoning deaths in error.
+The certifier placed the external cause on Line 1; the ICD-10 selection rules selected a different condition as the true UCOD. Option 1 would count these as pesticide poisoning deaths in error.
 
 ```{r}
 #| label: tbl-examples-fp
-#| tbl-cap: "Table 5. Records where Line 1 (CauseA) = poisoning code but UCOD is not poisoning. Orange column = CauseA."
+#| tbl-cap: "Table 5. Records where Line 1 (CauseA) = pesticide poisoning code but UCOD is not pesticide poisoning. Orange column = CauseA."
 
 if (exists("examples_fp") && nrow(examples_fp) > 0) {
   flextable(as.data.frame(examples_fp)) |>
@@ -277,11 +279,11 @@ if (exists("examples_fp") && nrow(examples_fp) > 0) {
 
 ### Type 3 — Buried on Line 3: missed by Options 1 and 3
 
-The poisoning code sits on Line 3 with a different condition below it. Option 3 (last reported line) picks up the non-poisoning Line 4 or the non-poisoning last line, not the poisoning on Line 3.
+The pesticide poisoning code sits on Line 3 with a different condition below it. Option 3 (last reported line) picks up the non-pesticide-poisoning Line 4 or the non-pesticide-poisoning last line, not the pesticide poisoning on Line 3.
 
 ```{r}
 #| label: tbl-examples-buried
-#| tbl-cap: "Table 6. Records where UCOD = poisoning but the poisoning code is on Line 3 (CauseC), with a different condition as the most distal line. Blue column = CauseC."
+#| tbl-cap: "Table 6. Records where UCOD = pesticide poisoning but the pesticide poisoning code is on Line 3 (CauseC), with a different condition as the most distal line. Blue column = CauseC."
 
 if (exists("examples_buried") && nrow(examples_buried) > 0) {
   flextable(as.data.frame(examples_buried)) |>
@@ -299,11 +301,11 @@ if (exists("examples_buried") && nrow(examples_buried) > 0) {
 
 ## Trend over time: what each option gives you year by year
 
-The gap between the UCOD line (Option 4, solid green) and the other lines represents poisoning deaths that would be lost or added in error in every year of the study.
+The gap between the UCOD line (Option 4, solid green) and the other lines represents pesticide poisoning deaths that would be lost or added in error in every year of the study.
 
 ```{r}
 #| label: fig-annual
-#| fig-cap: "Fig. 5. Annual poisoning deaths identified by each option, GP + KZN combined. The gap between Option 4 (UCOD, green solid) and the other options shows the persistent annual cost of not using the UCOD."
+#| fig-cap: "Fig. 5. Annual pesticide poisoning deaths identified by each option, GP + KZN combined. The gap between Option 4 (UCOD, green solid) and the other options shows the persistent annual cost of not using the UCOD."
 #| fig-width: 10
 #| fig-height: 4.5
 
@@ -320,9 +322,9 @@ Options 1–3 produce systematically biased counts because they assume the cause
 
 Specific failure mechanisms:
 
-- **Option 1** loses all deaths where the certifier correctly records a terminal event (cardiac arrest, respiratory failure) on Line 1 and places the causal agent lower — the most common certificate structure for poisoning.
-- **Option 2** loses almost all poisoning deaths because the majority of certificates are single-line entries.
-- **Option 3** improves on Option 1 but fails on certificates with a chronic disease recorded below an intermediate-line poisoning code — the "buried" pattern shown in Type 3 above.
+- **Option 1** loses all deaths where the certifier correctly records a terminal event (cardiac arrest, respiratory failure) on Line 1 and places the causal agent lower — the most common certificate structure for pesticide poisoning.
+- **Option 2** loses almost all pesticide poisoning deaths because the majority of certificates are single-line entries.
+- **Option 3** improves on Option 1 but fails on certificates with a chronic disease recorded below an intermediate-line pesticide poisoning code — the "buried" pattern shown in Type 3 above.
 - All three options are also **incomparable across years and settings** because they are sensitive to certifier behaviour and coding conventions that shift over time; UCOD processing normalises this variation.
 
 ## References

@@ -56,6 +56,31 @@ dq_target_high     <- 10          # percent (high-quality benchmark, in text)
 dq_target_colour   <- "#D32F2F"   # standardized red
 dq_target_lty      <- "dotted"
 
+# Percentage trend plots (proportions on a 0-1 scale) default to the full
+# 0-100% axis so small year-to-year changes are not exaggerated; a button lets
+# readers zoom to the data range when they want the detail.
+pct_full_axis <- function(p) {
+  full_range <- c(-0.02, 1.02)
+  p |>
+    plotly::layout(
+      margin = list(t = 90),
+      yaxis = list(range = full_range, autorange = FALSE, tickmode = "auto",
+                   tickformat = ".0%", nticks = 6),
+      updatemenus = list(list(
+        type = "buttons", direction = "right", showactive = TRUE, active = 0,
+        x = 0, xanchor = "left", y = 1.01, yanchor = "bottom",
+        pad = list(r = 4, t = 0), font = list(size = 11),
+        buttons = list(
+          list(label = "Full 0–100%", method = "relayout",
+               args = list(list(yaxis.range = full_range, yaxis.autorange = FALSE,
+                                yaxis.nticks = 6))),
+          list(label = "Zoom to data", method = "relayout",
+               args = list(list(yaxis.autorange = TRUE, yaxis.nticks = 8)))
+        )
+      ))
+    )
+}
+
 # Auditability: capture render timestamp once
 render_stamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
 
@@ -196,9 +221,30 @@ datatable(
 
 ## Report Timeliness {#timeliness}
 
-Stats SA releases mortality reports with a delay of several years. This section tracks the timeliness of releases.
+This figure measures **publication delay after the death year**: elapsed time from **1 January of the following year to the Stats SA report release date**. For example, the interval for deaths occurring in 2022 starts on **1 January 2023**, not 1 January 2022. Years are calculated as elapsed days divided by 365.25 and displayed to one decimal place. This is report-publication timeliness, not the time from an individual death to its registration.
 
-**Click on any point to open the corresponding Stats SA PDF report.**
+The **red dashed line at 2 years** marks the upper boundary of the WHO assessment's highest-scoring timeliness category: **less than 2 years** for detailed national cause-of-death statistics made available to the public ([WHO, 2010, *Rapid assessment of national civil registration and vital statistics systems*, question 24, p. 14](https://www.who.int/publications/i/item/rapid-assessment-of-national-civil-registration-and-vital-statistics-systems)). Exactly 2 years does not satisfy the less-than-2-years benchmark.
+
+```{r}
+#| label: timeliness-data
+#| include: false
+
+# Re-check Stats SA for newer P0309.3 reports at render time (falls back to the
+# cached list in outputs/mcod_statssa_releases.csv if offline).
+source("../../statssa_mcod_releases.r")
+mcod_releases <- tryCatch(
+  get_statssa_mcod_releases(root = "../.."),
+  error = function(e) get_statssa_mcod_releases(root = "../..", check_online = FALSE)
+)
+timeliness <- build_timeliness_plots(mcod_releases, n_years = 10)
+p_timeliness_interactive <- timeliness$interactive
+latest_release <- mcod_releases[which.max(mcod_releases$year_of_death), ]
+latest_delay   <- timeliness$data$delay_years[timeliness$data$is_latest]
+```
+
+The list of reports is **pulled automatically from Stats SA** each time this page is rendered: starting from the last known release, the next death year's P0309.3 report is requested from statssa.gov.za until one is not yet published, and the release date is read from the "Embargoed until" date on the report cover. The **most recent publication** is for deaths in **`r latest_release$year_of_death`**, released on **`r format(latest_release$release_date, "%d %B %Y")`** (`r latest_delay` years from 1 January `r latest_release$year_of_death + 1` to release; highlighted in orange). Stats SA last checked: `r format(attr(mcod_releases, "checked_on"), "%d %B %Y")`.
+
+**Click on any bar to open the corresponding Stats SA PDF report.**
 
 ```{r}
 #| label: timeliness-plot
@@ -489,12 +535,93 @@ p_ig <- ggplot(nat_ig_long, aes(x = DeathYear, y = pct, colour = indicator_label
 
 ggplotly(p_ig, tooltip = "text") |>
   style(connectgaps = TRUE) |>
-  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.25))
+  layout(hovermode = "closest", legend = list(orientation = "h", y = -0.25)) |>
+  pct_full_axis()
 ```
 
 ::: {.callout-note}
 **X59** (exposure to unspecified factor) appears `r comma(sum(dt_dq$is_x59))` times as Cause A over the last `r length(window_years)` years — too small nationally to plot as its own line, but it falls within Category 5 ("Insufficiently specified causes within ICD chapters", alongside Y10-Y34) of the confirmed unusable-code crosswalk [@nannan2023] and is captured within the garbage/unusable total above.
 :::
+
+### Methodology: How the Two Ill-Defined Groups Were Identified {#illdefined-methodology}
+
+The two groups plotted above are **nested**, not separate. **Ill-defined natural causes** (R00–R99) are one of the five categories that together make up **garbage/unusable** codes. Both are derived from the **underlying cause of death** (`UnderlyingCause`, a 3-character ICD-10 code) in a single, rule-based pass. The pass is implemented in the source pipeline (`LGH2025_analysis_FINAL_using2022data.R`, Section 3) and runs before any cause grouping:
+
+1. **Standardise the code.** `UnderlyingCause` is upper-cased and trimmed so code-range comparisons are reliable (for example, `"r99 "` becomes `"R99"`).
+2. **Start every death as usable.** Every death is set to `garbage_flag = 0` ("Not garbage").
+3. **Apply the unusable-code crosswalk in a fixed order.** Each step overwrites the previous one, so a code ends in exactly one category. The crosswalk is the 5-category GBD/Naghavi list as applied to SA CRVS data [@naghavi2010; @nannan2023]:
+
+    | Order | `garbage_flag` | Category | ICD-10 codes (summary) |
+    |:-----:|:-:|----------|------------------------|
+    | 1 | 1 | Symptoms, signs and ill-defined conditions | R00–R99 |
+    | 2 | 4 | Immediate causes of death | D65, I46, J96 |
+    | 3 | 5 | Insufficiently specified causes within ICD chapters | C26, C39, C57, C64, C76, C80, A49, B83, B99, E88, I51, I99, **X59**, D00–D13, D16–D18, D20–D24, D28–D48, Y10–Y34 |
+    | 4 | 3 | Intermediate causes of death | A40–A41, A48, E85–E87, G91–G93, I26–I27, I44–I45, I49–I50, I74, I81, J69, J80–J81, J86, J90, J93–J94, J98, K65–K66, K71–K72, K75–K76, K92, M86, N14, N17–N19 |
+    | 5 | 2 | Impossible as underlying causes of death | e.g. I10, I15, I70, A31, B94, Y86–Y89, F32–F33, F40–F98 (selected), G43–G58 (selected), H00–H93, L-, M- and Q-chapter ranges (full list in the pipeline) |
+
+    The code ranges do not overlap, so the order only acts as a safeguard.
+
+4. **Derive the two dashboard flags** from that one variable (chunk `dq-data-load`):
+    - **Ill-defined natural** is `is_illdefined = garbage_flag_label == "Symptoms, signs and ill-defined conditions"`, which is ICD-10 R00–R99.
+    - **Garbage/unusable** is `is_garbage = garbage_flag > 0`. This covers categories 1–5, so it **includes** the ill-defined group.
+5. **Compute indicators.** Each indicator is a percentage of **all registered deaths** in each death year: `mean(is_illdefined)` and `mean(is_garbage)`. This uses the last `r length(window_years)` death years (`r min(window_years)`–`r max(window_years)`). There is no age/sex re-stratification; see the caveats in [Methods](#methods-illdefined).
+
+**Verification 1: how deaths split across the crosswalk** (`r min(window_years)`–`r max(window_years)`). The ill-defined group is the first row. The garbage/unusable total is the sum of all five unusable categories.
+
+```{r}
+#| label: illdefined-method-composition
+
+comp <- dt_dq[, .N, by = .(garbage_flag, garbage_flag_label)][order(garbage_flag)]
+comp[, pct := N / sum(N)]
+comp[, group := fcase(
+  garbage_flag == 0L, "Usable",
+  garbage_flag == 1L, "Ill-defined natural (and garbage/unusable)",
+  default = "Garbage/unusable (not ill-defined)"
+)]
+comp_tbl <- rbind(
+  comp[, .(`garbage_flag` = as.character(garbage_flag),
+           Category = as.character(garbage_flag_label), Group = group,
+           Deaths = comma(N), `% of all deaths` = percent(pct, accuracy = 0.1))],
+  data.table(`garbage_flag` = "1–5", Category = "Garbage/unusable total",
+             Group = "is_garbage = TRUE",
+             Deaths = comma(sum(comp[garbage_flag > 0L, N])),
+             `% of all deaths` = percent(sum(comp[garbage_flag > 0L, pct]), accuracy = 0.1))
+)
+flextable(comp_tbl) |>
+  bold(i = nrow(comp_tbl)) |>
+  bg(i = ~ `garbage_flag` == "1", bg = "#FFF3E0") |>
+  autofit()
+```
+
+**Verification 2: independent check of the ill-defined flag.** The pipeline flag is cross-tabulated against a direct regular expression (`^R[0-9]`, i.e. ICD-10 Chapter XVIII R00–R99) applied to `UnderlyingCause`. Every death should fall on the diagonal, with zero disagreements.
+
+```{r}
+#| label: illdefined-method-concordance
+
+uc <- toupper(trimws(as.character(dt_dq$UnderlyingCause)))
+conc <- data.table(regex_R00_R99 = grepl("^R[0-9]", uc),
+                   is_illdefined = dt_dq$is_illdefined)[, .N, by = .(regex_R00_R99, is_illdefined)]
+n_disagree <- conc[regex_R00_R99 != is_illdefined, sum(N)]
+flextable(conc[order(-regex_R00_R99, -is_illdefined)][, N := comma(N)]) |>
+  set_header_labels(regex_R00_R99 = "Regex R00–R99 on UnderlyingCause",
+                    is_illdefined = "Pipeline is_illdefined", N = "Deaths") |>
+  autofit()
+```
+
+Disagreements between the regex and the pipeline flag: **`r comma(n_disagree)`**. In addition, `is_illdefined` is always a subset of `is_garbage`: there are `r comma(sum(dt_dq$is_illdefined & !dt_dq$is_garbage))` ill-defined deaths that are not flagged as garbage.
+
+**Verification 3: which codes drive the ill-defined group.** These are the ten most frequent R-codes in the window.
+
+```{r}
+#| label: illdefined-method-topcodes
+
+top_r <- dt_dq[is_illdefined == TRUE, .N, by = .(code = toupper(trimws(as.character(UnderlyingCause))))][order(-N)][1:10]
+top_r[, `% of ill-defined` := percent(N / sum(dt_dq$is_illdefined), accuracy = 0.1)]
+top_r[, N := comma(N)]
+flextable(top_r) |>
+  set_header_labels(code = "ICD-10 code", N = "Deaths") |>
+  autofit()
+```
 
 ### Unspecified Facility Type {#unspecified-facility}
 
@@ -519,7 +646,8 @@ p_unspec <- ggplot(unspec_trend, aes(x = DeathYear, y = pct_unspec,
   theme_minimal(base_size = 12) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplotly(p_unspec, tooltip = "text") |> style(connectgaps = TRUE) |> layout(hovermode = "closest")
+ggplotly(p_unspec, tooltip = "text") |> style(connectgaps = TRUE) |> layout(hovermode = "closest") |>
+  pct_full_axis()
 ```
 
 ### Data Completeness: Sex and Facility Type {#missingness-table}
@@ -595,13 +723,14 @@ make_nonhospital_plot <- function(province = NULL) {
     geom_line(colour = "#E63946", linewidth = 1) +
     geom_point(colour = "#E63946", size = 2) +
     scale_x_continuous(breaks = window_years) +
-    scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(x = NULL, y = "Proportion non-hospital", title = ttl) +
     theme_minimal(base_size = 11) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           plot.title  = element_text(face = "bold", size = 11))
 
-  ggplotly(p, tooltip = "text") |> style(connectgaps = TRUE) |> layout(hovermode = "closest")
+  ggplotly(p, tooltip = "text") |> style(connectgaps = TRUE) |> layout(hovermode = "closest") |>
+    pct_full_axis()
 }
 
 provinces_nonhosp <- sort(unique(as.character(dt_dq$DeathProvince)))
@@ -640,10 +769,12 @@ The **grey dashed line at 50%** is a **descriptive reference only** — it is *n
 
 ### HIV/AIDS Mortality: VR vs Models
 
+This trend deliberately goes beyond the 10-year reporting window. It shows the full Tembisa model history, from **1985** (the earliest year in the model output) to 2025, so the VR series (from 1997) can be read against the whole course of the epidemic. Tembisa values are modelled estimates, not observed counts.
+
 ```{r}
 #| label: hiv-plot
 
-ggplotly(p_hiv + coord_cartesian(xlim = range(window_years)), tooltip = "text") %>%
+ggplotly(p_hiv, tooltip = "text") %>%
   style(connectgaps = TRUE) %>%
   layout(hovermode = "closest")
 ```
@@ -672,10 +803,12 @@ The gap between VR and the Tembisa model is driven mainly by HIV deaths being mi
 
 ### TB Mortality: VR vs Models
 
+As with HIV, this trend shows the full Tembisa TB model history, from **1985** to 2025 (total adult TB deaths, model mean). It goes beyond the 10-year window to give long-run context for the VR (from 1997) and NMC (from 2017) series.
+
 ```{r}
 #| label: tb-plot
 
-ggplotly(p_tb + coord_cartesian(xlim = range(window_years)), tooltip = "text") %>%
+ggplotly(p_tb, tooltip = "text") %>%
   style(connectgaps = TRUE) %>%
   layout(hovermode = "closest")
 ```
@@ -822,8 +955,9 @@ if (exists("dt_external") && exists("tabulate_external_causes_only")) {
 
 | Source | Description | Coverage |
 |--------|-------------|----------|
-| Stats SA P0309.3 | Mortality and causes of death | 2006-2022 |
-| Thembisa Model v4.8 | HIV/AIDS demographic projections | 1997-2025 |
+| Stats SA P0309.3 | Mortality and causes of death (auto-updated from statssa.gov.za) | 2006-`r max(mcod_releases$year_of_death)` |
+| Thembisa Model v4.8 | HIV/AIDS demographic projections (plotted) | 1985-2025 |
+| Tembisa TB Model v2.1 | TB deaths in adults (plotted) | 1985-2025 |
 | NCODV Study | Verbal autopsy validation | 2017-2018 |
 | NMC Database | TB and poisoning surveillance notifications | 2017-2024 |
 
@@ -839,7 +973,7 @@ Deaths are classified using the WHO garbage code framework. A death is considere
 **Status: confirmed.** The definitions below match the 5-category unusable-code crosswalk (based on Naghavi et al. 2010's GBD classification) as applied to South African CRVS data by the SAMRC's rapid assessment of cause-of-death data [@nannan2023]. The `garbage_flag_label` categories already present in this dataset's source pipeline correspond exactly to Nannan et al. (2023)'s five categories.
 :::
 
-- **Ill-defined (natural) causes**: ICD-10 Chapter XVIII, **R00–R99** ("Symptoms, signs and abnormal clinical/laboratory findings, not elsewhere classified"). In this dataset this corresponds exactly to `garbage_flag_label == "Symptoms, signs and ill-defined conditions"` (verified 1:1 against a direct `R00-R99` regex on `UnderlyingCause`). Nannan et al. (2023) report this nationally at ~13% of deaths (2000-2017), above their cited ideal level of **below 5%**.
+- **Ill-defined (natural) causes**: ICD-10 Chapter XVIII, **R00–R99** ("Symptoms, signs and abnormal clinical/laboratory findings, not elsewhere classified"). In this dataset this corresponds exactly to `garbage_flag_label == "Symptoms, signs and ill-defined conditions"` (verified 1:1 against a direct `R00-R99` regex on `UnderlyingCause`; the step-by-step identification and verification tables are in [Methodology: How the Two Ill-Defined Groups Were Identified](#illdefined-methodology)). Nannan et al. (2023) report this nationally at ~13% of deaths (2000-2017), above their cited ideal level of **below 5%**.
 - **Garbage / unusable codes** (used interchangeably here): the broader GBD "unusable code" set — causes too vague, intermediate, or implausible to be the true underlying cause of death. Operationally this dashboard treats **any `garbage_flag > 0`** category as garbage/unusable, composed of the five categories confirmed in Nannan et al. (2023), Table 6:
   1. Ill-defined natural causes (R00–R99, above);
   2. Impossible causes of death (e.g. essential primary hypertension, atherosclerosis, long-term sequelae — implausible as an underlying cause);

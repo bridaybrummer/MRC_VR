@@ -1,6 +1,6 @@
 # =============================================================================
 # MRC VR Data Explorer Shiny App - OPTIMIZED VERSION
-# Interactive exploration of South African mortality data (1997-2022)
+# Interactive exploration of South African mortality data (1997-2024)
 # =============================================================================
 # OPTIMIZATIONS APPLIED:
 # 1. Pre-aggregated summary tables at startup (avoids repeated aggregation)
@@ -22,6 +22,7 @@ library(waiter)           # For startup loading screen
 library(shinycssloaders)  # For plot spinners
 library(sf)               # For choropleth maps
 library(dplyr)            # For left_join in choropleth maps
+library(ggplot2)          # For the faceted seasonality-by-age plot (via ggplotly)
 
 # Resolve conflicted package issues (NMCleaner loads conflicted)
 if (requireNamespace("conflicted", quietly = TRUE)) {
@@ -37,10 +38,19 @@ load_data <- function() {
   message("Loading data...")
   start_time <- Sys.time()
   
-  data_path <- here::here("Deaths2022_MRCversionFINAL.feather")
-  if (!file.exists(data_path)) {
-    data_path <- "../../Deaths2022_MRCversionFINAL.feather"
-  }
+  # Prefer the Isibalo-extended file (adds 2023-2024; see data/macod_isibalo/
+  # extend_deaths_explorer_with_isibalo.R), falling back to the original
+  # 2022-capped extract if the extended version hasn't been built yet.
+  # NOTE: 2023/2024 rows have no district geography (not on the public
+  # Isibalo portal) — the Geographic tab's district views will undercount
+  # those years until StatsSA supplies an equivalent District2023/2024.dta.
+  data_path_candidates <- c(
+    here::here("Deaths2022_MRCversionFINAL_2024.feather"),
+    "../../Deaths2022_MRCversionFINAL_2024.feather",
+    here::here("Deaths2022_MRCversionFINAL.feather"),
+    "../../Deaths2022_MRCversionFINAL.feather"
+  )
+  data_path <- data_path_candidates[file.exists(data_path_candidates)][1]
   
   # Read only required columns (major memory savings)
   required_cols <- c(
@@ -80,13 +90,17 @@ load_data <- function() {
                                   "35-44", "45-54", "55-64", "65-74", "75-84", "85+"))]
   
   # Convert to integer for speed (smaller, faster comparisons)
-  dt[, epi_year := as.integer(epi_year)]
-  dt[, epi_week := as.integer(epi_week)]
-  dt[, DeathType := as.integer(DeathType)]
-  dt[, NaturalUnnatural := as.integer(NaturalUnnatural)]
-  dt[, DeathYear := as.integer(DeathYear)]
-  dt[, DeathMonth := as.integer(DeathMonth)]
-  dt[, RegistrationYear := as.integer(RegistrationYear)]
+  # unclass() first: newer vctrs versions reject as.integer()/as.numeric()
+  # directly on a haven_labelled vector (observed on this environment even
+  # against the untouched original 2022-only extract — a pre-existing
+  # compatibility issue, not specific to the Isibalo-extended file).
+  dt[, epi_year := as.integer(unclass(epi_year))]
+  dt[, epi_week := as.integer(unclass(epi_week))]
+  dt[, DeathType := as.integer(unclass(DeathType))]
+  dt[, NaturalUnnatural := as.integer(unclass(NaturalUnnatural))]
+  dt[, DeathYear := as.integer(unclass(DeathYear))]
+  dt[, DeathMonth := as.integer(unclass(DeathMonth))]
+  dt[, RegistrationYear := as.integer(unclass(RegistrationYear))]
   
   # Set keys for fast filtering (critical optimization!)
   setkey(dt, epi_year, DeathProvinceName)
@@ -243,6 +257,68 @@ load_lgh_lookup <- function() {
 }
 
 # =============================================================================
+# LOAD NMC (NOTIFIABLE MEDICAL CONDITION) <-> ICD-10 LOOKUP
+# =============================================================================
+# Authoritative, triple-verified SA NMC list (outputs/nmc_icd_full_reference.csv,
+# built from data/NMC_ICD_link/SA_NMC_ICD_Codes_v3.xlsx). Includes known SA
+# outbreak-prone conditions: Malaria, Cholera, Listeriosis, Measles, Rift
+# Valley fever, viral haemorrhagic fevers, meningococcal disease, etc., each
+# with an ICD-10/11 code and a note on expected MACOD coding caveats.
+#
+# "Fever-rash illness" is NOT a separate notifiable condition in SA — it is
+# the syndromic surveillance case definition used to trigger investigation of
+# suspected Measles/Rubella, so it has no ICD-10 code of its own. A manual
+# search-alias row is added below so users searching that term still find the
+# conditions it actually represents.
+
+load_nmc_lookup <- function() {
+  message("Loading NMC <-> ICD-10 cause lookup...")
+  
+  ref_path <- here::here("outputs", "nmc_icd_full_reference.csv")
+  if (!file.exists(ref_path)) {
+    ref_path <- "../../outputs/nmc_icd_full_reference.csv"
+  }
+  
+  if (!file.exists(ref_path)) {
+    warning("NMC reference not found at: ", ref_path, " — NMC search tab will be empty")
+    return(data.table(
+      nmc_category = character(0), nmc_condition = character(0),
+      icd10_code = character(0), icd10_root = character(0),
+      icd11_code = character(0), pathogen_notes = character(0),
+      surveillance_artefacts = character(0), macod_note = character(0),
+      reporting_timeframe = character(0), is_alias = logical(0)
+    ))
+  }
+  
+  nmc <- fread(ref_path, encoding = "UTF-8")
+  nmc[, icd10_root := toupper(substr(trimws(icd10_code), 1, 3))]
+  nmc[, is_alias := FALSE]
+  
+  # Manual search-alias row(s) — real conditions (with real ICD-10 codes)
+  # surfaced under a common lay/surveillance search term that isn't itself a
+  # notifiable condition name.
+  aliases <- data.table(
+    nmc_category = "Search alias",
+    nmc_condition = "Fever-rash illness (searches Measles + Rubella)",
+    icd10_code = paste(nmc[nmc_condition %in% c("Measles", "Rubella", "Congenital rubella syndrome"), icd10_code], collapse = " + "),
+    icd10_root = paste(nmc[nmc_condition %in% c("Measles", "Rubella", "Congenital rubella syndrome"), icd10_root], collapse = "|"),
+    icd11_code = NA_character_,
+    pathogen_notes = "South Africa's 'fever and rash' syndromic surveillance case definition triggers investigation for suspected Measles or Rubella. It is not itself a distinct notifiable condition and has no ICD-10 code of its own — this entry searches the Measles, Rubella, and Congenital rubella syndrome records together.",
+    surveillance_artefacts = "Search alias combining 3 conditions — see each individually below for condition-specific notes.",
+    macod_note = "See the Measles and Rubella entries individually for MACOD coding caveats.",
+    reporting_timeframe = NA_character_,
+    is_alias = TRUE
+  )
+  
+  nmc <- rbindlist(list(nmc, aliases), use.names = TRUE, fill = TRUE)
+  setorder(nmc, nmc_category, nmc_condition)
+  
+  message("  NMC lookup loaded: ", nrow(nmc), " conditions (incl. search aliases)")
+  
+  return(nmc)
+}
+
+# =============================================================================
 # PRE-AGGREGATION FUNCTIONS
 # =============================================================================
 
@@ -271,6 +347,20 @@ create_aggregated_tables <- function(dt) {
                    by = .(epi_year, UnderlyingCause, DeathProvinceName, 
                           agegroup, SexName)]
   setkey(agg$causes, epi_year)
+  
+  # Cause code summaries by calendar MONTH (for the seasonality-by-age module)
+  agg$causes_month <- dt[!is.na(UnderlyingCause) & UnderlyingCause != "" & !is.na(DeathMonth), 
+                         .(count = .N),
+                         by = .(epi_year, DeathMonth, UnderlyingCause, 
+                                DeathProvinceName, agegroup, SexName)]
+  setkey(agg$causes_month, epi_year)
+  
+  # Cause code summaries by EPI WEEK (for the seasonality-by-age module)
+  agg$causes_week <- dt[!is.na(UnderlyingCause) & UnderlyingCause != "" & !is.na(epi_week), 
+                        .(count = .N),
+                        by = .(epi_year, epi_week, UnderlyingCause, 
+                               DeathProvinceName, agegroup, SexName)]
+  setkey(agg$causes_week, epi_year)
   
   # District summaries
   agg$districts <- dt[!is.na(deathdistrictname), .(count = .N),
@@ -306,8 +396,8 @@ ui <- page_navbar(
     useWaiter(),  # Enable waiter loading screen
     waiterShowOnLoad(html = tagList(
       spin_fading_circles(),
-      h4("Loading 13 million records...", style = "color: white; margin-top: 20px;"),
-      p("This may take 20-30 seconds on first load", style = "color: #aaa;")
+      h4("Loading 14 million records...", style = "color: white; margin-top: 20px;"),
+      p("This may take 40-70 seconds on first load", style = "color: #aaa;")
     ), color = "#0d6efd")
   ),
   
@@ -320,8 +410,8 @@ ui <- page_navbar(
         title = "Filters",
         width = 300,
         sliderInput("overview_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(1997L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(1997L, 2024L),
                     step = 1L, sep = ""),
         selectInput("overview_province", "Province:",
                     choices = NULL,
@@ -339,21 +429,25 @@ ui <- page_navbar(
                      selected = "all")
       ),
       card(
+        full_screen = TRUE,
         card_header("Deaths Over Time"),
         withSpinner(plotlyOutput("overview_time_plot", height = "400px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Deaths by Province"),
           withSpinner(plotlyOutput("overview_province_plot", height = "350px"), type = 4, color = "#0d6efd")
         ),
         card(
+          full_screen = TRUE,
           card_header("Deaths by Age Group"),
           withSpinner(plotlyOutput("overview_age_plot", height = "350px"), type = 4, color = "#198754")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Summary Statistics"),
         verbatimTextOutput("overview_summary")
       )
@@ -369,8 +463,8 @@ ui <- page_navbar(
         title = "Filters",
         width = 300,
         sliderInput("temporal_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2014L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2014L, 2024L),
                     step = 1L, sep = ""),
         selectInput("temporal_province", "Province:",
                     choices = NULL,
@@ -388,16 +482,19 @@ ui <- page_navbar(
         checkboxInput("temporal_compare_years", "Compare years overlay", FALSE)
       ),
       card(
+        full_screen = TRUE,
         card_header("Time Series"),
         withSpinner(plotlyOutput("temporal_plot", height = "500px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Seasonality Heatmap"),
           withSpinner(plotlyOutput("temporal_heatmap", height = "400px"), type = 4, color = "#0d6efd")
         ),
         card(
+          full_screen = TRUE,
           card_header("Year-over-Year Comparison"),
           withSpinner(plotlyOutput("temporal_yoy", height = "400px"), type = 4, color = "#dc3545")
         )
@@ -414,8 +511,8 @@ ui <- page_navbar(
         title = "Filters",
         width = 300,
         sliderInput("cause_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2020L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2020L, 2024L),
                     step = 1L, sep = ""),
         selectInput("cause_province", "Province:",
                     choices = NULL,
@@ -431,21 +528,25 @@ ui <- page_navbar(
         numericInput("cause_top_n", "Top N causes:", value = 20, min = 5, max = 50)
       ),
       card(
+        full_screen = TRUE,
         card_header("Top Underlying Causes"),
         withSpinner(plotlyOutput("cause_top_plot", height = "500px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Causes Over Time"),
           withSpinner(plotlyOutput("cause_time_plot", height = "400px"), type = 4, color = "#0d6efd")
         ),
         card(
+          full_screen = TRUE,
           card_header("Cause Distribution by Province"),
           withSpinner(plotlyOutput("cause_province_plot", height = "400px"), type = 4, color = "#0d6efd")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Cause Code Details"),
         withSpinner(DTOutput("cause_table"), type = 4, color = "#6c757d")
       )
@@ -461,8 +562,8 @@ ui <- page_navbar(
         title = "Filters",
         width = 300,
         sliderInput("demo_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2020L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2020L, 2024L),
                     step = 1L, sep = ""),
         selectInput("demo_province", "Province:",
                     choices = NULL,
@@ -477,19 +578,23 @@ ui <- page_navbar(
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Age Distribution"),
           withSpinner(plotlyOutput("demo_age_hist", height = "350px"), type = 4, color = "#0d6efd")
         ),
         card(
+          full_screen = TRUE,
           card_header("Sex Distribution"),
           withSpinner(plotlyOutput("demo_sex_plot", height = "350px"), type = 4, color = "#dc3545")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Age-Sex Pyramid"),
         withSpinner(plotlyOutput("demo_pyramid", height = "500px"), type = 4, color = "#6f42c1")
       ),
       card(
+        full_screen = TRUE,
         card_header("Registration Delay Analysis"),
         withSpinner(plotlyOutput("demo_reg_delay", height = "400px"), type = 4, color = "#198754")
       )
@@ -505,8 +610,8 @@ ui <- page_navbar(
         title = "Compare Cause Codes",
         width = 350,
         sliderInput("compare_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2015L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2015L, 2024L),
                     step = 1L, sep = ""),
         hr(),
         h5("Group A (e.g., HIV)"),
@@ -540,16 +645,19 @@ ui <- page_navbar(
                     selected = "all")
       ),
       card(
+        full_screen = TRUE,
         card_header("Code Group Comparison Over Time"),
         withSpinner(plotlyOutput("compare_time_plot", height = "400px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Group A vs Group B Totals"),
           withSpinner(plotlyOutput("compare_totals_plot", height = "350px"), type = 4, color = "#6f42c1")
         ),
         card(
+          full_screen = TRUE,
           card_header("Age Distribution Comparison"),
           withSpinner(plotlyOutput("compare_age_plot", height = "350px"), type = 4, color = "#dc3545")
         )
@@ -557,15 +665,18 @@ ui <- page_navbar(
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Sex Distribution Comparison"),
           withSpinner(plotlyOutput("compare_sex_plot", height = "350px"), type = 4, color = "#198754")
         ),
         card(
+          full_screen = TRUE,
           card_header("Province Distribution Comparison"),
           withSpinner(plotlyOutput("compare_province_plot", height = "350px"), type = 4, color = "#fd7e14")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Detailed Comparison Table"),
         withSpinner(DTOutput("compare_table"), type = 4, color = "#6c757d")
       )
@@ -583,8 +694,8 @@ ui <- page_navbar(
         p("Compare pre-defined LGH cause groups (no manual code entry needed)"),
         hr(),
         sliderInput("lgh_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2015L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2015L, 2024L),
                     step = 1L, sep = ""),
         hr(),
         h5("Group A", style = "color: #0d6efd;"),
@@ -612,16 +723,19 @@ ui <- page_navbar(
                     selected = "all")
       ),
       card(
+        full_screen = TRUE,
         card_header("LGH Cause Group Comparison Over Time"),
         withSpinner(plotlyOutput("lgh_time_plot", height = "400px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Group Totals"),
           withSpinner(plotlyOutput("lgh_totals_plot", height = "350px"), type = 4, color = "#6f42c1")
         ),
         card(
+          full_screen = TRUE,
           card_header("Age Distribution"),
           withSpinner(plotlyOutput("lgh_age_plot", height = "350px"), type = 4, color = "#dc3545")
         )
@@ -629,17 +743,187 @@ ui <- page_navbar(
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Sex Distribution"),
           withSpinner(plotlyOutput("lgh_sex_plot", height = "350px"), type = 4, color = "#198754")
         ),
         card(
+          full_screen = TRUE,
           card_header("Province Distribution"),
           withSpinner(plotlyOutput("lgh_province_plot", height = "350px"), type = 4, color = "#fd7e14")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Detailed Summary Table"),
         withSpinner(DTOutput("lgh_table"), type = 4, color = "#6c757d")
+      )
+    )
+  ),
+  
+  # LGH Cause Age-Year Explorer Tab
+  nav_panel(
+    title = "Age-Year Explorer",
+    icon = icon("chart-area"),
+    layout_sidebar(
+      sidebar = sidebar(
+        title = "LGH Cause Age-Year Explorer",
+        width = 350,
+        p("Explore how the age distribution of a LGH cause group has changed over the years. Each line on the main chart is one calendar year."),
+        hr(),
+        selectInput("explorer_lgh_cause", "LGH Cause Group(s):",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE),
+        helpText("Select one or more causes; counts are combined if more than one is selected."),
+        hr(),
+        sliderInput("explorer_years", "Year Range:",
+                    min = 1997L, max = 2024L,
+                    value = c(2013L, 2024L),
+                    step = 1L, sep = ""),
+        helpText("Each year in range becomes a separate line. Keep the range narrow (5-10 years) to avoid an overcrowded chart."),
+        hr(),
+        selectInput("explorer_province", "Province:",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE),
+        selectInput("explorer_sex", "Sex:",
+                    choices = c("All" = "all", "Male" = "Male", "Female" = "Female"),
+                    selected = "all"),
+        hr(),
+        checkboxInput("explorer_pct", "Show as % of each year's total (within selected cause)", FALSE),
+        hr(),
+        sliderInput("explorer_plot_height", "Plot Height (px):",
+                    min = 300, max = 1100, value = 500, step = 50),
+        helpText("Adjust chart height to suit your screen; use the expand icon on any chart's top-right corner for a full-screen view.")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Age Distribution by Year"),
+        uiOutput("explorer_age_year_plot_ui")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Total Deaths by Year (Selected Cause)"),
+        withSpinner(plotlyOutput("explorer_totals_plot", height = "300px"), type = 4, color = "#6f42c1")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Age × Year Heatmap"),
+        uiOutput("explorer_heatmap_ui")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Detail Table"),
+        withSpinner(DTOutput("explorer_table"), type = 4, color = "#6c757d")
+      )
+    )
+  ),
+  
+  # LGH Cause Seasonality-by-Age Tab
+  nav_panel(
+    title = "Seasonality by Age",
+    icon = icon("calendar-week"),
+    layout_sidebar(
+      sidebar = sidebar(
+        title = "Cause Seasonality by Age",
+        width = 350,
+        p("For a chosen LGH cause group, one small chart per age group shows deaths by month or epi week. Each line is one calendar year."),
+        hr(),
+        selectInput("season_lgh_cause", "LGH Cause Group(s):",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE),
+        helpText("Select one or more causes; counts are combined if more than one is selected."),
+        hr(),
+        radioButtons("season_time_unit", "Time Unit:",
+                     choices = c("Month" = "month", "Epi Week" = "week"),
+                     selected = "month"),
+        sliderInput("season_years", "Year Range:",
+                    min = 1997L, max = 2024L,
+                    value = c(2018L, 2024L),
+                    step = 1L, sep = ""),
+        helpText("Each year in range becomes a separate line within every age-group panel. Keep the range narrow (3-6 years) to avoid overcrowded panels."),
+        hr(),
+        selectInput("season_province", "Province:",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE),
+        selectInput("season_sex", "Sex:",
+                    choices = c("All" = "all", "Male" = "Male", "Female" = "Female"),
+                    selected = "all"),
+        hr(),
+        sliderInput("season_plot_height", "Plot Height (px):",
+                    min = 500, max = 1600, value = 950, step = 50),
+        helpText("Increase height for more age-group panels to breathe, or use the expand icon for a full-screen view.")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Cause Volume by Age Group"),
+        uiOutput("season_plot_ui")
+      )
+    )
+  ),
+  
+  # NMC Condition Search Tab
+  nav_panel(
+    title = "NMC Condition Search",
+    icon = icon("magnifying-glass"),
+    layout_sidebar(
+      sidebar = sidebar(
+        title = "NMC Cause Code Searcher",
+        width = 380,
+        p("Search South Africa's Notifiable Medical Conditions (NMC) list and see the matching ICD-10 cause-of-death code, with data-quality notes on how that condition tends to be coded (or miscoded) in MACOD vital registration data."),
+        hr(),
+        selectizeInput("nmc_condition", "Search NMC Condition:",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = FALSE,
+                       options = list(placeholder = "Type e.g. Malaria, Cholera, Listeriosis, Fever-rash...")),
+        helpText("Covers all 57 SA notifiable conditions (incl. known outbreak diseases: Malaria, Cholera, Listeriosis, Measles, Rift Valley fever, viral haemorrhagic fevers, meningococcal disease, and more). 'Fever-rash illness' is a search alias for Measles + Rubella — it has no ICD-10 code of its own in South Africa's list."),
+        hr(),
+        sliderInput("nmc_years", "Year Range:",
+                    min = 1997L, max = 2024L,
+                    value = c(2015L, 2024L),
+                    step = 1L, sep = ""),
+        selectInput("nmc_province", "Province:",
+                    choices = NULL,
+                    selected = NULL,
+                    multiple = TRUE),
+        selectInput("nmc_sex", "Sex:",
+                    choices = c("All" = "all", "Male" = "Male", "Female" = "Female"),
+                    selected = "all"),
+        hr(),
+        sliderInput("nmc_plot_height", "Plot Height (px):",
+                    min = 300, max = 900, value = 400, step = 50)
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Condition Details & MACOD Data-Quality Notes"),
+        uiOutput("nmc_info_panel")
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Annual Deaths Trend"),
+        uiOutput("nmc_trend_plot_ui")
+      ),
+      layout_columns(
+        col_widths = c(6, 6),
+        card(
+          full_screen = TRUE,
+          card_header("Age Distribution"),
+          withSpinner(plotlyOutput("nmc_age_plot", height = "350px"), type = 4, color = "#dc3545")
+        ),
+        card(
+          full_screen = TRUE,
+          card_header("Province Distribution"),
+          withSpinner(plotlyOutput("nmc_province_plot", height = "350px"), type = 4, color = "#198754")
+        )
+      ),
+      card(
+        full_screen = TRUE,
+        card_header("Detail Table"),
+        withSpinner(DTOutput("nmc_table"), type = 4, color = "#6c757d")
       )
     )
   ),
@@ -653,8 +937,8 @@ ui <- page_navbar(
         title = "Filters",
         width = 320,
         sliderInput("geo_years", "Year Range:",
-                    min = 1997L, max = 2022L,
-                    value = c(2020L, 2022L),
+                    min = 1997L, max = 2024L,
+                    value = c(2020L, 2024L),
                     step = 1L, sep = ""),
         selectInput("geo_agegroup", "Age Group:",
                     choices = NULL,
@@ -690,25 +974,30 @@ ui <- page_navbar(
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Province Choropleth Map"),
           withSpinner(plotlyOutput("geo_province_map", height = "450px"), type = 4, color = "#0d6efd")
         ),
         card(
+          full_screen = TRUE,
           card_header("District Choropleth Map"),
           withSpinner(plotlyOutput("geo_district_map", height = "450px"), type = 4, color = "#198754")
         )
       ),
       card(
+        full_screen = TRUE,
         card_header("Deaths by Province (Bar Chart)"),
         withSpinner(plotlyOutput("geo_province_bar", height = "350px"), type = 4, color = "#0d6efd")
       ),
       layout_columns(
         col_widths = c(6, 6),
         card(
+          full_screen = TRUE,
           card_header("Top 20 Districts"),
           withSpinner(plotlyOutput("geo_district_plot", height = "400px"), type = 4, color = "#198754")
         ),
         card(
+          full_screen = TRUE,
           card_header("Province Trends Over Time"),
           withSpinner(plotlyOutput("geo_province_time", height = "400px"), type = 4, color = "#0d6efd")
         )
@@ -725,7 +1014,7 @@ ui <- page_navbar(
         title = "Filters",
         width = 300,
         selectInput("raw_years", "Year:",
-                    choices = 1997:2022,
+                    choices = 1997:2024,
                     selected = 2022,
                     multiple = FALSE),
         selectInput("raw_province", "Province:",
@@ -736,6 +1025,7 @@ ui <- page_navbar(
         downloadButton("download_filtered", "Download Filtered Data")
       ),
       card(
+        full_screen = TRUE,
         card_header("Raw Data Sample"),
         withSpinner(DTOutput("raw_data_table"), type = 4, color = "#6c757d")
       )
@@ -747,11 +1037,12 @@ ui <- page_navbar(
     title = "About",
     icon = icon("info-circle"),
     card(
+      full_screen = TRUE,
       card_header("About This App"),
       markdown("
 ## MRC VR Data Explorer (Optimized)
 
-This Shiny application provides interactive exploration of South African vital registration mortality data from 1997-2022.
+This Shiny application provides interactive exploration of South African vital registration mortality data from 1997-2024.
 
 ### Optimizations Applied
 - **Pre-aggregated tables**: Common aggregations computed at startup
@@ -761,7 +1052,13 @@ This Shiny application provides interactive exploration of South African vital r
 - **Column selection**: Only required columns loaded
 
 ### Data
-- ~13 million death records (1997-2022)
+- ~14 million death records (1997-2024). 2023-2024 are sourced from StatsSA's
+  public Isibalo MCOD portal (see `data/macod_isibalo/`) and appended onto the
+  1997-2022 base extract; national/provincial figures are current to 2024, but
+  **district-level geography is not available for 2023-2024** (the public
+  Isibalo data only carry province-level geography) — the Geographic tab's
+  district views will undercount those two years pending a new StatsSA data
+  request.
 - Key variables: demographics, cause codes, geography, timing
       ")
     )
@@ -779,6 +1076,7 @@ server <- function(input, output, session) {
   agg <- create_aggregated_tables(dt)
   shapes <- load_shape_files()
   lgh_lookup <- load_lgh_lookup()
+  nmc_lookup <- load_nmc_lookup()
   pop_data <- load_population_data()
   
   # Hide the loading screen now that data is ready
@@ -816,6 +1114,19 @@ server <- function(input, output, session) {
   updateSelectInput(session, "lgh_group_b", choices = lgh_choices, selected = NULL)
   updateSelectInput(session, "lgh_province", choices = c("All" = "", provinces), selected = "")
   updateSelectInput(session, "lgh_agegroup", choices = c("All" = "", agegroups), selected = "")
+  
+  # Age-Year Explorer tab - use pre-defined LGH cause groups
+  updateSelectInput(session, "explorer_lgh_cause", choices = lgh_choices, selected = NULL)
+  updateSelectInput(session, "explorer_province", choices = c("All" = "", provinces), selected = "")
+  
+  # Seasonality by Age tab - use pre-defined LGH cause groups
+  updateSelectInput(session, "season_lgh_cause", choices = lgh_choices, selected = NULL)
+  updateSelectInput(session, "season_province", choices = c("All" = "", provinces), selected = "")
+  
+  # NMC Condition Search tab - searchable list of all notifiable conditions
+  updateSelectizeInput(session, "nmc_condition", choices = nmc_lookup$nmc_condition,
+                       selected = NULL, server = TRUE)
+  updateSelectInput(session, "nmc_province", choices = c("All" = "", provinces), selected = "")
   
   # ==========================================================================
   # OVERVIEW TAB - Using pre-aggregated data
@@ -1546,6 +1857,357 @@ server <- function(input, output, session) {
     
     datatable(d_summary,
               options = list(pageLength = 10, scrollX = TRUE, dom = 't'),
+              rownames = FALSE)
+  })
+  
+  # ==========================================================================
+  # AGE-YEAR EXPLORER TAB - age group x year lines for a chosen LGH cause group
+  # ==========================================================================
+  
+  explorer_data <- reactive({
+    req(input$explorer_lgh_cause)
+    
+    # Expand selected LGH cause(s) to actual ICD-10 codes present in the data
+    all_causes <- unique(agg$causes$UnderlyingCause)
+    selected_codes <- unique(unlist(lapply(input$explorer_lgh_cause, expand_lgh_cause,
+                                           all_codes = all_causes)))
+    if (length(selected_codes) == 0) return(NULL)
+    
+    cause_label <- paste(lgh_lookup[LGH_Cause %in% input$explorer_lgh_cause, description],
+                         collapse = " + ")
+    if (nchar(cause_label) > 60) cause_label <- paste0(substr(cause_label, 1, 57), "...")
+    
+    d <- agg$causes[epi_year >= input$explorer_years[1] & epi_year <= input$explorer_years[2]]
+    d <- d[UnderlyingCause %in% selected_codes]
+    
+    if (length(input$explorer_province) > 0 && !("" %in% input$explorer_province)) {
+      d <- d[DeathProvinceName %in% input$explorer_province]
+    }
+    
+    if (input$explorer_sex != "all") {
+      d <- d[SexName == input$explorer_sex]
+    }
+    
+    if (nrow(d) == 0) return(NULL)
+    
+    # Collapse to age group x year, filling in zero counts for a complete grid
+    d_agg <- d[!is.na(agegroup), .(count = sum(count)), by = .(epi_year, agegroup)]
+    full_grid <- CJ(epi_year = sort(unique(d_agg$epi_year)),
+                    agegroup = factor(agegroups, levels = agegroups))
+    d_agg <- merge(full_grid, d_agg, by = c("epi_year", "agegroup"), all.x = TRUE)
+    d_agg[is.na(count), count := 0L]
+    d_agg[, pct := 100 * count / pmax(sum(count), 1), by = epi_year]
+    d_agg[, agegroup := factor(agegroup, levels = agegroups)]
+    
+    attr(d_agg, "cause_label") <- cause_label
+    d_agg
+  }) |> bindCache(input$explorer_lgh_cause, input$explorer_years,
+                  input$explorer_province, input$explorer_sex)
+  
+  output$explorer_age_year_plot_ui <- renderUI({
+    withSpinner(plotlyOutput("explorer_age_year_plot",
+                             height = paste0(input$explorer_plot_height, "px")),
+               type = 4, color = "#0d6efd")
+  })
+  
+  output$explorer_age_year_plot <- renderPlotly({
+    d <- explorer_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Select at least one LGH cause group"))
+    }
+    
+    cause_label <- attr(d, "cause_label")
+    years <- sort(unique(d$epi_year))
+    # Sequential colour ramp (blue -> orange -> red) so earlier/later years are
+    # visually distinguishable even with many lines on the chart.
+    year_colors <- colorRampPalette(c("#2b6cb0", "#f6ad55", "#c53030"))(length(years))
+    
+    y_var <- if (isTRUE(input$explorer_pct)) ~pct else ~count
+    y_title <- if (isTRUE(input$explorer_pct)) "% of that year's deaths" else "Number of Deaths"
+    hover_fmt <- if (isTRUE(input$explorer_pct)) "%{y:.1f}%" else "%{y:,}"
+    
+    plot_ly(d, x = ~agegroup, y = y_var, color = ~factor(epi_year, levels = years),
+            type = 'scatter', mode = 'lines+markers',
+            colors = year_colors,
+            hovertemplate = paste0("Age: %{x}<br>", hover_fmt, "<extra>%{fullData.name}</extra>")) %>%
+      layout(title = cause_label,
+             xaxis = list(title = "Age Group", categoryorder = "array", categoryarray = agegroups),
+             yaxis = list(title = y_title),
+             legend = list(title = list(text = "Year"), orientation = "v"))
+  })
+  
+  output$explorer_totals_plot <- renderPlotly({
+    d <- explorer_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Select at least one LGH cause group"))
+    }
+    
+    d_tot <- d[, .(count = sum(count)), by = epi_year][order(epi_year)]
+    
+    plot_ly(d_tot, x = ~epi_year, y = ~count, type = 'scatter', mode = 'lines+markers',
+            line = list(color = '#6f42c1'), marker = list(color = '#6f42c1'),
+            hovertemplate = "Year: %{x}<br>Deaths: %{y:,}<extra></extra>") %>%
+      layout(xaxis = list(title = "Year"),
+             yaxis = list(title = "Total Deaths"))
+  })
+  
+  output$explorer_heatmap_ui <- renderUI({
+    withSpinner(plotlyOutput("explorer_heatmap",
+                             height = paste0(input$explorer_plot_height, "px")),
+               type = 4, color = "#198754")
+  })
+  
+  output$explorer_heatmap <- renderPlotly({
+    d <- explorer_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Select at least one LGH cause group"))
+    }
+    
+    z_var <- if (isTRUE(input$explorer_pct)) "pct" else "count"
+    d_wide <- dcast(d, agegroup ~ epi_year, value.var = z_var, fill = 0)
+    agegroup_labels <- as.character(d_wide$agegroup)
+    z_mat <- as.matrix(d_wide[, -1, with = FALSE])
+    
+    plot_ly(x = as.integer(names(d_wide)[-1]), y = agegroup_labels, z = z_mat,
+            type = "heatmap", colorscale = "YlOrRd",
+            hovertemplate = "Year: %{x}<br>Age: %{y}<br>%{z}<extra></extra>") %>%
+      layout(xaxis = list(title = "Year", constrain = "domain"),
+             yaxis = list(title = "Age Group", categoryorder = "array",
+                         categoryarray = rev(agegroups),
+                         scaleanchor = "x", scaleratio = 1, constrain = "domain"))
+  })
+  
+  output$explorer_table <- renderDT({
+    d <- explorer_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(datatable(data.frame(Message = "Select at least one LGH cause group")))
+    }
+    
+    d_wide <- dcast(d, agegroup ~ epi_year, value.var = "count", fill = 0)
+    setnames(d_wide, "agegroup", "Age Group")
+    
+    datatable(d_wide,
+              options = list(pageLength = 15, scrollX = TRUE, dom = 't'),
+              rownames = FALSE)
+  })
+  
+  # ==========================================================================
+  # SEASONALITY BY AGE TAB - faceted month/week x year panels, one per age group
+  # ==========================================================================
+  
+  season_data <- reactive({
+    req(input$season_lgh_cause)
+    
+    time_unit <- input$season_time_unit
+    agg_tbl <- if (time_unit == "week") agg$causes_week else agg$causes_month
+    time_col <- if (time_unit == "week") "epi_week" else "DeathMonth"
+    
+    all_causes <- unique(agg_tbl$UnderlyingCause)
+    selected_codes <- unique(unlist(lapply(input$season_lgh_cause, expand_lgh_cause,
+                                           all_codes = all_causes)))
+    if (length(selected_codes) == 0) return(NULL)
+    
+    cause_label <- paste(lgh_lookup[LGH_Cause %in% input$season_lgh_cause, description],
+                         collapse = " + ")
+    if (nchar(cause_label) > 60) cause_label <- paste0(substr(cause_label, 1, 57), "...")
+    
+    d <- agg_tbl[epi_year >= input$season_years[1] & epi_year <= input$season_years[2]]
+    d <- d[UnderlyingCause %in% selected_codes]
+    
+    if (length(input$season_province) > 0 && !("" %in% input$season_province)) {
+      d <- d[DeathProvinceName %in% input$season_province]
+    }
+    
+    if (input$season_sex != "all") {
+      d <- d[SexName == input$season_sex]
+    }
+    
+    if (nrow(d) == 0) return(NULL)
+    
+    # Collapse to time-unit x year x age group, filling zero counts for
+    # continuous lines within every age-group facet.
+    d_agg <- d[!is.na(agegroup), .(count = sum(count)), by = c("epi_year", time_col, "agegroup")]
+    setnames(d_agg, time_col, "time_val")
+    
+    time_levels <- if (time_unit == "week") 1:53 else 1:12
+    full_grid <- CJ(epi_year = sort(unique(d_agg$epi_year)),
+                    time_val = time_levels,
+                    agegroup = factor(agegroups, levels = agegroups))
+    d_agg <- merge(full_grid, d_agg, by = c("epi_year", "time_val", "agegroup"), all.x = TRUE)
+    d_agg[is.na(count), count := 0L]
+    d_agg[, agegroup := factor(agegroup, levels = agegroups)]
+    
+    attr(d_agg, "cause_label") <- cause_label
+    attr(d_agg, "time_unit") <- time_unit
+    d_agg
+  }) |> bindCache(input$season_lgh_cause, input$season_time_unit, input$season_years,
+                  input$season_province, input$season_sex)
+  
+  output$season_plot_ui <- renderUI({
+    withSpinner(plotlyOutput("season_plot",
+                             height = paste0(input$season_plot_height, "px")),
+               type = 4, color = "#0d6efd")
+  })
+  
+  output$season_plot <- renderPlotly({
+    d <- season_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Select at least one LGH cause group"))
+    }
+    
+    cause_label <- attr(d, "cause_label")
+    time_unit <- attr(d, "time_unit")
+    x_title <- if (time_unit == "week") "Epi Week" else "Month"
+    years <- sort(unique(d$epi_year))
+    year_colors <- colorRampPalette(c("#2b6cb0", "#f6ad55", "#c53030"))(length(years))
+    
+    d <- copy(d)
+    d[, year_f := factor(epi_year, levels = years)]
+    
+    p <- ggplot(d, aes(x = time_val, y = count, color = year_f, group = year_f)) +
+      geom_line(linewidth = 0.5) +
+      facet_wrap(~ agegroup, scales = "free_y") +
+      scale_color_manual(values = year_colors, name = "Year") +
+      labs(title = cause_label, x = x_title, y = "Deaths") +
+      theme_minimal(base_size = 11) +
+      theme(strip.text = element_text(face = "bold"),
+            panel.grid.minor = element_blank())
+    
+    if (time_unit == "month") {
+      p <- p + scale_x_continuous(breaks = 1:12, labels = month.abb)
+    }
+    
+    ggplotly(p, tooltip = c("x", "y", "colour")) %>%
+      layout(legend = list(orientation = "h", y = -0.08),
+             margin = list(t = 60))
+  })
+  
+  # ==========================================================================
+  # NMC CONDITION SEARCH TAB - search NMC conditions, see ICD-10 mapping +
+  # MACOD data-quality notes, and mortality trends for the matched code(s)
+  # ==========================================================================
+  
+  nmc_data <- reactive({
+    req(input$nmc_condition)
+    
+    row <- nmc_lookup[nmc_condition == input$nmc_condition]
+    if (nrow(row) == 0) return(NULL)
+    row <- row[1]
+    
+    icd10_roots <- strsplit(row$icd10_root, "\\|")[[1]]
+    icd10_roots <- toupper(trimws(icd10_roots))
+    
+    d <- agg$causes[epi_year >= input$nmc_years[1] & epi_year <= input$nmc_years[2]]
+    d <- d[toupper(substr(UnderlyingCause, 1, 3)) %in% icd10_roots]
+    
+    if (length(input$nmc_province) > 0 && !("" %in% input$nmc_province)) {
+      d <- d[DeathProvinceName %in% input$nmc_province]
+    }
+    
+    if (input$nmc_sex != "all") {
+      d <- d[SexName == input$nmc_sex]
+    }
+    
+    attr(d, "info") <- row
+    d
+  }) |> bindCache(input$nmc_condition, input$nmc_years, input$nmc_province, input$nmc_sex)
+  
+  output$nmc_info_panel <- renderUI({
+    d <- nmc_data()
+    if (is.null(d)) {
+      return(p("Search for and select an NMC condition above (e.g. Malaria, Cholera, Listeriosis, Fever-rash)."))
+    }
+    
+    info <- attr(d, "info")
+    na_or <- function(x, default = "—") if (is.na(x) || !nzchar(trimws(x))) default else x
+    
+    tagList(
+      layout_columns(
+        col_widths = c(3, 3, 3, 3),
+        p(strong("Category: "), na_or(info$nmc_category)),
+        p(strong("ICD-10 code: "), code(na_or(info$icd10_code))),
+        p(strong("ICD-11 code: "), code(na_or(info$icd11_code))),
+        p(strong("Reporting timeframe: "), na_or(info$reporting_timeframe))
+      ),
+      if (nzchar(trimws(na_or(info$pathogen_notes, "")))) tagList(
+        strong("Pathogen / specificity notes: "), p(info$pathogen_notes)
+      ),
+      if (nzchar(trimws(na_or(info$surveillance_artefacts, "")))) div(
+        class = "alert alert-warning",
+        strong("⚠ Surveillance artefacts & coding pitfalls: "), info$surveillance_artefacts
+      ),
+      if (nzchar(trimws(na_or(info$macod_note, "")))) div(
+        class = "alert alert-info",
+        strong("SA MACOD data-quality note: "), info$macod_note
+      ),
+      p(em(sprintf("Matched %s death record(s) in the vital registration data for the selected filters.",
+                   format(nrow(d), big.mark = ","))))
+    )
+  })
+  
+  output$nmc_trend_plot_ui <- renderUI({
+    withSpinner(plotlyOutput("nmc_trend_plot",
+                             height = paste0(input$nmc_plot_height, "px")),
+               type = 4, color = "#0d6efd")
+  })
+  
+  output$nmc_trend_plot <- renderPlotly({
+    d <- nmc_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Search for and select an NMC condition"))
+    }
+    
+    info <- attr(d, "info")
+    d_year <- d[, .(count = sum(count)), by = epi_year][order(epi_year)]
+    
+    plot_ly(d_year, x = ~epi_year, y = ~count, type = 'scatter', mode = 'lines+markers',
+            line = list(color = '#0d6efd'), marker = list(color = '#0d6efd'),
+            hovertemplate = "Year: %{x}<br>Deaths: %{y:,}<extra></extra>") %>%
+      layout(title = info$nmc_condition,
+             xaxis = list(title = "Year"),
+             yaxis = list(title = "Number of Deaths"))
+  })
+  
+  output$nmc_age_plot <- renderPlotly({
+    d <- nmc_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Search for and select an NMC condition"))
+    }
+    
+    d_age <- d[!is.na(agegroup), .(count = sum(count)), by = agegroup]
+    
+    plot_ly(d_age, x = ~agegroup, y = ~count, type = 'bar',
+            marker = list(color = '#dc3545'),
+            hovertemplate = "Age: %{x}<br>Deaths: %{y:,}<extra></extra>") %>%
+      layout(xaxis = list(title = "Age Group", categoryorder = "array", categoryarray = agegroups),
+             yaxis = list(title = "Number of Deaths"))
+  })
+  
+  output$nmc_province_plot <- renderPlotly({
+    d <- nmc_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(plotly_empty() %>% layout(title = "Search for and select an NMC condition"))
+    }
+    
+    d_prov <- d[!is.na(DeathProvinceName), .(count = sum(count)), by = DeathProvinceName]
+    setorder(d_prov, count)
+    
+    plot_ly(d_prov, x = ~count, y = ~DeathProvinceName, type = 'bar', orientation = 'h',
+            marker = list(color = '#198754'),
+            hovertemplate = "%{y}<br>Deaths: %{x:,}<extra></extra>") %>%
+      layout(xaxis = list(title = "Number of Deaths"), yaxis = list(title = NULL))
+  })
+  
+  output$nmc_table <- renderDT({
+    d <- nmc_data()
+    if (is.null(d) || nrow(d) == 0) {
+      return(datatable(data.frame(Message = "Search for and select an NMC condition")))
+    }
+    
+    d_tbl <- d[, .(Deaths = sum(count)), by = .(Year = epi_year)][order(Year)]
+    
+    datatable(d_tbl,
+              options = list(pageLength = 15, scrollX = TRUE, dom = 't'),
               rownames = FALSE)
   })
   

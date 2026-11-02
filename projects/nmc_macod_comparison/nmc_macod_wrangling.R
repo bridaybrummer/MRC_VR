@@ -11,7 +11,11 @@ project_dir  <- "projects/nmc_macod_comparison"
 root         <- here::here()   # falls back to getwd() if {here} not installed
 
 nmc_feather  <- path.expand("~/Desktop/SAFETP/CLA/NMC_database/master/new_master.feather")
-lgh_feather  <- "LGH_MasterFile_preCollapsedAll.feather"
+# Prefer the Isibalo-extended file (adds 2023-2024; see data/macod_isibalo/
+# extend_lgh_with_isibalo.R). No district dependency here.
+lgh_candidates <- c("LGH_MasterFile_preCollapsedAll_2024.feather",
+                    "LGH_MasterFile_preCollapsedAll.feather")
+lgh_feather  <- lgh_candidates[file.exists(lgh_candidates)][1]
 icd_map_csv  <- "outputs/verified_nmc_condition_icd10.csv"
 
 out_nmc_vs   <- file.path(project_dir, "nmc_vital_status_counts.rds")

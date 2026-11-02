@@ -4,8 +4,14 @@ suppressPackageStartupMessages({
 })
 
 project_dir <- "projects/poisoning_deaths"
-# Prefer LGH source as requested; fall back to the full pre-collapsed LGH extract.
-input_candidates <- c("LGH.feather", "LGH_MasterFile_preCollapsedAll.feather")
+# Prefer the Isibalo-extended file (adds 2023-2024; see data/macod_isibalo/
+# extend_lgh_with_isibalo.R), then the original LGH sources as fallback.
+# NOTE: 2023/2024 rows have no district geography (not on the public Isibalo
+# portal) — see the `district_data_available` guard used below for district-
+# level outputs (maps / hotspot tables stay capped at the latest year with
+# district data, i.e. 2022, pending a StatsSA District2023/2024.dta request).
+input_candidates <- c("LGH_MasterFile_preCollapsedAll_2024.feather",
+                      "LGH.feather", "LGH_MasterFile_preCollapsedAll.feather")
 input_file <- input_candidates[file.exists(input_candidates)][1]
 output_rda  <- file.path(project_dir, "poisoning_results.rda")
 if (is.na(input_file)) {
@@ -25,16 +31,23 @@ for (v in names(dt)) {
 }
 
 # ── Flag poisoning records ───────────────────────────────────────────────────
+# Restricted to the four pesticide-specific ICD-10 codes validated by StatsSA
+# (MACOD 2022, Table 4.12; validated by Debbie Bradshaw) — interim definition
+# pending confirmation in the 2023 StatsSA MACOD release. Each code already
+# corresponds 1:1 to an intent category, so "poisoning" here means
+# "pesticide poisoning" specifically (excludes drugs, alcohol, gases, other
+# chemicals, etc. that the older X40-X49/X60-X69/X85/Y10-Y19 definition used).
 dt[, icd_clean := toupper(gsub("[^A-Z0-9]", "", as.character(UnderlyingCause)))]
-dt[, is_poisoning := grepl("^(X4[0-9]|X6[0-9]|X85|Y1[0-9])", icd_clean)]
+dt[, is_poisoning := grepl("^(X48|X68|X87|Y18)$", icd_clean)]
 p <- dt[is_poisoning == TRUE & !is.na(DeathYear)]
 
 # ── Intent ───────────────────────────────────────────────────────────────────
+# 1:1 mapping — each pesticide code already encodes a single intent category.
 p[, intent := fcase(
-  grepl("^X4[0-9]", icd_clean), "Accidental/unspec.",
-  grepl("^X6[0-9]", icd_clean), "Self-harm",
-  grepl("^X85",     icd_clean), "Assault",
-  grepl("^Y1[0-9]", icd_clean), "Undetermined",
+  grepl("^X48", icd_clean), "Accidental/unspec.",
+  grepl("^X68", icd_clean), "Self-harm",
+  grepl("^X87", icd_clean), "Assault",
+  grepl("^Y18", icd_clean), "Undetermined",
   default = "Other"
 )]
 p[, intent := factor(intent, levels = c("Accidental/unspec.","Self-harm","Assault","Undetermined","Other"))]
@@ -89,6 +102,13 @@ p[, age_grp := cut(age, breaks=AGE_BREAKS, labels=AGE_LABELS, right=FALSE)]
 p[, year    := as.integer(DeathYear)]
 p[, month   := as.integer(DeathMonth)]
 p[, date_month := as.Date(sprintf("%d-%02d-01", year, month))]
+
+# Dynamic year range used by axis breaks / labels below so the series keeps
+# extending as new years (e.g. 2023-2024 from Isibalo) are added, without
+# hardcoding a stale end year.
+YEAR_MIN <- min(p$year, na.rm = TRUE)
+YEAR_MAX <- max(p$year, na.rm = TRUE)
+YEAR_RANGE_LABEL <- paste0(YEAR_MIN, "\u2013", YEAR_MAX)
 
 # ── Monthly epicurve data (complete — all records have year+month) ────────────
 monthly_intent <- p[!is.na(date_month) & intent != "Other",
@@ -186,7 +206,15 @@ p[is.na(district_name) | trimws(district_name) == "", district_name := as.charac
 p[, district_name := trimws(district_name)]
 p[, district_key := match_key_to_ref(norm_key(district_name), ref_district_keys)]
 
-analysis_year <- max(p$year, na.rm = TRUE)
+# district_data_available flags years with no district geography at all
+# (2023/2024 appended from the public Isibalo portal, which never carries
+# district — see header note). Older/plain inputs lack this column entirely,
+# so default to TRUE (district data assumed available for all years) when
+# it's missing, to preserve behaviour on those fallback inputs.
+if (!"district_data_available" %in% names(p)) p[, district_data_available := TRUE]
+p_district <- p[district_data_available == TRUE]
+
+analysis_year <- max(p_district$year, na.rm = TRUE)
 
 annual_pop <- pop[, .(population = sum(population, na.rm = TRUE)), by = .(year = as.integer(as.character(Year)))]
 annual_pop <- annual_pop[!is.na(year)]
@@ -253,7 +281,7 @@ fig_age_year_sex_rate <- ggplot(age_rate_grid, aes(x = year, y = age_rate_grp_re
         axis.text.x = element_text(angle = 45, hjust = 1),
         strip.text = element_text(face = "bold"))
 
-district_latest_counts <- p[year == analysis_year, .(deaths = .N), by = district_key]
+district_latest_counts <- p_district[year == analysis_year, .(deaths = .N), by = district_key]
 district_pop_latest <- pop[as.integer(as.character(Year)) == analysis_year,
   .(population = sum(population, na.rm = TRUE)), by = .(district_key = norm_key(as.character(district_standard)))]
 
@@ -288,13 +316,15 @@ fig_district_rate_map <- ggplot(district_map_sf) +
   geom_sf(aes(fill = crude_rate_per_100k), colour = "white", linewidth = 0.2) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1, na.value = "grey90",
                        name = "Deaths\nper 100,000") +
-  labs(x = NULL, y = NULL, title = paste0("District crude death rate map (", analysis_year, ")")) +
+  labs(x = NULL, y = NULL,
+       title = paste0("District crude death rate map (", analysis_year, ")"),
+       subtitle = "Most recent year with district-level geography (public Isibalo data lack district for 2023-2024)") +
   theme_minimal(base_size = 11)
 
-recent_years <- sort(unique(p$year), decreasing = TRUE)[1:min(3L, uniqueN(p$year))]
+recent_years <- sort(unique(p_district$year), decreasing = TRUE)[1:min(3L, uniqueN(p_district$year))]
 recent_years <- sort(recent_years)
 
-district_counts_3yr <- p[year %in% recent_years, .(deaths = .N), by = district_key]
+district_counts_3yr <- p_district[year %in% recent_years, .(deaths = .N), by = district_key]
 district_pop_3yr <- pop[
   as.integer(as.character(Year)) %in% recent_years,
   .(population = sum(population, na.rm = TRUE)),
@@ -331,35 +361,21 @@ fig_district_hotspot_map_3yr <- ggplot(district_hotspot_map_3yr_sf) +
                       min(recent_years), "-", max(recent_years), ")")) +
   theme_minimal(base_size = 11)
 
-# ── Top 15 ICD subcodes ──────────────────────────────────────────────────────
+# ── Pesticide ICD-10 codes (exactly 4: one per intent category) ─────────────
 icd_sub <- p[,.(n=.N),by=.(icd=substr(icd_clean,1,3))]
-setorder(icd_sub,-n); icd_sub <- head(icd_sub,15)
+setorder(icd_sub,-n)
 icd_lu <- c(
-  X40="X40  Acc./unspec. - analgesics (non-opioid)",
-  X41="X41  Acc./unspec. - antiepileptics/sedatives",
-  X42="X42  Acc./unspec. - narcotics/psychodysleptics",
-  X44="X44  Acc./unspec. - other/unspecified drugs",
-  X45="X45  Acc./unspec. - alcohol",
-  X47="X47  Acc./unspec. - gases & vapours",
-  X48="X48  Acc./unspec. - pesticides",
-  X49="X49  Acc./unspec. - other chemicals/NOS",
-  X60="X60  Self-harm - analgesics (non-opioid)",
-  X61="X61  Self-harm - antiepileptics/sedatives",
-  X62="X62  Self-harm - narcotics",
-  X64="X64  Self-harm - other/unspecified drugs",
+  X48="X48  Accidental/unspec. - pesticides",
   X68="X68  Self-harm - pesticides",
-  X69="X69  Self-harm - other chemicals/NOS",
-  X85="X85  Assault",
-  Y10="Y10  Undetermined - analgesics (non-opioid)",
-  Y14="Y14  Undetermined - other/unspecified drugs",
-  Y19="Y19  Undetermined - other chemicals/NOS"
+  X87="X87  Assault - pesticides",
+  Y18="Y18  Undetermined - pesticides"
 )
 icd_sub[, label := fifelse(icd %in% names(icd_lu), icd_lu[icd], icd)]
 icd_sub[, label := factor(label,levels=rev(label))]
 
 # ── Overall summary table ────────────────────────────────────────────────────
 tbl_overall <- data.table(
-  Metric = c("Total poisoning deaths","Analysis years","% Male",
+  Metric = c("Total pesticide poisoning deaths","Analysis years","% Male",
              "Median age (years)","% Accidental/unspec.","% Self-harm",
              "% Assault","% Undetermined"),
   Value  = c(
@@ -488,7 +504,7 @@ fig_age_year_count_heatmap <- ggplot(age_year_grid,
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "Deaths\n(count)",
                        labels = comma) +
-  scale_x_continuous(breaks = seq(1997, 2022, 3)) +
+  scale_x_continuous(breaks = seq(YEAR_MIN, YEAR_MAX, 3)) +
   labs(x = NULL, y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid      = element_blank(),
@@ -501,7 +517,7 @@ fig_age_year_heatmap <- ggplot(age_year_grid,
   geom_tile(colour = "white", linewidth = 0.3) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "% of year's\ndeaths") +
-  scale_x_continuous(breaks = seq(1997, 2022, 3)) +
+  scale_x_continuous(breaks = seq(YEAR_MIN, YEAR_MAX, 3)) +
   labs(x = NULL, y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid      = element_blank(),
@@ -511,6 +527,7 @@ fig_age_year_heatmap <- ggplot(age_year_grid,
 # ── EAPC (Estimated Annual % Change) by age group ────────────────────────────
 fit_eapc <- function(d) {
   d2 <- copy(d)
+  d2[, n := as.numeric(n)]
   d2[n == 0, n := 0.5]                       # continuity correction
   m  <- tryCatch(lm(log(n) ~ year, data = d2), error = function(e) NULL)
   if (is.null(m) || nrow(d2) < 5)
@@ -544,7 +561,7 @@ fig_age_eapc <- ggplot(age_eapc[!is.na(eapc)],
   scale_alpha_manual(values = c("p<0.05" = 1.0, "p\u22650.05" = 0.35),
                      name = "Significance") +
   scale_y_discrete(limits = rev(levels(age_eapc$age_grp))) +
-  labs(x = "Estimated annual % change (EAPC, 1997\u20132022)",
+  labs(x = paste0("Estimated annual % change (EAPC, ", YEAR_RANGE_LABEL, ")"),
        y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid.minor = element_blank(),
@@ -579,7 +596,7 @@ fig_age_year_sex_count <- ggplot(age_yr_sex,
   facet_wrap(~ sex_label, ncol = 2) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "Deaths\n(count)", labels = comma) +
-  scale_x_continuous(breaks = seq(1997, 2022, 5)) +
+  scale_x_continuous(breaks = seq(YEAR_MIN, YEAR_MAX, 5)) +
   labs(x = NULL, y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid        = element_blank(),
@@ -594,7 +611,7 @@ fig_age_year_sex_prop <- ggplot(age_yr_sex,
   facet_wrap(~ sex_label, ncol = 2) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "% of same-\nsex deaths") +
-  scale_x_continuous(breaks = seq(1997, 2022, 5)) +
+  scale_x_continuous(breaks = seq(YEAR_MIN, YEAR_MAX, 5)) +
   labs(x = NULL, y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid        = element_blank(),
@@ -623,7 +640,7 @@ fig_age_sex_eapc <- ggplot(age_sex_eapc[!is.na(eapc)],
   scale_alpha_manual( values = c("p<0.05" = 1.0, "p\u22650.05" = 0.30),
                       name = "Significance") +
   scale_y_discrete(limits = rev(levels(age_sex_eapc$age_grp))) +
-  labs(x = "Estimated annual % change (EAPC, 1997\u20132022)",
+  labs(x = paste0("Estimated annual % change (EAPC, ", YEAR_RANGE_LABEL, ")"),
        y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid.minor = element_blank(),
@@ -713,7 +730,7 @@ fig_yll_age_sex <- ggplot(yll_age_sex,
   scale_y_continuous(labels = comma,
                      expand = expansion(mult = c(0, 0.07))) +
   labs(x = "Age group",
-       y = "Total YLL (thousands, 1997\u20132022)") +
+       y = paste0("Total YLL (thousands, ", YEAR_RANGE_LABEL, ")")) +
   theme_minimal(base_size = 11) +
   theme(panel.grid.minor = element_blank(),
         axis.text.x      = element_text(angle = 45, hjust = 1),
@@ -759,7 +776,7 @@ fig_yll_age_year <- ggplot(yll_age_year,
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "YLL\n(thousands)",
                        labels = comma) +
-  scale_x_continuous(breaks = seq(1997, 2022, 3)) +
+  scale_x_continuous(breaks = seq(YEAR_MIN, YEAR_MAX, 3)) +
   labs(x = NULL, y = "Age group") +
   theme_minimal(base_size = 11) +
   theme(panel.grid        = element_blank(),
@@ -767,13 +784,13 @@ fig_yll_age_year <- ggplot(yll_age_year,
         legend.key.height = unit(1.2, "cm"))
 
 # ── Death institution — facility type analysis ───────────────────────────────
-# Detailed breakdown: X40–X49 by institution
+# Detailed breakdown: X48 (accidental/unspecified pesticide poisoning) by institution
 acc_facility_detail <- p[intent == "Accidental/unspec.",
   .(n = .N), by = .(death_inst, facility_grp)]
 setorder(acc_facility_detail, -n)
 acc_facility_detail[, pct := round(100 * n / sum(n), 1)]
 
-# All poisoning (excl. "Other"): facility group × intent proportions
+# All pesticide poisoning (excl. "Other"): facility group × intent proportions
 facility_intent_ct <- p[intent != "Other",
   .(n = .N), by = .(facility_grp, intent)]
 facility_intent_prop <- copy(facility_intent_ct)
@@ -781,7 +798,7 @@ facility_intent_prop[, pct := 100 * n / sum(n), by = facility_grp]
 facility_intent_prop[, intent := factor(intent,
   levels = c("Accidental/unspec.","Self-harm","Assault","Undetermined"))]
 
-# Table A: all poisoning — intent × facility group (wide)
+# Table A: all pesticide poisoning — intent × facility group (wide)
 tbl_facility_intent <- dcast(
   facility_intent_ct, facility_grp ~ intent,
   value.var = "n", fill = 0L)
@@ -789,15 +806,15 @@ tbl_facility_intent[, Total := `Accidental/unspec.` + `Self-harm` + Assault + Un
 tbl_facility_intent[, `% Acc./unspec.` := round(100 * `Accidental/unspec.` / Total, 1)]
 setnames(tbl_facility_intent, "facility_grp", "Facility setting")
 
-# Table B: X40–X49 by detailed institution (known records only)
+# Table B: X48 by detailed institution (known records only)
 tbl_facility_acc <- acc_facility_detail[
   !death_inst %in% c("Unknown","Unspecified"),
   .(`Death institution` = as.character(death_inst),
     `Facility group`    = as.character(facility_grp),
     N                   = n,
-    `% of X40-49`       = pct)]
+    `% of X48`          = pct)]
 
-# ── FIG INST-1: X40–X49 by death institution (horizontal bar) ────────────────
+# ── FIG INST-1: X48 by death institution (horizontal bar) ────────────────────
 INST_COLS <- c(
   "Hospital"                  = "#2166AC",
   "Emergency room/Outpatient" = "#74ADD1",
@@ -816,10 +833,11 @@ fig_facility_acc <- ggplot(
     hjust = -0.05, size = 3.2) +
   scale_fill_manual(values = INST_COLS) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.35))) +
-  labs(x = "% of X40\u201349 poisoning deaths", y = NULL) +
+  labs(x = "% of X48 pesticide poisoning deaths", y = NULL) +
   theme_minimal(base_size = 11) +
   theme(panel.grid.minor   = element_blank(),
         panel.grid.major.y = element_blank())
+
 
 # ── FIG INST-2: Intent composition within each facility setting ───────────────
 fig_facility_intent <- ggplot(facility_intent_prop,
@@ -841,7 +859,7 @@ analysis_metadata <- list(
   input_file           = input_file,
   n_records_total      = format(nrow(dt),big.mark=","),
   n_poisoning_records  = format(nrow(p), big.mark=","),
-  poisoning_definition = "X40-X49, X60-X69, X85, Y10-Y19",
+  poisoning_definition = "X48+X68+X87+Y18 (pesticide poisoning; StatsSA MACOD 2022 Table 4.12, validated by D. Bradshaw; interim pending 2023 release)",
   year_range           = paste(min(p$year),"-",max(p$year))
 )
 

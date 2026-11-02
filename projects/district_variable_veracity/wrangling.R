@@ -8,9 +8,15 @@
 #   3) map crude death rates to flag potential over/under-reporting areas.
 #
 # Inputs:
-#   Deaths2022_MRCversionFINAL.feather
+#   Deaths2022_MRCversionFINAL_2024.feather (preferred; falls back to the
+#   2022-capped Deaths2022_MRCversionFINAL.feather if not present)
 #   projects/data_explorer/population_data.rda   (MYPES-derived district pop)
 #   projects/data_explorer/shape_files.rda       (district sf geometry)
+#
+# NOTE: district geography is NOT available for 2023/2024 (the public Isibalo
+# portal used to extend the deaths file only carries province-level
+# geography), so ANALYSIS_YEAR will still default to 2022 — the latest year
+# with real district data — even once the extended deaths file is in use.
 #
 # Output:
 #   projects/district_variable_veracity/district_veracity_results.rda
@@ -32,13 +38,14 @@ suppressPackageStartupMessages({
 })
 
 PROJECT_DIR <- "projects/district_variable_veracity"
-INPUT_DEATHS <- "Deaths2022_MRCversionFINAL.feather"
+INPUT_DEATHS_CANDIDATES <- c("Deaths2022_MRCversionFINAL_2024.feather", "Deaths2022_MRCversionFINAL.feather")
+INPUT_DEATHS <- INPUT_DEATHS_CANDIDATES[file.exists(INPUT_DEATHS_CANDIDATES)][1]
 INPUT_POP <- "projects/data_explorer/population_data.rda"
 INPUT_SHAPE <- "projects/data_explorer/shape_files.rda"
 OUTPUT_RDA <- file.path(PROJECT_DIR, "district_veracity_results.rda")
 
 stopifnot(
-  "Deaths file not found" = file.exists(INPUT_DEATHS),
+  "Deaths file not found" = !is.na(INPUT_DEATHS) && file.exists(INPUT_DEATHS),
   "Population file not found" = file.exists(INPUT_POP),
   "Shape file not found" = file.exists(INPUT_SHAPE)
 )

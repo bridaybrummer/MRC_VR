@@ -2,7 +2,8 @@
 # Cancer Deaths Analysis — Wrangling & Summarisation Script
 # =============================================================================
 # Monitors trends in cancer mortality in South Africa using the MRC-processed
-# vital registration data (1997–2022), with particular focus on:
+# vital registration data (1997-latest available year, currently 2024), with
+# particular focus on:
 #   • HIV-associated / AIDS-defining cancers (cervical, KS, NHL)
 #   • Top cancers by burden (breast, prostate, oesophageal, colorectal, lung)
 #
@@ -29,29 +30,60 @@ suppressPackageStartupMessages({
 })
 
 cat("══════════════════════════════════════════════════════════╗\n")
-cat("  Cancer Deaths Analysis — SA VR 1997–2022                 \n")
+cat("  Cancer Deaths Analysis — SA Vital Registration            \n")
 cat("══════════════════════════════════════════════════════════╝\n\n")
 
 
 # ─── 1. LOAD VR DEATH DATA ────────────────────────────────────────────────────
 cat("1. Loading VR death data …\n")
 
-vr_path <- "Deaths2022_MRCversionFINAL.feather"
-if (!file.exists(vr_path)) stop("VR data not found: ", vr_path)
+vr_path_candidates <- c("Deaths2022_MRCversionFINAL_2024.feather", "Deaths2022_MRCversionFINAL.feather")
+vr_path <- vr_path_candidates[file.exists(vr_path_candidates)][1]
+if (is.na(vr_path)) stop("VR data not found: ", paste(vr_path_candidates, collapse = ", "))
 
-df <- read_feather(vr_path) |> as.data.table()
+# Only load the columns this script actually uses — the extended file carries
+# far more columns (58) than the original 2022-only extract's narrower users
+# needed, and loading everything is unnecessarily memory-heavy. (Candidate
+# names like DeathProvinceName/Province are checked later via intersect() but
+# never exist on the raw feather file, so they're omitted here.)
+VR_COLS <- c("DeathYear", "epi_year", "epi_week", "Sex", "AgeYear",
+            "age", "NaturalUnnatural", "DeathType", "UnderlyingCause")
+df <- read_feather(vr_path, col_select = VR_COLS) |> as.data.table()
 
 # Normalise key columns
 df[, epi_year := as.integer(as.numeric(epi_year))]
 df[, epi_week := as.integer(as.numeric(epi_week))]
+
+# epi_year is an MMWR/CDC epidemiological-week year, which can legitimately
+# differ from calendar DeathYear for a handful of late-December deaths whose
+# epi week rolls into week 1 of the following year (e.g. some Dec-2024 deaths
+# get epi_year = 2025). DeathYear is unambiguous, so anchor the "latest
+# complete year" on it and drop the resulting tiny epi_year leakage sliver so
+# it doesn't appear as a misleading near-zero final point on every trend chart.
+if ("DeathYear" %in% names(df)) {
+  death_year_int <- as.integer(as.numeric(unclass(df$DeathYear)))
+  YEAR_MAX <- max(death_year_int, na.rm = TRUE)
+  df <- df[epi_year <= YEAR_MAX]
+} else {
+  YEAR_MAX <- max(df$epi_year, na.rm = TRUE)
+}
+
+# Unclass any remaining haven_labelled columns used in direct numeric
+# comparisons below (NaturalUnnatural, DeathType) — newer vctrs versions
+# reject comparing <haven_labelled> directly against a plain integer literal.
+for (v in c("NaturalUnnatural", "DeathType")) {
+  if (v %in% names(df) && inherits(df[[v]], "haven_labelled")) {
+    df[, (v) := as.integer(as.numeric(unclass(get(v))))]
+  }
+}
 
 # Sex: convert to readable label
 if ("SexName" %in% names(df)) {
   df[, sex_label := as.character(SexName)]
 } else if ("Sex" %in% names(df)) {
   df[, sex_label := fcase(
-    as.integer(as.numeric(Sex)) == 1L, "Male",
-    as.integer(as.numeric(Sex)) == 2L, "Female",
+    as.integer(as.numeric(unclass(Sex))) == 1L, "Male",
+    as.integer(as.numeric(unclass(Sex))) == 2L, "Female",
     default = "Unknown"
   )]
 } else {
@@ -61,7 +93,7 @@ if ("SexName" %in% names(df)) {
 # Age at death
 age_col <- intersect(c("AgeYear", "age", "AgeinYears"), names(df))[1]
 if (!is.na(age_col)) {
-  df[, age_death := as.integer(as.numeric(get(age_col)))]
+  df[, age_death := as.integer(as.numeric(unclass(get(age_col))))]
   df[age_death < 0L | age_death > 120L, age_death := NA_integer_]
 } else {
   df[, age_death := NA_integer_]
@@ -166,9 +198,9 @@ fig_cancer_trend <- ggplot(annual_all[epi_year >= 2000L], aes(x = epi_year)) +
       name = "% of all natural deaths"
     )
   ) +
-  scale_x_continuous(breaks = seq(2000, 2022, 2)) +
+  scale_x_continuous(breaks = seq(2000, YEAR_MAX, 2)) +
   labs(
-    title    = "Cancer mortality in South Africa, 2000–2022",
+    title    = paste0("Cancer mortality in South Africa, 2000–", YEAR_MAX, ""),
     subtitle = "Bars = annual cancer deaths; red line = % of all natural deaths",
     x        = "Year"
   ) +
@@ -212,9 +244,9 @@ fig_group_trend <- ggplot(
   geom_point(size = 1.5, alpha = 0.7) +
   scale_colour_manual(values = grp_colours, name = NULL) +
   scale_y_continuous(labels = comma) +
-  scale_x_continuous(breaks = seq(2000, 2022, 2)) +
+  scale_x_continuous(breaks = seq(2000, YEAR_MAX, 2)) +
   labs(
-    title    = "Annual cancer deaths by type — South Africa, 2000–2022",
+    title    = paste0("Annual cancer deaths by type — South Africa, 2000–", YEAR_MAX, ""),
     subtitle = "HIV-associated cancers in red/orange; other top cancers in blue/green",
     x        = "Year",
     y        = "Deaths"
@@ -232,10 +264,10 @@ fig_group_facet <- ggplot(
   geom_col(width = 0.8, show.legend = FALSE) +
   scale_fill_manual(values = grp_colours) +
   scale_y_continuous(labels = comma) +
-  scale_x_continuous(breaks = c(2005, 2015, 2022)) +
+  scale_x_continuous(breaks = c(2005, 2015, YEAR_MAX)) +
   facet_wrap(~ cancer_group, scales = "free_y", ncol = 3L) +
   labs(
-    title = "Cancer deaths by type — annual counts, 2000–2022",
+    title = paste0("Cancer deaths by type — annual counts, 2000–", YEAR_MAX, ""),
     x = "Year", y = "Deaths"
   ) +
   theme_minimal(base_size = 10) +
@@ -263,9 +295,9 @@ fig_hiv_trend <- ggplot(hiv_annual[epi_year >= 2000L],
     name = NULL
   ) +
   scale_y_continuous(labels = comma) +
-  scale_x_continuous(breaks = seq(2000, 2022, 2)) +
+  scale_x_continuous(breaks = seq(2000, YEAR_MAX, 2)) +
   labs(
-    title    = "HIV-associated cancer deaths — South Africa, 2000–2022",
+    title    = paste0("HIV-associated cancer deaths — South Africa, 2000–", YEAR_MAX, ""),
     subtitle = "Cervical cancer, Kaposi's sarcoma, Non-Hodgkin lymphoma",
     x        = "Year",
     y        = "Deaths"
@@ -278,8 +310,8 @@ cat("   fig_hiv_trend done\n")
 # Summary table: HIV cancer totals by decade
 hiv_summary <- monitored[hiv_associated == TRUE & epi_year >= 2000L, .(
   Period = cut(epi_year,
-    breaks = c(2000, 2010, 2020, 2023),
-    labels = c("2000–2009", "2010–2019", "2020–2022"),
+    breaks = c(2000, 2010, 2020, YEAR_MAX + 1),
+    labels = c("2000–2009", "2010–2019", paste0("2020–", YEAR_MAX)),
     right  = FALSE),
   cancer_group
 )][, .(Deaths = .N), by = .(Period, cancer_group)]
@@ -308,9 +340,9 @@ fig_cervical_trend <- ggplot(cervical_annual[epi_year >= 2000L],
   geom_smooth(method = "loess", se = FALSE, colour = "black",
               linetype = "dashed", linewidth = 0.7) +
   scale_y_continuous(labels = comma) +
-  scale_x_continuous(breaks = seq(2000, 2022, 2)) +
+  scale_x_continuous(breaks = seq(2000, YEAR_MAX, 2)) +
   labs(
-    title    = "Cervical cancer deaths — South Africa, 2000–2022",
+    title    = paste0("Cervical cancer deaths — South Africa, 2000–", YEAR_MAX, ""),
     subtitle = "ICD-10 C53. Red bars = annual deaths; dashed line = LOESS trend",
     x        = "Year",
     y        = "Deaths"
@@ -323,7 +355,7 @@ fig_cervical_age <- ggplot(cervical_age, aes(x = agegroup10, y = deaths)) +
   labs(
     title = "Cervical cancer deaths by age group (all years)",
     x     = "Age group",
-    y     = "Deaths (total 1997–2022)"
+    y     = paste0("Deaths (total 1997–", YEAR_MAX, ")")
   ) +
   theme_minimal(base_size = 12)
 
@@ -335,7 +367,7 @@ fig_cervical_province <- ggplot(
   coord_flip() +
   scale_y_continuous(labels = comma) +
   labs(
-    title    = "Cervical cancer deaths by province, 2015–2022",
+    title    = paste0("Cervical cancer deaths by province, 2015–", YEAR_MAX, ""),
     x        = NULL,
     y        = "Deaths"
   ) +
@@ -359,7 +391,7 @@ fig_age_dist <- ggplot(age_dist,
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   facet_wrap(~ cancer_group, scales = "free_y", ncol = 3L) +
   labs(
-    title    = "Age distribution of cancer deaths, 2010–2022",
+    title    = paste0("Age distribution of cancer deaths, 2010–", YEAR_MAX, ""),
     subtitle = "% within each cancer group",
     x        = "Age group",
     y        = "% of group deaths"
@@ -389,7 +421,7 @@ fig_province <- ggplot(prov_top5,
   scale_y_continuous(labels = comma) +
   coord_flip() +
   labs(
-    title    = "Cancer deaths by province (top 5 groups), 2015–2022",
+    title    = paste0("Cancer deaths by province (top 5 groups), 2015–", YEAR_MAX, ""),
     x        = NULL,
     y        = "Deaths"
   ) +
@@ -410,20 +442,20 @@ cancer_summary <- monitored[epi_year >= 2013L, .(
 ), by = cancer_group][order(-Deaths)]
 cancer_summary[, Pct_of_total := round(100 * Deaths / sum(Deaths), 1)]
 cancer_summary[, HIV_associated := cancer_group %in% hiv_cancers]
-cancer_summary[, Period := "2013–2022"]
+cancer_summary[, Period := paste0("2013–", YEAR_MAX)]
 
 # Sex split for monitored groups
 sex_split <- monitored[epi_year >= 2013L & sex_label %in% c("Male", "Female"),
   .(deaths = .N), by = .(cancer_group, sex_label)]
 sex_split[, pct := round(100 * deaths / sum(deaths), 1), by = cancer_group]
 
-# Trend 2010 vs 2022 (% change)
-yr_compare <- monitored[epi_year %in% c(2010L, 2022L),
+# Trend 2010 vs latest available year (% change)
+yr_compare <- monitored[epi_year %in% c(2010L, YEAR_MAX),
   .(deaths = .N), by = .(epi_year, cancer_group)] |>
   dcast(cancer_group ~ epi_year, value.var = "deaths") |>
-  setnames(c("2010", "2022"), c("deaths_2010", "deaths_2022"))
-yr_compare[, pct_change := round(100 * (deaths_2022 - deaths_2010) / deaths_2010, 1)]
-yr_compare <- yr_compare[order(-deaths_2022)]
+  setnames(c("2010", as.character(YEAR_MAX)), c("deaths_2010", "deaths_latest"))
+yr_compare[, pct_change := round(100 * (deaths_latest - deaths_2010) / deaths_2010, 1)]
+yr_compare <- yr_compare[order(-deaths_latest)]
 
 cat("   Tables done\n\n")
 

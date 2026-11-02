@@ -1,8 +1,8 @@
 ---
-title: "Poisoning Deaths in South Africa"
-description: "Epidemiology of poisoning-related mortality from the national vital registration system, 1997–2022"
+title: "Pesticide Poisoning Deaths in South Africa"
+description: "Epidemiology of pesticide poisoning deaths (ICD-10 X48+X68+X87+Y18; StatsSA MACOD 2022, Table 4.12) from the national vital registration system, 1997–2024"
 date: "2026-03-09"
-categories: [poisoning, injury-mortality, vital-registration, icd10, epidemiology]
+categories: [pesticide-poisoning, injury-mortality, vital-registration, icd10, epidemiology]
 bibliography: poisoning_references.bib
 csl: ../../vancouver.csl
 execute:
@@ -45,34 +45,30 @@ if (file.exists("poisoning_results.rda")) {
 
 ## Overview
 
-Poisoning is a significant cause of injury death in South Africa. This page describes the epidemiology of poisoning deaths recorded in the national vital registration (VR) system, using underlying-cause ICD-10 codes. Four intent categories are distinguished, though **the category boundaries are substantially distorted by the absence of a manner of death field on the South African death notification form** (see methodological note below):
+Pesticide poisoning is a priority indicator for injury mortality surveillance in South Africa, given its established role as a leading method of self-harm in rural/agricultural settings globally [@mew2017]. This page describes the epidemiology of pesticide poisoning deaths recorded in the national vital registration (VR) system, restricted to the **four ICD-10 codes StatsSA validates for pesticide poisoning specifically** — StatsSA MACOD 2022, Table 4.12 (interim definition, pending confirmation against the 2023 MACOD release), checked by Debbie Bradshaw. This is a deliberately **narrower** scope than a generic "poisoning" analysis (which would also include drugs, alcohol, gases and other chemicals under X40–X49/X60–X69/X85/Y10–Y19): each of the four codes below maps to pesticides specifically, one per intent category.
 
-| ICD-10 block | Category | Description |
+| ICD-10 code | Category | Description |
 |:---|:---|:---|
-| X40–X49 | Accidental / unspecified | Unintentional exposure *or intent not documented on DNF* (ICD-10 default) |
-| X60–X69 | Self-harm | Intentional self-poisoning |
-| X85 | Assault | Poisoning inflicted by another person |
-| Y10–Y19 | Undetermined | Intent unknown or not specified |
+| X48 | Accidental / unspecified | Unintentional pesticide exposure *or intent not documented on DNF* (ICD-10 default) |
+| X68 | Self-harm | Intentional self-poisoning by pesticides |
+| X87 | Assault | Pesticide poisoning inflicted by another person |
+| Y18 | Undetermined | Intent unknown or not specified (pesticide poisoning) |
 
 ::: {.callout-important}
 ## Caution: intent categories reflect ICD-10 coding defaults, not certified intent
 
-South Africa's death notification form (DNF) **does not include a field for manner of death**, contrary to the WHO-recommended Medical Certificate of Cause of Death [@groenewald2023importance]. Under ICD-10 Volume 2 coding rules, when manner of death is not stated by the certifier, external cause deaths are assigned to the most appropriate **Accidental** code by default [@who2016icd10].
+South Africa's death notification form (DNF) **does not include a field for manner of death**, contrary to the WHO-recommended Medical Certificate of Cause of Death [@groenewald2023importance]. Under ICD-10 Volume 2 coding rules, when manner of death is not stated by the certifier, external cause deaths are assigned to the most appropriate code by default [@who2016icd10] — in practice this can route to **either** the Accidental or the Undetermined code depending on how the cause was documented and coded, and the empirical pattern differs markedly by cause.
 
-This structural omission has two direct consequences for the intent breakdown presented in this analysis:
+**For pesticide poisoning specifically, the dominant code is "Undetermined" (Y18), not "Accidental."** In this dataset, Y18 accounts for roughly **three-quarters of all pesticide poisoning deaths**, versus about a quarter for X48 (Accidental/unspecified) and only a few percent for X68 (Self-harm); X87 (Assault) is vanishingly rare. This is the opposite pattern to many other external-cause categories (e.g. Groenewald et al. (2023) found 98.7% of Stats SA firearm deaths coded accidental, versus 88.5% homicide on forensic NCoDV review [@groenewald2023misclassification]) and is consistent with the international literature on pesticide self-poisoning: non-forensic certifiers are often unable or unwilling to certify suicidal intent without a clear circumstantial history (e.g. a note, witnessed ingestion, psychiatric history), so many genuine self-harm pesticide deaths are likely coded Y18 rather than X68 [@mew2017; @prinsloo2017].
 
-- **"Accidental" (X40–X49) is substantially over-represented.** In the absence of a certified manner, Stats SA coders apply the ICD-10 default and assign an accidental poisoning code. The scale of this effect is illustrated starkly for firearm deaths: Groenewald et al. (2023) showed that in Stats SA's 2017 data, **98.7% of firearm deaths were coded as accidental**, while the National Cause-of-Death Validation (NCoDV) forensic data from the same period found 88.5% were homicides [@groenewald2023misclassification]. The same mechanism applies to poisoning, where the absence of certified intent causes genuine self-harm and assault deaths to be silently absorbed into the accidental category.
-
-- **"Self-harm" (X60–X69) and "Undetermined" (Y10–Y19) are substantially under-represented.** These categories require the certifier to explicitly document suicidal intent or uncertainty — information that in South Africa is almost exclusively available from forensic pathology reports. Non-forensic certifiers (the majority for poisoning deaths in clinical settings) default to the accidental category or do not specify intent, regardless of clinical context or stigma considerations [@prinsloo2017; @norman2007; @pillayvwyk2016].
-
-**Interpretation:** The "Accidental" category in these data should be read as **"accidental or intent not specified."** The true proportion of intentional and undetermined-intent poisoning deaths is almost certainly higher than shown. Accurate intent-stratified estimates require triangulation with forensic mortality surveillance data, poison information centre (NPIS) call records, and other independent sources [@prinsloo2024].
+**Interpretation:** The large **Y18 (Undetermined)** share in these data should **not** be read as "intent unknown and therefore unimportant" — it most plausibly contains a substantial number of unrecognised self-harm deaths, consistent with pesticides' known role as a common suicide method. **X48 (Accidental)** likely also contains some genuine self-harm and a small number of assault deaths absorbed by the same DNF manner-of-death omission. Accurate intent-stratified estimates require triangulation with forensic mortality surveillance (NCoDV), Poisons Information Centre call records, and other independent sources [@prinsloo2024].
 :::
 
 ### Summary statistics
 
 ```{r}
 #| label: tbl-overall
-#| tbl-cap: "Table 1. Overall summary — poisoning deaths, vital registration"
+#| tbl-cap: "Table 1. Overall summary — pesticide poisoning deaths (X48+X68+X87+Y18), vital registration"
 
 if (exists("tbl_overall")) {
   flextable(as.data.frame(tbl_overall)) |>
@@ -93,7 +89,7 @@ if (exists("tbl_overall")) {
 
 ```{r}
 #| label: fig-annual-trend
-#| fig-cap: "Fig. 1. Annual poisoning deaths. Bars = observed count; dashed red line = OLS trend with 95% CI."
+#| fig-cap: "Fig. 1. Annual pesticide poisoning deaths. Bars = observed count; dashed red line = OLS trend with 95% CI."
 #| fig-width: 9
 #| fig-height: 4.5
 
@@ -102,7 +98,7 @@ if (exists("fig_annual_trend")) fig_annual_trend else message("Run poisoning_wra
 
 ```{r}
 #| label: fig-crude-rate-trend
-#| fig-cap: "Fig. 2. Annual poisoning crude death rate (deaths per 100,000 population)."
+#| fig-cap: "Fig. 2. Annual pesticide poisoning crude death rate (deaths per 100,000 population)."
 #| fig-width: 9
 #| fig-height: 4.5
 
@@ -111,11 +107,11 @@ if (exists("fig_crude_rate_trend")) fig_crude_rate_trend else message("Run poiso
 
 ### Deaths by intent
 
-The **"Accidental/unspec."** category (blue) dominates because ICD-10 Vol. 2 coding rules assign an accidental code whenever manner of death is not stated — see the methodological note above [@groenewald2023importance; @who2016icd10].
+The **"Undetermined" (Y18, green)** category dominates — the opposite pattern to many other external causes, where the ICD-10 default assigns an accidental code whenever manner of death is not stated. For pesticides, non-forensic certifiers appear more likely to leave intent undetermined than to default to accidental — see the methodological note above [@groenewald2023importance; @who2016icd10; @mew2017].
 
 ```{r}
 #| label: fig-intent-trend
-#| fig-cap: "Fig. 3. Annual poisoning deaths by intent (stacked area). Blue = accidental/unspecified; red = self-harm; orange = assault; green = undetermined."
+#| fig-cap: "Fig. 3. Annual pesticide poisoning deaths by intent (stacked area). Blue = accidental/unspecified (X48); red = self-harm (X68); orange = assault (X87); green = undetermined (Y18)."
 #| fig-width: 9
 #| fig-height: 5
 
@@ -126,7 +122,7 @@ if (exists("fig_intent_trend")) fig_intent_trend else message("Run poisoning_wra
 
 ```{r}
 #| label: tbl-year-summary
-#| tbl-cap: "Table 2. Annual poisoning deaths by intent, % male, and median age."
+#| tbl-cap: "Table 2. Annual pesticide poisoning deaths by intent, % male, and median age."
 
 if (exists("tbl_year_summary")) {
   flextable(as.data.frame(tbl_year_summary)) |>
@@ -145,11 +141,11 @@ if (exists("tbl_year_summary")) {
 
 ### Monthly time series
 
-The monthly epicurve shows all poisoning deaths from 1997 to 2022, stacked by intent category. The overlaid LOESS smoother (dark line with 95% CI) tracks the long-term trajectory of total counts while the stacked colours reveal whether any compositional shift in intent type accompanied the volume change.
+The monthly epicurve shows all pesticide poisoning deaths from 1997 to 2024, stacked by intent category. The overlaid LOESS smoother (dark line with 95% CI) tracks the long-term trajectory of total counts while the stacked colours reveal whether any compositional shift in intent type accompanied the volume change.
 
 ```{r}
 #| label: fig-weekly-epicurve
-#| fig-cap: "Fig. 3. Monthly poisoning deaths by intent (stacked bars). Dark line + band = LOESS total-count smoother (span ≈ 5-year window) with 95% CI. The dominant blue category ('Accidental/unspec.') is inflated by the ICD-10 coding default applied whenever manner of death is absent from the death notification form."
+#| fig-cap: "Fig. 3. Monthly pesticide poisoning deaths by intent (stacked bars). Dark line + band = LOESS total-count smoother (span ≈ 5-year window) with 95% CI. The dominant green category ('Undetermined', Y18) reflects the difficulty of certifying intent for pesticide poisoning without a manner-of-death field on the death notification form."
 #| fig-width: 11
 #| fig-height: 4.5
 
@@ -158,11 +154,11 @@ if (exists("fig_weekly_epicurve")) fig_weekly_epicurve else message("Run poisoni
 
 ### Monthly seasonality
 
-Average deaths per calendar month (averaged across all years), with ±1 SD error bars. A consistent seasonal pattern would suggest environmental or behavioural drivers (e.g. agricultural pesticide exposure in summer, indoor heating–related gas poisoning in winter).
+Average deaths per calendar month (averaged across all years), with ±1 SD error bars. A consistent seasonal pattern would suggest environmental or behavioural drivers (e.g. agricultural pesticide exposure/availability varying with the farming season).
 
 ```{r}
 #| label: fig-seasonality
-#| fig-cap: "Fig. 4. Mean poisoning deaths per calendar month (+/-1 SD across years)."
+#| fig-cap: "Fig. 4. Mean pesticide poisoning deaths per calendar month (+/-1 SD across years)."
 #| fig-width: 9
 #| fig-height: 4
 
@@ -175,11 +171,11 @@ if (exists("fig_seasonality")) fig_seasonality else message("Run poisoning_wrang
 
 ### Age-sex pyramid
 
-The population pyramid shows the sex- and age-distribution of all poisoning deaths. Males to the left, females to the right.
+The population pyramid shows the sex- and age-distribution of all pesticide poisoning deaths. Males to the left, females to the right.
 
 ```{r}
 #| label: fig-pyramid
-#| fig-cap: "Fig. 5. Age-sex pyramid — all poisoning deaths. Blue = male; red = female."
+#| fig-cap: "Fig. 5. Age-sex pyramid — all pesticide poisoning deaths. Blue = male; red = female."
 #| fig-width: 7
 #| fig-height: 7
 
@@ -190,7 +186,7 @@ if (exists("fig_pyramid")) fig_pyramid else message("Run poisoning_wrangling.R")
 
 ```{r}
 #| label: fig-pyramid-intent
-#| fig-cap: "Fig. 6. Age-sex pyramids by intent category (accidental/unspecified, self-harm, undetermined). The 'Accidental/unspec.' panel is the most affected by the ICD-10 coding default and likely absorbs cases of genuine self-harm and undetermined intent. X-axis scales differ by panel."
+#| fig-cap: "Fig. 6. Age-sex pyramids by intent category (accidental/unspecified X48, self-harm X68, undetermined Y18; assault X87 omitted — fewer than 5 cases nationally, 1997-2024). X-axis scales differ by panel."
 #| fig-width: 11
 #| fig-height: 7
 
@@ -201,7 +197,7 @@ if (exists("fig_pyramid_intent")) fig_pyramid_intent else message("Run poisoning
 
 ```{r}
 #| label: tbl-age-sex
-#| tbl-cap: "Table 3. Poisoning deaths by age group and sex"
+#| tbl-cap: "Table 3. Pesticide poisoning deaths by age group and sex"
 
 if (exists("tbl_age_sex")) {
   flextable(as.data.frame(tbl_age_sex)) |>
@@ -219,11 +215,11 @@ if (exists("tbl_age_sex")) {
 
 ### Age × year heatmap — nominal counts
 
-Each cell shows the **absolute number of poisoning deaths** in that age band and calendar year. This reveals which groups contribute the most deaths in volume terms and allows direct comparison across time.
+Each cell shows the **absolute number of pesticide poisoning deaths** in that age band and calendar year. This reveals which groups contribute the most deaths in volume terms and allows direct comparison across time.
 
 ```{r}
 #| label: fig-age-year-count-heatmap
-#| fig-cap: "Fig. 9a. Annual poisoning deaths by age group (raw count). Darker = more deaths."
+#| fig-cap: "Fig. 9a. Annual pesticide poisoning deaths by age group (raw count). Darker = more deaths."
 #| fig-width: 10
 #| fig-height: 5.5
 
@@ -232,11 +228,11 @@ if (exists("fig_age_year_count_heatmap")) fig_age_year_count_heatmap else messag
 
 ### Age × year heatmap — proportional share
 
-Each cell shows that age band's **share of that year's total poisoning deaths** (%). Using proportions rather than raw counts removes the effect of overall volume changes and isolates structural shifts in the age distribution — e.g. a darkening row signals a rising share for that group regardless of whether total deaths rose or fell.
+Each cell shows that age band's **share of that year's total pesticide poisoning deaths** (%). Using proportions rather than raw counts removes the effect of overall volume changes and isolates structural shifts in the age distribution — e.g. a darkening row signals a rising share for that group regardless of whether total deaths rose or fell.
 
 ```{r}
 #| label: fig-age-year-heatmap
-#| fig-cap: "Fig. 9b. Proportion of annual poisoning deaths by age group (heatmap). Darker = higher share. Each column sums to 100%."
+#| fig-cap: "Fig. 9b. Proportion of annual pesticide poisoning deaths by age group (heatmap). Darker = higher share. Each column sums to 100%."
 #| fig-width: 10
 #| fig-height: 5.5
 
@@ -245,11 +241,11 @@ if (exists("fig_age_year_heatmap")) fig_age_year_heatmap else message("Run poiso
 
 ### Estimated annual percentage change (EAPC) by age group
 
-The EAPC is derived from a log-linear regression of annual death counts on calendar year for each age band independently (with a 0.5 continuity correction for zero counts). It estimates the average year-on-year percentage change across 1997–2022. Red = increasing trend; blue = decreasing; faded points indicate *p* ≥ 0.05. This is the standard WHO / GBD approach for characterising mortality trends by subgroup.
+The EAPC is derived from a log-linear regression of annual death counts on calendar year for each age band independently (with a 0.5 continuity correction for zero counts). It estimates the average year-on-year percentage change across 1997–2024. Red = increasing trend; blue = decreasing; faded points indicate *p* ≥ 0.05. This is the standard WHO / GBD approach for characterising mortality trends by subgroup.
 
 ```{r}
 #| label: fig-age-eapc
-#| fig-cap: "Fig. 10. EAPC by age group with 95% CI. Solid (opaque) points are statistically significant (p < 0.05). EAPC = estimated annual % change in poisoning death count, 1997–2022."
+#| fig-cap: "Fig. 10. EAPC by age group with 95% CI. Solid (opaque) points are statistically significant (p < 0.05). EAPC = estimated annual % change in pesticide poisoning death count, 1997–2024."
 #| fig-width: 7
 #| fig-height: 6.5
 
@@ -260,7 +256,7 @@ if (exists("fig_age_eapc")) fig_age_eapc else message("Run poisoning_wrangling.R
 
 ## Age-group trends by sex
 
-The three figures below stratify the age-trend analysis by sex, enabling direct comparison between male and female poisoning death patterns — e.g. whether rising counts in older age groups are driven by males, and whether any increase in younger age groups is female-predominant.
+The three figures below stratify the age-trend analysis by sex, enabling direct comparison between male and female pesticide poisoning death patterns — e.g. whether rising counts in older age groups are driven by males, and whether any increase in younger age groups is female-predominant.
 
 ### Age × year heatmap — counts by sex
 
@@ -268,7 +264,7 @@ Two side-by-side heatmaps showing raw death counts. Allows comparison of absolut
 
 ```{r}
 #| label: fig-age-year-sex-count
-#| fig-cap: "Fig. 11a. Annual poisoning deaths by age group, stratified by sex (raw count). Each panel's colour scale is shared, so darker cells can be compared directly between male and female panels."
+#| fig-cap: "Fig. 11a. Annual pesticide poisoning deaths by age group, stratified by sex (raw count). Each panel's colour scale is shared, so darker cells can be compared directly between male and female panels."
 #| fig-width: 11
 #| fig-height: 5.5
 
@@ -277,11 +273,11 @@ if (exists("fig_age_year_sex_count")) fig_age_year_sex_count else message("Run p
 
 ### Age × year heatmap — within-sex proportional share
 
-Each cell is the **percentage of that sex's total deaths** in that year falling in that age band. Proportions are computed separately within each sex, so the panels show whether the *age structure* of male and female poisoning deaths has shifted over time — independently of the overall sex ratio in deaths.
+Each cell is the **percentage of that sex's total deaths** in that year falling in that age band. Proportions are computed separately within each sex, so the panels show whether the *age structure* of male and female pesticide poisoning deaths has shifted over time — independently of the overall sex ratio in deaths.
 
 ```{r}
 #| label: fig-age-year-sex-prop
-#| fig-cap: "Fig. 11b. Proportion of annual poisoning deaths by age group within each sex. Each panel's columns sum to 100%."
+#| fig-cap: "Fig. 11b. Proportion of annual pesticide poisoning deaths by age group within each sex. Each panel's columns sum to 100%."
 #| fig-width: 11
 #| fig-height: 5.5
 
@@ -307,13 +303,19 @@ if (exists("fig_age_sex_eapc")) fig_age_sex_eapc else message("Run poisoning_wra
 
 Counts by province of **usual residence** (`ResProvince`), excluding records coded as "Outside SA" or "Unspecified".
 
+::: {.callout-note}
+## District-level geography capped at 2022
+
+District maps below use the most recent year/years for which district-of-residence geography is available. The public StatsSA Isibalo microdata (used to extend this analysis to 2023-2024 at the national/provincial level) does not carry district-level geography for any year — district data for 2023/2024 would require a separate StatsSA data request. Provincial and national figures throughout this page are current to 2024; district maps are not.
+:::
+
 ### District hot spots: last 3 years
 
 Pooling the last 3 years stabilizes district-level crude rates and makes potential geographic hot spots easier to interpret than a single-year map.
 
 ```{r}
 #| label: fig-district-hotspot-map-3yr
-#| fig-cap: "Fig. 7a. District hot spot map from pooled crude poisoning death rates over the last 3 years. Red = top decile of district crude rates; blue = bottom decile."
+#| fig-cap: "Fig. 7a. District hot spot map from pooled crude pesticide poisoning death rates over the last 3 years with district data available. Red = top decile of district crude rates; blue = bottom decile."
 #| fig-width: 8
 #| fig-height: 6
 
@@ -322,7 +324,7 @@ if (exists("fig_district_hotspot_map_3yr")) fig_district_hotspot_map_3yr else me
 
 ```{r}
 #| label: fig-provincial
-#| fig-cap: "Fig. 7. Poisoning deaths by province of usual residence. Provinces ordered by count."
+#| fig-cap: "Fig. 7. Pesticide poisoning deaths by province of usual residence. Provinces ordered by count."
 #| fig-width: 8
 #| fig-height: 5
 
@@ -331,13 +333,13 @@ if (exists("fig_provincial")) fig_provincial else message("Run poisoning_wrangli
 
 ---
 
-## Cause breakdown — ICD subcodes
+## Cause breakdown — pesticide poisoning by ICD-10 code
 
-The top 15 three-character ICD-10 subcodes within the poisoning block, ranked by total deaths across the study period.
+The four validated pesticide-specific ICD-10 codes (StatsSA MACOD 2022, Table 4.12), ranked by total deaths across the study period. Each code corresponds 1:1 to an intent category (X48 = accidental/unspecified, X68 = self-harm, X87 = assault, Y18 = undetermined) — see the Overview methodological note on why "Undetermined" (Y18) dominates.
 
 ```{r}
 #| label: fig-top-icd
-#| fig-cap: "Fig. 8. Top 15 ICD-10 subcodes for poisoning deaths."
+#| fig-cap: "Fig. 8. Pesticide poisoning deaths by the four validated ICD-10 codes."
 #| fig-width: 10
 #| fig-height: 5.5
 
@@ -348,7 +350,7 @@ if (exists("fig_top_icd")) fig_top_icd else message("Run poisoning_wrangling.R")
 
 ## Years of Life Lost (YLL)
 
-YLL is computed as the sum of remaining life expectancy at age of death across all registered poisoning deaths with a known, valid age and documented sex (male or female). Individual ages are mapped to WHO standard remaining life expectancy using linear interpolation of the WHO reference life table (Murray 1994; LE at birth = 82.5 years). Records with unknown age or unknown/other sex are excluded from this section but remain in the death-count analyses above.
+YLL is computed as the sum of remaining life expectancy at age of death across all registered pesticide poisoning deaths with a known, valid age and documented sex (male or female). Individual ages are mapped to WHO standard remaining life expectancy using linear interpolation of the WHO reference life table (Murray 1994; LE at birth = 82.5 years). Records with unknown age or unknown/other sex are excluded from this section but remain in the death-count analyses above.
 
 ::: {.callout-note}
 ## Reference life table
@@ -360,7 +362,7 @@ The WHO/GBD standard life table (Murray 1994) anchors YLL at a life expectancy o
 
 ```{r}
 #| label: tbl-yll-summary
-#| tbl-cap: "Table 4. YLL by age group and sex — all poisoning deaths with valid age and known sex (1997–2022). YLL computed using WHO standard life table (Murray 1994). 'YLL/death' = mean standard life-years lost per registered death."
+#| tbl-cap: "Table 4. YLL by age group and sex — all pesticide poisoning deaths with valid age and known sex (1997–2024). YLL computed using WHO standard life table (Murray 1994). 'YLL/death' = mean standard life-years lost per registered death."
 
 if (exists("tbl_yll_age_sex")) {
   flextable(as.data.frame(tbl_yll_age_sex)) |>
@@ -385,7 +387,7 @@ if (exists("tbl_yll_age_sex")) {
 
 ```{r}
 #| label: fig-yll-age-sex
-#| fig-cap: "Fig. 13. Total YLL by age group, stratified by sex (1997–2022). Blue = male; red = female. YLL computed from individual registered ages using the WHO standard life table."
+#| fig-cap: "Fig. 13. Total YLL by age group, stratified by sex (1997–2024). Blue = male; red = female. YLL computed from individual registered ages using the WHO standard life table."
 #| fig-width: 9
 #| fig-height: 4.5
 
@@ -398,7 +400,7 @@ YLL per death declines monotonically with age because older decedents have fewer
 
 ```{r}
 #| label: fig-yll-per-death
-#| fig-cap: "Fig. 14. Mean YLL per registered poisoning death by age group and sex. Reflects the WHO standard remaining life expectancy applied at each recorded age."
+#| fig-cap: "Fig. 14. Mean YLL per registered pesticide poisoning death by age group and sex. Reflects the WHO standard remaining life expectancy applied at each recorded age."
 #| fig-width: 9
 #| fig-height: 4.5
 
@@ -409,7 +411,7 @@ if (exists("fig_yll_per_death")) fig_yll_per_death else message("Run poisoning_w
 
 ```{r}
 #| label: fig-yll-year-sex
-#| fig-cap: "Fig. 15. Annual total YLL from poisoning deaths by sex (1997–2022). Blue = male; red = female."
+#| fig-cap: "Fig. 15. Annual total YLL from pesticide poisoning deaths by sex (1997–2024). Blue = male; red = female."
 #| fig-width: 9
 #| fig-height: 4.5
 
@@ -439,13 +441,13 @@ The `DeathInst` field on the South African death notification form records where
 A substantial proportion of records carry code 9 (Unspecified). This likely reflects incomplete form completion rather than a genuinely unknown setting, and mirrors the broader data-quality limitations of the vital registration system. These records are retained in the tables below but excluded from the bar charts to avoid distorting the proportions of known categories. Their exclusion is reported in the figure footnotes.
 :::
 
-### X40–X49: distribution by death institution
+### X48: distribution by death institution
 
-The chart below shows where accidental/unspecified poisoning deaths (X40–X49) occurred, excluding the Unknown and Unspecified categories. The "Unspecified" share is shown in the table.
+The chart below shows where accidental/unspecified pesticide poisoning deaths (X48) occurred, excluding the Unknown and Unspecified categories. The "Unspecified" share is shown in the table.
 
 ```{r}
 #| label: fig-facility-acc
-#| fig-cap: "Fig. 17. Death institution for X40–X49 (accidental/unspecified) poisoning deaths. Records coded Unknown (8) or Unspecified (9) are excluded from this chart but included in the table below."
+#| fig-cap: "Fig. 17. Death institution for X48 (accidental/unspecified pesticide poisoning) deaths. Records coded Unknown (8) or Unspecified (9) are excluded from this chart but included in the table below."
 #| fig-width: 9
 #| fig-height: 4
 
@@ -454,12 +456,12 @@ if (exists("fig_facility_acc")) fig_facility_acc else message("Run poisoning_wra
 
 ```{r}
 #| label: tbl-facility-acc
-#| tbl-cap: "Table 5. X40–X49 poisoning deaths by death institution (known records only, excluding Unknown/Unspecified)."
+#| tbl-cap: "Table 5. X48 (accidental/unspecified pesticide poisoning) deaths by death institution (known records only, excluding Unknown/Unspecified)."
 
 if (exists("tbl_facility_acc")) {
   flextable(tbl_facility_acc) |>
     colformat_int(j = "N", big.mark = ",") |>
-    set_formatter(`% of X40-49` = function(x) paste0(x, "%")) |>
+    set_formatter(`% of X48` = function(x) paste0(x, "%")) |>
     autofit()
 } else {
   message("Run poisoning_wrangling.R")
@@ -468,11 +470,11 @@ if (exists("tbl_facility_acc")) {
 
 ### Intent composition within each facility setting
 
-The proportional stacked bars show how the intent mix varies across facility settings. Because "Accidental/unspec." is the ICD-10 default when manner is not stated, settings where non-forensic clinicians certify deaths (e.g. hospital wards) are expected to show the highest proportional contribution from this category.
+The proportional stacked bars show how the intent mix varies across facility settings. "Undetermined" (Y18) is the dominant pesticide-poisoning intent code overall (see methodological note above), so settings where intent is hardest to certify are expected to show the highest proportional contribution from this category rather than "Accidental/unspec."
 
 ```{r}
 #| label: fig-facility-intent
-#| fig-cap: "Fig. 18. Intent composition of poisoning deaths within each facility setting (100% stacked bars). 'Other' intent excluded. Percentages are within-setting shares."
+#| fig-cap: "Fig. 18. Intent composition of pesticide poisoning deaths within each facility setting (100% stacked bars). 'Other' intent excluded. Percentages are within-setting shares."
 #| fig-width: 9
 #| fig-height: 4
 
@@ -481,7 +483,7 @@ if (exists("fig_facility_intent")) fig_facility_intent else message("Run poisoni
 
 ```{r}
 #| label: tbl-facility-intent
-#| tbl-cap: "Table 6. Poisoning deaths by facility setting and intent (all records, including Unknown/Unspecified). '% Acc./unspec.' = proportion of that setting's deaths coded X40–X49."
+#| tbl-cap: "Table 6. Pesticide poisoning deaths by facility setting and intent (all records, including Unknown/Unspecified). '% Acc./unspec.' = proportion of that setting's deaths coded X48."
 
 if (exists("tbl_facility_intent")) {
   flextable(tbl_facility_intent) |>
@@ -498,6 +500,7 @@ if (exists("tbl_facility_intent")) {
 
 ## Next steps
 
+- Confirm/update this code definition once StatsSA publishes the 2023 MACOD release (current analysis uses the interim validated code set from the 2022 release, Table 4.12).
 - Add population denominators to compute age-standardised mortality rates.
 - Stratify provincial trends by intent.
 - Link to external toxicology data (e.g. NPIS calls, emergency department presentations) for triangulation with IMS and NCoDV forensic data.

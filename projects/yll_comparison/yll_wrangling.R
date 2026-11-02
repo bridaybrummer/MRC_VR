@@ -3,7 +3,8 @@ suppressPackageStartupMessages({
 })
 
 project_dir <- "projects/yll_comparison"
-input_file  <- "Deaths2022_MRCversionFINAL.feather"
+input_file_candidates <- c("Deaths2022_MRCversionFINAL_2024.feather", "Deaths2022_MRCversionFINAL.feather")
+input_file  <- input_file_candidates[file.exists(input_file_candidates)][1]
 output_rda  <- file.path(project_dir, "yll_results.rda")
 
 if (!file.exists(input_file)) stop("Input file not found: ", input_file)
@@ -376,7 +377,7 @@ tbl_yll_overall_display <- tbl_yll_overall[, .(
   `% missing age`        = Pct_missing_age
 )]
 
-# ── Most-recent-year (2022) YLL table ────────────────────────────────────────
+# ── Most-recent-year YLL table ───────────────────────────────────────────────
 RECENT_YEAR <- max(dt$year, na.rm = TRUE)
 yll_recent <- dt[year == RECENT_YEAR & !is.na(cause_group), .(
   Deaths   = .N,

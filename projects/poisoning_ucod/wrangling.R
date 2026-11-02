@@ -9,8 +9,13 @@ project_dir <- "projects/poisoning_ucod"
 output_rda  <- file.path(project_dir, "ucod_results.rda")
 
 # ── Load and decode ──────────────────────────────────────────────────────────
-input_file <- "LGH_MasterFile_preCollapsedAll.feather"
-if (!file.exists(input_file)) stop("Input not found: ", input_file)
+# Prefer the Isibalo-extended file (adds 2023-2024; see data/macod_isibalo/
+# extend_lgh_with_isibalo.R). No district dependency here, so this project is
+# fully extended (unlike poisoning_deaths' district maps, which stay at 2022).
+input_candidates <- c("LGH_MasterFile_preCollapsedAll_2024.feather",
+                      "LGH_MasterFile_preCollapsedAll.feather")
+input_file <- input_candidates[file.exists(input_candidates)][1]
+if (is.na(input_file)) stop("Input not found: ", paste(input_candidates, collapse = ", "))
 message("Reading: ", input_file)
 dt <- as.data.table(read_feather(input_file))
 for (v in names(dt)) {
@@ -39,8 +44,13 @@ for (v in CAUSE_COLS) {
   }]
 }
 
-# ── Poisoning flag: X40–X49, X60–X69, X85, Y10–Y19 ──────────────────────────
-POIS_RE <- "^(X4[0-9]|X6[0-9]|X85|Y1[0-9])"
+# ── Poisoning flag: pesticide poisoning only (X48, X68, X87, Y18) ──────────
+# Restricted to the four pesticide-specific ICD-10 codes validated by StatsSA
+# (MACOD 2022, Table 4.12; validated by Debbie Bradshaw) — interim definition
+# pending confirmation in the 2023 StatsSA MACOD release. Narrower than a
+# generic poisoning definition (which would include drugs, alcohol, gases,
+# other chemicals under X40-X49/X60-X69/X85/Y10-Y19).
+POIS_RE <- "^(X48|X68|X87|Y18)$"
 is_pois <- function(x) !is.na(x) & grepl(POIS_RE, x, ignore.case = FALSE)
 
 # ── Derived fields ───────────────────────────────────────────────────────────
@@ -256,9 +266,9 @@ fig_chain_pos <- {
     geom_text(aes(label = ifelse(pct >= 2, paste0(pct, "%"), "")),
               position = position_fill(vjust = 0.5),
               colour = "white", fontface = "bold", size = 3.8) +
-    scale_fill_manual(values = LINE_COLS, name = "Position of\npoisoning code") +
+    scale_fill_manual(values = LINE_COLS, name = "Position of\npesticide code") +
     scale_y_continuous(labels = percent_format(accuracy = 1)) +
-    labs(x = NULL, y = "Proportion of UCOD-poisoning records") +
+    labs(x = NULL, y = "Proportion of UCOD-pesticide-poisoning records") +
     theme_minimal(base_size = 11) +
     theme(panel.grid.minor   = element_blank(),
           panel.grid.major.x = element_blank())
@@ -341,9 +351,9 @@ fig_lines_filled <- {
 
 # ── DECISION SUMMARY TABLE (combines counts + sensitivity + recommendation) ──
 VERDICTS <- c(
-  "Line 1 (CauseA)"    = "Undercounts: misses all deaths where the poisoning code is not the immediate cause",
+  "Line 1 (CauseA)"    = "Undercounts: misses all deaths where the pesticide code is not the immediate cause",
   "Line 4 (CauseD)"    = "Largely uninformative: most certifiers do not fill Line 4",
-  "Last reported line" = "Better than Line 1 but still misses intermediate-chain poisoning codes",
+  "Last reported line" = "Better than Line 1 but still misses intermediate-chain pesticide codes",
   "UCOD"               = "Reference standard \u2014 captures all certificate information via ICD-10 selection rules"
 )
 

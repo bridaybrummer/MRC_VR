@@ -370,15 +370,20 @@ dt_garbage_summary_by_instance[
 
 library(plotly)
 
+# Full Tembisa history: model output starts in 1985 (earliest year available);
+# capped at 2025 to exclude forward projections.
+trend_years <- 1985:2025
+
 # HIV/AIDS Deaths Plot (including NCODV corrected estimates)
-p_hiv <- dt_hiv[year %in% 1997:2025] %>%
+p_hiv <- dt_hiv[as.numeric(as.character(year)) %in% trend_years] %>%
   ggplot(aes(x = as.numeric(as.character(year)), y = deaths, 
              color = source, group = source,
              text = paste0("Year: ", year, "<br>",
                           "Deaths: ", scales::comma(round(deaths)), "<br>",
                           "Source: ", source))) +
   geom_line(linewidth = 1) +
-  geom_point(size = 2.5) +
+  geom_point(size = 1.8) +
+  scale_x_continuous(breaks = seq(1985, 2025, by = 5)) +
   scale_y_continuous(labels = scales::comma) +
   scale_color_manual(values = c(
     "Tembisa" = "#2E86AB", 
@@ -387,7 +392,7 @@ p_hiv <- dt_hiv[year %in% 1997:2025] %>%
   )) +
   labs(x = "Year", y = "Deaths", color = "Data Source",
        title = "HIV/AIDS Deaths Comparison",
-       subtitle = "Comparing VR, Tembisa model, and NCODV-corrected estimates") +
+       subtitle = "Tembisa model (1985 onwards) vs VR and NCODV-corrected estimates") +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "bottom",
@@ -404,14 +409,15 @@ dt_tb <- rbind(
   nmc_SA_TB_deaths_from_CFR[, source := "NMC (from CFR)"]
 )
 
-p_tb <- dt_tb[year %in% 1997:2025] %>%
+p_tb <- dt_tb[as.numeric(as.character(year)) %in% trend_years] %>%
   ggplot(aes(x = as.numeric(as.character(year)), y = deaths, 
              color = source, group = source,
              text = paste0("Year: ", year, "<br>",
                           "Deaths: ", scales::comma(round(deaths)), "<br>",
                           "Source: ", source))) +
   geom_line(linewidth = 1) +
-  geom_point(size = 2.5) +
+  geom_point(size = 1.8) +
+  scale_x_continuous(breaks = seq(1985, 2025, by = 5)) +
   scale_y_continuous(labels = scales::comma) +
   scale_color_manual(values = c(
     "Tembisa" = "#2E86AB", 
@@ -421,7 +427,7 @@ p_tb <- dt_tb[year %in% 1997:2025] %>%
   )) +
   labs(x = "Year", y = "Deaths", color = "Data Source",
        title = "TB Deaths Comparison",
-       subtitle = "Comparing VR, Tembisa model, and NMC estimates") +
+       subtitle = "Tembisa model (1985 onwards) vs VR and NMC estimates") +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "bottom",
@@ -587,57 +593,10 @@ p_unnatural <- dt_unnatural_vr[year %in% 1997:2022] %>%
   library(lubridate)
   library(stringr)
 
-  mcod_statssa <- tribble(
-      ~year_of_death, ~embargoed_until, ~url,
-      2006, "23 October 2008 10:00", "https://www.statssa.gov.za/publications/P03093/P030932006.pdf",
-      2007, "2 November 2009 13:00", "https://www.statssa.gov.za/publications/P03093/P030932007.pdf",
-      2008, "18 November 2010 11:30", "https://www.statssa.gov.za/publications/P03093/P030932008.pdf",
-      2009, "30 November 2011 11:30", "https://www.statssa.gov.za/publications/P03093/P030932009.pdf",
-      2010, "11 April 2013 10:00", "https://www.statssa.gov.za/publications/P03093/P030932010.pdf",
-      2011, "18 March 2014 10:00", "https://www.statssa.gov.za/publications/P03093/P030932011.pdf",
-      2012, "4 September 2014 10:00", "https://www.statssa.gov.za/publications/P03093/P030932012.pdf",
-      2013, "02 December 2014 11:00", "https://www.statssa.gov.za/publications/P03093/P030932013.pdf",
-      2014, "02 December 2015 11:00", "https://www.statssa.gov.za/publications/P03093/P030932014.pdf",
-      2015, "28 February 2017 11:00", "https://www.statssa.gov.za/publications/P03093/P030932015.pdf",
-      2016, "27 March 2018 11:30", "https://www.statssa.gov.za/publications/P03093/P030932016.pdf",
-      2017, "26 March 2020 11:00", "https://www.statssa.gov.za/publications/P03093/P030932017.pdf",
-      2018, "15 June 2021 11:00", "https://www.statssa.gov.za/publications/P03093/P030932018.pdf",
-      2019, "13 December 2023 11:00", "https://www.statssa.gov.za/publications/P03093/P030932019.pdf",
-      2020, "30 April 2024 11:30", "https://www.statssa.gov.za/publications/P03093/P030932020.pdf",
-      2021, "31 March 2025 14:30", "https://www.statssa.gov.za/publications/P03093/P030932021.pdf",
-      2022, "28 August 2025 09:00", "https://www.statssa.gov.za/publications/P03093/P030932022.pdf"
-  ) %>%
-      mutate(
-          # parse date robustly (drop time if you prefer)
-          release_date = dmy(str_extract(embargoed_until, "\\d{1,2}\\s+\\w+\\s+\\d{4}")),
-          publication_year = lubridate::year(release_date),
-          product = "P0309.3",
-          report_title = paste0(
-              "Mortality and causes of death in South Africa, ", year_of_death,
-              ": Findings from death notification"
-          )
-      ) %>%
-      dplyr::select(
-          publication_year,
-          year_of_death,
-          release_date,
-          product,
-          report_title,
-          url
-      ) %>%
-      arrange(year_of_death)
-
-# take each URL and put each PDF into a file 
-if(!exists("MCOD_reports")){
-    dir.create("MCOD_reports")
-}
-mcod_statssa$url %>% purrr::walk( ~ {
-    url <- .
-    destfile <- file.path("MCOD_reports", basename(url))
-    if (!file.exists(destfile)) {
-        download.file(url, destfile, mode = "wb")
-    }
-})
+  # Known releases + auto-discovery of newer Stats SA P0309.3 reports
+  # (downloads new PDFs to MCOD_reports/ and reads the embargo date).
+  source("statssa_mcod_releases.r")
+  mcod_statssa <- get_statssa_mcod_releases(root = ".")
 
 list.files("MCOD_reports", full.names = TRUE) -> downloaded_files
 downloaded_files
@@ -684,73 +643,11 @@ library(lubridate)
 library(ggplot2)
 library(scales)
 
-df_plot <- mcod_statssa %>%
-  # M+E review (Aug 2026): restrict to the most recent 10 death-year cohorts
-  filter(year_of_death %in% ((max(year_of_death) - 9):max(year_of_death))) %>%
-  mutate(
-    death_year_end = ymd(paste0(year_of_death, "-12-31")),
-    delay_days     = as.numeric(release_date - death_year_end),
-    delay_months   = delay_days / 30.4375, 
-    delay_years = round( delay_days / 365.25, 1),
-    # Create hover text with clickable URL
-    hover_text = paste0(
-      "<b>Deaths in: </b>", year_of_death, "<br>",
-      "<b>Released: </b>", format(release_date, "%d %b %Y"), "<br>",
-      "<b>Delay: </b>", delay_years, " years<br>",
-      "<b>Report: </b><a href='", url, "' target='_blank'>View PDF</a>"
-    )
-  )
-
-  
-df_plot
-
-# Single-dimension vertical bar chart: bars anchored at y=0, height = delay in
-# years, with value labels so outlier years (e.g. 2019) jump out immediately.
-ggplot(df_plot, aes(x = factor(year_of_death), y = delay_years,
-                     text = hover_text)) +
-    geom_col(fill = "#2E86AB", width = 0.65) +
-    geom_text(
-        aes(label = paste0(delay_years, " yr")),
-        vjust = -0.4, size = 3.3, colour = "grey20"
-    ) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-    labs(
-        x = "Deaths occurring in year",
-        y = "Delay to publication (years)"
-    ) +
-    theme_minimal(
-    
-    ) + 
-    theme(
-     axis.text.x = element_text(angle = 45, hjust = 1),
-     panel.grid.minor = element_blank()
-    )-> p_timeliness
-
-# stylise for dashboard 
-p_timeliness %>%
-    plotly::ggplotly(
-        tooltip = "text"
-    ) %>%
-    plotly::style(
-        customdata = df_plot$url,
-        traces = 1  # The geom_col trace (bars)
-    ) %>%
-    plotly::layout(
-        hoverlabel = list(
-            align = "left",
-            bgcolor = "white",
-            bordercolor = "darkgray"
-        ),
-        hovermode = "closest"
-    ) %>%
-    htmlwidgets::onRender("
-        function(el, x) {
-            el.on('plotly_click', function(d) {
-                var url = d.points[0].customdata;
-                if(url) window.open(url, '_blank');
-            });
-        }
-    ") -> p_timeliness_interactive
+# Most recent 10 death-year cohorts, latest report highlighted.
+timeliness <- build_timeliness_plots(mcod_statssa, n_years = 10)
+df_plot <- timeliness$data
+p_timeliness <- timeliness$plot
+p_timeliness_interactive <- timeliness$interactive
 
     p_timeliness_interactive 
 
