@@ -987,7 +987,7 @@ rate_plot <- ggplot(rate_plot_dt, aes(x = short_label, y = outlier_rate,
 ggplotly(rate_plot, tooltip = "text") |> ply_config()
 ```
 
-**Facility x month x method outlier table.** Every flagged facility-month for a CYP-eligible method, largest deviation first — the same underlying flags as @tbl-contra-outliers, filtered to CYP methods only. The single largest deviation (Sub-dermal implant, one facility, one month) is two orders of magnitude above that facility's own typical volume — almost certainly a data-entry error (e.g. a unit or decimal-place slip) rather than a genuine service surge, and a candidate for exclusion or correction before using that facility-month in any CYP total.
+**Facility x month x method outlier table.** Every flagged facility-month for a CYP-eligible method, largest deviation first — the same underlying flags as @tbl-contra-outliers, filtered to CYP methods only. The largest deviation found by this check (Sub-dermal implant, `r data_corrections_log$facility[1]`, `r format(data_corrections_log$period_date[1], "%B %Y")`: `r format(data_corrections_log$reported_value[1], big.mark = ",")` reported against a typical `r data_corrections_log$replacement_value[1]`) is about four orders of magnitude above that facility's own typical volume and is almost certainly a data-entry error. It is corrected in `wrangling.R` before the tables and figures on this page, so it no longer appears below. The original and replacement values are recorded in `data_corrections_log`.
 
 ```{r}
 #| label: tbl-cyp-outliers

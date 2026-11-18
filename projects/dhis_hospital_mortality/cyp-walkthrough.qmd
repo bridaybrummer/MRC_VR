@@ -1,0 +1,676 @@
+---
+title: "Spreading long-acting contraceptive protection across the years it works"
+subtitle: "A step-by-step walk-through with worked examples"
+description: "How standard CYP and continuation-weighted CYP are calculated, shown with implants, IUCDs and national DHIS data."
+date: "2026-11-16"
+categories: [DHIS2, contraception, CYP, methods]
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: false
+execute:
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressPackageStartupMessages({
+  library(data.table)
+  library(knitr)
+  library(ggplot2)
+  library(scales)
+  library(kableExtra)
+})
+
+rda_path <- here::here("projects/dhis_hospital_mortality/dhis_results.rda")
+if (!file.exists(rda_path)) stop("Run projects/dhis_hospital_mortality/wrangling.R first.")
+load(rda_path)
+
+fmt <- function(x, d = 0) {
+  ifelse(is.na(x), "", formatC(x, format = "f", digits = d, big.mark = ","))
+}
+
+# Excel-style cohort grid: rows = year of insertion, columns = calendar year.
+# Each cell = units inserted x weight for that many years since insertion.
+# Adding down a column gives the adjusted CYP for that calendar year.
+grid_table <- function(units, ins_years, w, cal_years, std, caption,
+                       scale = 1, d = 0) {
+  k <- outer(ins_years, cal_years, function(s, t) t - s)
+  ok <- k >= 0 & k < length(w)
+  wk <- matrix(0, length(ins_years), length(cal_years))
+  wk[ok] <- w[k[ok] + 1]
+  m <- units * wk * scale
+  lifetime <- units * sum(w) * scale
+  after <- pmax(lifetime - rowSums(m), 0)
+  after[after < 1e-6] <- 0
+  show_after <- any(after > 1e-6)
+
+  adj <- colSums(m)
+  std_rows <- lapply(std, function(f) {
+    v <- numeric(length(cal_years))
+    hit <- cal_years %in% ins_years
+    v[hit] <- f * units[match(cal_years[hit], ins_years)] * scale
+    v
+  })
+  diff_row <- adj - std_rows[[1]]
+
+  body <- ifelse(m == 0, "", fmt(m, d))
+  mk <- function(v, tot) c(fmt(v, d), fmt(tot, d), if (show_after) "")
+  out <- cbind(body, Within = fmt(rowSums(m), d))
+  if (show_after) out <- cbind(out, After = fmt(after, d))
+  out <- rbind(
+    out,
+    mk(adj, sum(adj)),
+    do.call(rbind, lapply(std_rows, function(v) mk(v, sum(v)))),
+    mk(diff_row, sum(diff_row))
+  )
+  row_lab <- c(
+    paste0("Inserted ", ins_years, " (", fmt(units), " units)"),
+    "ADJUSTED CYP in the year (add down the column)",
+    names(std),
+    "Difference: adjusted minus first standard row"
+  )
+  hdr <- c("", cal_years, if (show_after) c("Total in table", "Falls after table") else "Total")
+  nr <- length(ins_years)
+
+  kbl(cbind(row_lab, out), col.names = hdr, align = c("l", rep("r", ncol(out))),
+      caption = caption, row.names = FALSE, escape = FALSE) |>
+    kable_styling(bootstrap_options = c("bordered", "condensed"),
+                  full_width = FALSE, font_size = 12, position = "left") |>
+    row_spec(0, bold = TRUE, background = "#d9d9d9") |>
+    column_spec(1, bold = TRUE) |>
+    row_spec(nr + 1, bold = TRUE, background = "#e2efda") |>
+    row_spec(nr + 2:(length(std) + 1), background = "#fff2cc") |>
+    row_spec(nr + length(std) + 2, italic = TRUE)
+}
+
+excel_table <- function(df, caption, align = NULL, font_size = 12, bold_last = FALSE) {
+  tb <- kbl(df, caption = caption, row.names = FALSE, escape = FALSE,
+            align = align) |>
+    kable_styling(bootstrap_options = c("bordered", "condensed"),
+                  full_width = FALSE, font_size = font_size, position = "left") |>
+    row_spec(0, bold = TRUE, background = "#d9d9d9")
+  if (bold_last) tb <- tb |> row_spec(nrow(df), bold = TRUE, background = "#e2efda")
+  tb
+}
+```
+
+## Summary
+
+**Question.** Does allocating long-acting-method CYP to the years protected,
+rather than the insertion year, change annual programme CYP or its correlation
+with births?
+
+**Comparison.** The baseline credits all CYP in the distribution year. Rob's
+request changes the pill and implant factors and redistributes implant and IUCD
+protection over later years using decaying weights. Programme comparisons
+exclude condoms; condom CYP is shown separately.
+
+**Main findings.** The request specifies redistribution and revised factors.
+The displayed implementation also uses an analyst-selected pre-2015 warm-up,
+so differences from baseline reflect all three. Correlations with next-year
+births are descriptive; ten annual observations cannot establish a causal
+relationship or validate the assumed decay weights.
+
+**Contents.**
+
+| Step | Content |
+|---|---|
+| 1 | Standard baseline and factors in Rob's request |
+| 2 | Weights |
+| 3 | Use case A: implants |
+| 4 | Use cases B (IUCD) and C (short-acting methods, sterilisation) |
+| 5 | National implant data |
+| 6 | Standard baseline versus Rob's request, excluding condoms |
+| 7 | Compare both CYP series with births |
+| 8 | Limits and decisions |
+
+::: {.callout-note}
+## Reading the grids
+Each row is a group of insertions (a cohort) and each column is a calendar year.
+A cell is the protection that cohort gives in that year. Add down a column for
+that year's CYP. Add across a row for the cohort's total.
+:::
+
+## Step 1. Standard CYP
+
+Standard CYP is units multiplied by a fixed factor, credited to the year of
+distribution.
+
+```{r}
+#| label: step1
+step1 <- data.frame(
+  Method = c("Oral pill", "Sub-dermal implant", "Copper IUCD"),
+  `What is counted` = c("Pill cycles", "Insertions", "Insertions"),
+  `Units in 2021` = c("1,200", "100", "100"),
+  `Standard factor` = c("1/15", "3.5", "4.6"),
+  `Rob-request factor` = c("1/12", "2.5", "4.6"),
+  `Standard CYP in 2021` = c("80", "350", "460"),
+  `Rob-request CYP in 2021` = c("100", "250", "460"),
+  `Years of protection` = c("About 1", "3", "10"),
+  check.names = FALSE
+)
+excel_table(step1, "Standard baseline and factors specified in Rob's request.",
+            align = c("l", "l", rep("r", 6)))
+```
+
+The request specifies 12 pill cycles per CYP and 2.5 CYP per implant; the
+baseline uses 15 cycles and 3.5 CYP per implant. Confirm the pill product before
+applying 12 cycles: the methods note distinguishes combined-pill cycles from
+progestin-only packs.
+
+The adjusted scenario moves implant and IUCD protection to the years it is
+expected to occur. The following grids make those contributions checkable.
+
+## Step 2. Weights
+
+Adjusted CYP uses a weight per year since insertion: year 0 is the year of
+insertion, year 1 the next year, and so on.
+
+```{r}
+#| label: step2
+fullm <- ADJUSTED_CYP_MATRIX[short_label %in% c("Sub-dermal implant", "IUCD")]
+wide <- dcast(fullm, short_label ~ protection_year, value.var = "adjusted_cyp")
+yrs <- setdiff(names(wide), "short_label")
+wide[, Total := rowSums(.SD, na.rm = TRUE), .SDcols = yrs]
+wtab <- wide[, lapply(.SD, function(x) ifelse(is.na(x), "", formatC(x, format = "f", digits = 2))),
+             by = short_label]
+setnames(wtab, c("short_label", yrs, "Total"),
+         c("Method", paste("Year", yrs), "Total CYP per insertion"))
+excel_table(as.data.frame(wtab),
+            "Rob-request allocation weights per insertion for long-acting methods.",
+            align = c("l", rep("r", ncol(wtab) - 1)), font_size = 11)
+```
+
+Rules:
+
+1. The weights add up to the method's CYP factor, so a cohort's lifetime CYP is
+   unchanged.
+2. The weights fall over time, because some women stop using the method.
+3. Implants and IUCDs are the only methods spread. Injectables, pills and
+   condoms last about a year or less and are credited in the distribution year.
+   Sterilisation is permanent but is also credited in the procedure year (see
+   Step 4).
+
+::: {.callout-warning}
+## Weights are assumptions
+Rob supplied the implant weights (1.00, 0.80, 0.70) and the first two IUCD
+weights (0.85, 0.75). The rest of the IUCD profile is an assumed steady fall
+that totals 4.6. Replace them with local continuation data when available.
+:::
+
+## Step 3. Use case A: implants
+
+Suppose 100, 120, 90 and 110 implants are inserted in 2021 to 2024, and none
+before or after. Each insertion gives 1.00 CYP in its own year, 0.80 the next
+year and 0.70 the year after.
+
+```{r}
+#| label: usecase-implant
+grid_table(
+  units = c(100, 120, 90, 110), ins_years = 2021:2024,
+  w = c(1.00, 0.80, 0.70), cal_years = 2021:2026,
+  std = c("Standard baseline (3.5 CYP, credited in insertion year)" = 3.5),
+  caption = "Use case A: implant CYP by calendar year, standard baseline versus Rob's requested allocation."
+)
+```
+
+**2023 column:**
+90 × 1.00 (2023 insertions) + 120 × 0.80 (2022 insertions, second year) +
+100 × 0.70 (2021 insertions, third year) = 90 + 96 + 70 = **256 CYP**.
+
+The baseline puts 315 CYP in 2023 and nothing after 2024. Rob's requested
+allocation puts 256 in 2023, 151 in 2025 and 77 in 2026. Across these cohorts,
+the baseline totals 1,470 CYP (3.5 per insertion); the request totals 1,050
+(2.5 per insertion). The difference therefore includes both the factor change
+and redistribution.
+
+## Step 4. More use cases
+
+### Use case B: copper IUCD
+
+Suppose 100 IUCDs are inserted in each of 2021, 2022 and 2023. The weights run
+for ten years, so protection builds up and continues well after the last
+insertion.
+
+```{r}
+#| label: usecase-iucd
+iucd_w <- ADJUSTED_CYP_MATRIX[short_label == "IUCD"][order(protection_year)]$adjusted_cyp
+grid_table(
+  units = c(100, 100, 100), ins_years = 2021:2023,
+  w = iucd_w, cal_years = 2021:2032,
+  std = c("Standard CYP (all credited in insertion year)" = 4.6),
+  caption = "Use case B: IUCD CYP by calendar year, standard versus adjusted.",
+  d = 0
+) |> scroll_box(width = "100%")
+```
+
+In 2023, standard CYP is 460 (the 2023 insertions only). Adjusted CYP is
+100 × 0.85 + 100 × 0.75 + 100 × 0.65 = **225**: the 2023 cohort is in its first
+year and the 2021 and 2022 cohorts are in their third and second. The
+remaining 910 of the 1,380 CYP falls in 2024–2032.
+### Use case C: injectables, pills, condoms and sterilisation
+
+```{r}
+#| label: usecase-short
+short_tab <- data.frame(
+  Method = c("Medroxyprogesterone (DMPA)", "Norethisterone (NET-EN)", "Oral pill",
+             "Male / female condom", "Sterilisation (F or M)"),
+  Unit = c("Injection", "Injection", "Cycle", "Condom", "Procedure"),
+  `Units in 2021` = c("1,200", "1,200", "1,200", "12,000", "10"),
+  `Standard baseline CYP (2021)` = c("300", "200", "80", "100", "100"),
+  `Rob-request CYP (2021)` = c("300", "200", "100", "100", "100"),
+  `Rob-request CYP (2022 onwards)` = c("0", "0", "0", "0", "0"),
+  check.names = FALSE
+)
+excel_table(short_tab,
+            "Use case C: short-duration methods are not redistributed; the pill factor differs by scenario.",
+            align = c("l", "l", rep("r", 4)))
+```
+
+::: {.callout-warning}
+## Sterilisation
+Sterilisation is permanent and is credited 10 CYP in the procedure year, not
+spread. This is inconsistent with spreading implants and IUCDs and affects
+comparisons with births. Decide whether to spread it or report it separately.
+:::
+
+## Step 5. The real data: implants, 2015–2025
+
+The same layout with national DHIS counts of sub-dermal implants inserted.
+Rows are insertion years, columns are calendar years, and figures are thousands
+of CYP. The requested allocation uses the pipeline's pre-2015 warm-up.
+
+```{r}
+#| label: real-data-prep
+# All inputs come from wrangling.R, which already applies the one documented
+# data correction (see below).
+imp_w <- ADJUSTED_CYP_MATRIX[short_label == "Sub-dermal implant"][order(protection_year)]$adjusted_cyp
+imp <- adjusted_cyp_lag_buildup[
+  scenario == "Proposed new: steady-state initialization" &
+    short_label == "Sub-dermal implant",
+  .(year = source_year, n = services)
+][, unique(.SD, by = "year")][order(year)]
+
+# Hand calculation of the weighted sum must match the pipeline output.
+n_by_year <- setNames(imp$n, imp$year)
+check_years <- 2015:2025
+hand <- vapply(check_years, function(t) {
+  v <- n_by_year[as.character(t - seq_along(imp_w) + 1)]
+  sum(imp_w * ifelse(is.na(v), 0, v))
+}, numeric(1))
+stopifnot(isTRUE(all.equal(
+  unname(hand),
+  agg_adjusted_cyp_method_annual[
+    scenario == "Proposed new: steady-state initialization" &
+      short_label == "Sub-dermal implant" & year %in% check_years][order(year)]$adjusted_cyp
+)))
+
+fix <- data_corrections_log[1]
+```
+
+```{r}
+#| label: real-implant-grid
+grid_table(
+  units = imp$n, ins_years = imp$year, w = imp_w, cal_years = 2015:2025,
+    std = c("Rob-request factor, credited in insertion year (2.5)" = 2.5,
+      "A. Standard baseline (3.5)" = 3.5),
+  scale = 1e-3,
+    caption = "National sub-dermal implants: baseline and requested factor versus decay-weighted CYP, thousands (2025 corrected)."
+) |> scroll_box(width = "100%")
+```
+
+For each calendar year, multiply that year's insertions by 1.00, the prior
+year's by 0.80, and the insertions two years earlier by 0.70; add the
+contributions. Pre-2015 rows use the 2015 count as the assumed warm-up. The
+adjusted annual totals are checked against the pipeline; the baseline column
+credits 3.5 CYP per insertion in its insertion year.
+
+::: {.callout-warning}
+## Corrected reporting error
+`r fix$facility` reports `r fmt(fix$reported_value)` implants for
+`r format(fix$period_date, "%B %Y")`, against a typical `r fmt(fix$replacement_value)`
+per month. That entry is `r round(100 * fix$reported_value / fix$national_annual_before)`%
+of the reported 2025 national total. `wrangling.R` replaces it with the
+facility's typical monthly value, so every page uses the corrected data. The
+correction is recorded in `data_corrections_log`.
+:::
+
+```{r}
+#| label: real-correction-table
+corr_tab <- data.frame(
+  Item = c("Reported national implants, 2025", "Corrected national implants, 2025",
+           "Removed"),
+  Value = fmt(c(fix$national_annual_before, fix$national_annual_after, fix$excess_removed))
+)
+excel_table(corr_tab, "Effect of the correction on 2025 implant insertions.",
+            align = c("l", "r"))
+```
+
+Pre-2015 insertion counts are not observed. The requested series initializes
+those cohorts by carrying the 2015 count backward; this assumption affects the
+early adjusted totals (see Step 8).
+
+## Step 6. Standard baseline versus the request implementation
+
+Both series use the same corrected national DHIS data and exclude condoms. Rob's
+request specifies revised factors and decay-weighted allocation. Since DHIS
+starts in 2015, the displayed implementation additionally uses a steady-state
+pre-2015 initialization; that is an analysis assumption, not part of the
+verbatim request. The annual difference combines factor changes, redistribution
+and initialization.
+
+```{r}
+#| label: all-methods
+pc <- copy(programme_cyp_comparison)[order(year)]
+disp <- pc[, .(
+  Year = year,
+  `A. Standard baseline` = fmt(standard_cyp / 1e3),
+  `B. Request implementation` = fmt(full_proposal_cyp / 1e3),
+  `Difference (B - A)` = fmt((full_proposal_cyp - standard_cyp) / 1e3),
+  `Difference from baseline (%)` = fmt(full_vs_standard_pct, 1)
+)]
+excel_table(as.data.frame(disp),
+            "Annual programme CYP excluding condoms, thousands (2025 corrected).",
+            align = c("l", rep("r", 4)), font_size = 11) |> scroll_box(width = "100%")
+```
+
+Rob's request specifies 12 pill cycles per CYP, 2.5 CYP per implant, and
+decay-weighted allocation for implants and IUCDs. The pre-2015 initialization
+assumes 2015 counts in earlier years; it is not observed historical data.
+
+```{r}
+#| label: condom-share
+ctab <- copy(cyp_condom_share_annual)
+excel_table(
+  data.frame(
+    Year = ctab$year,
+    `Non-condom standard CYP (thousands)` = fmt(ctab$noncondom_cyp / 1e3),
+    `Condom CYP at 100% use (thousands)` = fmt(ctab$condom_cyp / 1e3),
+    `Condoms as % of all CYP` = fmt(ctab$condom_share_pct, 1),
+    check.names = FALSE
+  ),
+  "Why condoms are excluded from the headline comparison (2025 implant correction applied).",
+  align = c("l", "r", "r", "r")
+)
+```
+
+Condoms account for 45–72% of all CYP if every distributed condom is counted as
+used. They are not redistributed, and reporting shifts from facility to district
+level in 2018. They are excluded from the baseline/request comparison and shown
+separately here.
+
+## Step 7. Compare both CYP series with births
+
+This descriptive comparison uses only the **standard baseline** and the
+**request implementation**. The latter combines Rob's revised factors and
+decay-weighted allocation with the analysis's assumed pre-2015 carryover; the
+correlation difference cannot identify the contribution of any one component.
+Births are facility births in N+1, shown as counts and crude rates per 1,000
+women aged 15–49. Condoms are excluded from the programme total.
+
+```{r}
+#| label: decay-helpers
+al_next <- "Births in following year (N+1)"
+al_prev <- "Births in previous year (N-1)"
+mcol <- c("A. Standard" = "#6a3d9a", "D. Full proposal" = "#1b9e77")
+rv <- function(g, m, bs = "Counts", vw = "Yearly values", al = al_next) {
+  sprintf("%.2f", cyp_decay_correlation[group == g & measure == m & basis == bs &
+                                          view == vw & alignment == al, correlation])
+}
+jk_request <- function(g, bs = "Counts") {
+  round(10 * cyp_decay_correlation[
+    group == g & measure == "D. Full proposal" & basis == bs &
+      view == "Yearly values" & alignment == al_next,
+    jackknife_stronger
+  ])
+}
+
+cor_block <- function(vw, al, bs) {
+  d <- cyp_decay_correlation[view == vw & alignment == al & basis == bs &
+                               measure %in% names(mcol)]
+  w <- dcast(d, group ~ measure, value.var = "correlation")
+  ci <- d[measure == "D. Full proposal", .(group, ci = sprintf("%.2f to %.2f", ci_low, ci_high))]
+  w <- merge(w, ci, by = "group")
+  jkv <- d[measure == "D. Full proposal", .(group, jk = jackknife_stronger)]
+  w <- merge(w, jkv, by = "group")
+  w <- w[order(group)]
+  out <- data.frame(
+    Group = as.character(w$group),
+    `A. Standard baseline` = sprintf("%.2f", w$`A. Standard`),
+    `B. Request implementation` = sprintf("%.2f", w$`D. Full proposal`),
+    `B minus A` = sprintf("%+.2f", w$`D. Full proposal` - w$`A. Standard`),
+    check.names = FALSE
+  )
+  if (vw == "Yearly values") {
+    out[["Leave-one-year-out: request stronger than baseline (of 10)"]] <- ifelse(
+      is.na(w$jk), "", round(10 * w$jk))
+  }
+  out
+}
+```
+
+### Tables
+
+```{r}
+#| label: answer-counts-levels
+excel_table(cor_block("Yearly values", al_next, "Counts"),
+  "Correlation with next-year facility births, counts. More negative is a stronger inverse association.",
+  align = c("l", rep("r", 4)), font_size = 11) |> scroll_box(width = "100%")
+```
+
+```{r}
+#| label: answer-rates-levels
+excel_table(cor_block("Yearly values", al_next, "Rates"),
+  "Correlation with next-year facility-birth rates per 1,000 women aged 15–49.",
+  align = c("l", rep("r", 4)), font_size = 11) |> scroll_box(width = "100%")
+```
+
+```{r}
+#| label: answer-changes
+tb <- rbind(
+  cbind(Basis = "Counts", cor_block("Year-on-year change", al_next, "Counts")),
+  cbind(Basis = "Rates", cor_block("Year-on-year change", al_next, "Rates"))
+)
+excel_table(tb,
+  "Correlation of year-on-year CYP and next-year birth changes; this reduces shared long-term trend.",
+  align = c("l", "l", rep("r", 3)), font_size = 11) |> scroll_box(width = "100%")
+```
+
+```{r}
+#| label: answer-prev
+tb <- rbind(
+  cbind(Basis = "Counts", cor_block("Yearly values", al_prev, "Counts")),
+  cbind(Basis = "Rates", cor_block("Yearly values", al_prev, "Rates"))
+)
+excel_table(tb,
+  "Secondary alignment: correlation with previous-year facility births (N-1).",
+  align = c("l", "l", rep("r", 4)), font_size = 11) |> scroll_box(width = "100%")
+```
+
+Values closer to −1 indicate a stronger inverse association. "B minus A" is the
+change in correlation under the request implementation; the final column counts
+how many leave-one-year-out checks retain a stronger absolute correlation than
+baseline.
+
+### Figures
+
+Figures show the programme total (all methods, excluding condoms) and the
+long-acting methods (implant + IUCD). A point for 2020 shows 2020 CYP and births
+in 2021.
+
+```{r}
+#| label: fig-counts
+#| fig-height: 6
+#| fig-width: 9
+#| fig-cap: "Counts: CYP (thousands) and recorded facility births in the following year (thousands)."
+fig_dat <- function(basis) {
+  d <- cyp_decay_series[group %in% c("All methods", "Implant + IUCD (long-acting)") &
+                           measure %in% names(mcol)]
+  cy <- d[, .(group, measure, year,
+              value = if (basis == "Counts") cyp_value / 1e3 else cyp_per_1000_wra,
+              panel = if (basis == "Counts") "CYP (thousands)" else "CYP per 1,000 women 15–49")]
+  b <- d[measure == "A. Standard" & !is.na(births_next),
+         .(group, measure = "Births in following year", year,
+           value = if (basis == "Counts") births_next / 1e3 else births_next_per_1000_wra,
+           panel = if (basis == "Counts") "Births in N+1 (thousands)" else "Births in N+1 per 1,000 women 15–49")]
+  rbind(cy, b)
+}
+trend_plot <- function(basis) {
+  d <- fig_dat(basis)
+  lev <- unique(d$panel)
+  d[, panel := factor(panel, levels = lev)]
+  cols <- c(mcol, "Births in following year" = "black")
+  ggplot(d, aes(year, value, colour = measure, linetype = measure)) +
+    geom_line(linewidth = 0.8) + geom_point(size = 1.4) +
+    facet_grid(panel ~ group, scales = "free_y") +
+    scale_colour_manual(values = cols,
+                        labels = c("A. Standard" = "A. Standard baseline",
+                                   "D. Full proposal" = "B. Request implementation",
+                                   "Births in following year" = "Births in N+1"),
+                        name = NULL) +
+    scale_linetype_manual(values = c("A. Standard" = "solid", "D. Full proposal" = "solid",
+                     "Births in following year" = "solid"), name = NULL) +
+    scale_x_continuous(breaks = seq(2015, 2025, 2)) +
+    scale_y_continuous(labels = comma) +
+    labs(x = NULL, y = NULL) + theme_bw(base_size = 11) +
+    theme(legend.position = "bottom", strip.background = element_rect(fill = "#e8edf2"),
+          panel.grid.minor = element_blank())
+}
+trend_plot("Counts")
+```
+
+```{r}
+#| label: fig-rates
+#| fig-height: 6
+#| fig-width: 9
+#| fig-cap: "Crude rates: CYP and recorded facility births in the following year, per 1,000 women aged 15–49."
+trend_plot("Rates")
+```
+
+```{r}
+#| label: fig-scatter
+#| fig-height: 7
+#| fig-width: 9
+#| fig-cap: "All methods, excluding condoms: CYP in year N against recorded births in year N+1. Points are labelled by CYP year. The title of each panel gives the correlation."
+scatter_plot <- function(basis, grp = "All methods") {
+  d <- cyp_decay_series[group == grp & measure %in% names(mcol) & !is.na(births_next)]
+  d[, `:=`(x = if (basis == "Counts") cyp_value / 1e3 else cyp_per_1000_wra,
+           y = if (basis == "Counts") births_next / 1e3 else births_next_per_1000_wra)]
+  r <- d[, .(r = cor(x, y)), by = measure]
+  d[r, on = "measure", lab := sprintf("%s (r = %.2f)", measure, i.r)]
+  ggplot(d, aes(x, y)) +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "grey40", linewidth = 0.6) +
+    geom_point(aes(colour = measure), size = 2) +
+    geom_text(aes(label = year), size = 2.8, vjust = -0.8) +
+    facet_wrap(~lab, scales = "free_x", ncol = 2) +
+    scale_colour_manual(values = mcol, guide = "none") +
+    scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma) +
+    labs(x = if (basis == "Counts") "CYP in year N (thousands)" else "CYP per 1,000 women 15–49, year N",
+         y = if (basis == "Counts") "Births in year N+1 (thousands)" else "Births per 1,000 women 15–49, year N+1") +
+    theme_bw(base_size = 11) +
+    theme(strip.background = element_rect(fill = "#e8edf2"), panel.grid.minor = element_blank())
+}
+scatter_plot("Counts")
+```
+
+```{r}
+#| label: fig-scatter-rates
+#| fig-height: 7
+#| fig-width: 9
+#| fig-cap: "Same as above, as crude rates per 1,000 women aged 15–49."
+scatter_plot("Rates")
+```
+
+```{r}
+#| label: fig-forest
+#| fig-height: 7
+#| fig-width: 9
+#| fig-cap: "Correlation with next-year births, by intervention group and CYP version, with 95% confidence intervals (indicative only; ten yearly points). More negative is a stronger link."
+fd <- cyp_decay_correlation[alignment == al_next & measure %in% names(mcol)]
+fd[, measure := factor(measure, levels = names(mcol))]
+fd[, group := factor(group, levels = rev(levels(group)))]
+ggplot(fd, aes(correlation, group, colour = measure)) +
+  geom_vline(xintercept = 0, colour = "grey50") +
+  geom_pointrange(aes(xmin = ci_low, xmax = ci_high),
+                  position = position_dodge(width = 0.7), size = 0.35) +
+  facet_grid(basis ~ view) +
+  scale_colour_manual(values = mcol,
+                      labels = c("A. Standard" = "A. Standard baseline",
+                                 "D. Full proposal" = "B. Request implementation"),
+                      name = NULL) +
+  labs(x = "Correlation with births in the following year", y = NULL) +
+  theme_bw(base_size = 11) +
+  theme(legend.position = "bottom", strip.background = element_rect(fill = "#e8edf2"),
+        panel.grid.minor = element_blank())
+```
+
+### Results
+
+For next-year facility births (N+1), yearly values, counts (rates per 1,000
+women aged 15–49 in brackets):
+
+- **Implants:** baseline `r rv("Implant", "A. Standard")`
+  (`r rv("Implant", "A. Standard", "Rates")`); request implementation
+  `r rv("Implant", "D. Full proposal")`
+  (`r rv("Implant", "D. Full proposal", "Rates")`).
+- **IUCDs:** baseline `r rv("IUCD", "A. Standard")`
+  (`r rv("IUCD", "A. Standard", "Rates")`); request implementation
+  `r rv("IUCD", "D. Full proposal")`
+  (`r rv("IUCD", "D. Full proposal", "Rates")`).
+- **All methods, excluding condoms:** baseline `r rv("All methods", "A. Standard")`
+  (`r rv("All methods", "A. Standard", "Rates")`); request implementation
+  `r rv("All methods", "D. Full proposal")`
+  (`r rv("All methods", "D. Full proposal", "Rates")`).
+- **Sensitivity to individual years:** in `r jk_request("All methods")` of ten leave-one-year-out checks, the request implementation's all-methods count series had a stronger absolute correlation than baseline. This does not address confounding or the pre-2015 assumption.
+
+Previous-year births (N−1) are retained as a secondary alignment check in the
+table. Neither alignment establishes a contraceptive effect: annual trends,
+facility-only birth counts, reporting changes, and the warm-up assumption can
+all influence these correlations.
+
+::: {.callout-warning}
+## Limitations
+- Ten yearly points, and both series trend. Births rose to a peak around
+  2019–2020 and then fell while CYP kept rising, so the correlations are driven
+  by the years after 2020. Spreading moves CYP later in time, and with a single
+  turning point in births this test cannot separate a protection effect from a
+  time shift that happens to fit.
+- Confidence intervals are indicative only, because annual series are not
+  independent.
+- Recorded births are facility births, not national births.
+- The leave-one-year-out check tests sensitivity to a single year, not
+  confounding.
+:::
+
+**Conclusion.** The requested CYP series is compared with the standard
+baseline, excluding condoms. The comparison includes revised factors,
+decay-weighted allocation, and an assumed pre-2015 warm-up; it does not isolate
+the effect of decay. Local continuation data are needed to validate the weights.
+
+## Step 8. Limits and decisions needed
+
+| Issue | Why it matters | Proposed action |
+|---|---|---|
+| Pre-2015 cohorts | DHIS starts in 2015; the request carries the 2015 count backward to initialize active cohorts | Treat early adjusted totals as assumption-dependent; compare with observed-only output as a supplementary sensitivity check |
+| Weights | Only partly supplied; tail of IUCD profile is assumed | Replace with local continuation data (for example DHS calendar data) |
+| Sterilisation | Permanent, but credited in one year | Decide: spread, or report separately |
+| Pill factor | Request specifies 12 cycles per CYP; baseline uses 15 | Confirm whether the DHIS pill indicator represents combined-pill cycles or progestin-only packs before applying 12 |
+| Implant factor | Programme uses 3.5, the proposal uses 2.5 | Confirm the factor to use as the reference |
+| Condoms | Dominant in total CYP and counted at 100% use | Excluded from the headline comparison (switch `CYP_COMPARISON_INCLUDE_CONDOMS` in `wrangling.R`); report use scenarios separately |
+| Data entry errors | One facility-month was 10,000 times its normal value; it is now corrected in `wrangling.R` and logged | Keep the residual-extreme check, and review any flagged facility-months |
+| Births | Facility births only; ten points | Treat as descriptive; repeat with national births when available |
+
+: Limits, why they matter, and proposed actions.
+
+## Where the numbers come from
+
+All counts come from `projects/dhis_hospital_mortality/wrangling.R` (national
+sums of facility-level DHIS counts, 2015–2025). Every table on this page reads
+objects saved by that script, including the programme comparison, the condom
+share, the correlations and the data-correction log. The implant calculation in
+Step 5 is repeated by hand on this page, and the page stops with an error if it
+differs from the pipeline.

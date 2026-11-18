@@ -1,0 +1,225 @@
+---
+title: "Continuation-weighted allocation of couple-years of protection"
+subtitle: "Methods"
+format:
+  html:
+    toc: true
+    number-sections: true
+references:
+  - id: usaid-cyp
+    type: webpage
+    title: "Couple-years of protection (CYP)"
+    container-title: "Data for Impact (D4I)"
+    URL: "https://www.data4impactproject.org/prh/family-planning/fp/couple-years-of-protection-cyp/"
+  - id: lebetkin2024
+    type: article-journal
+    title: "Couple-years of protection indicator: new global guidance for updating existing methods and adding new methods"
+    author:
+      - family: Lebetkin
+        given: Elena
+      - family: Steiner
+        given: Markus J.
+      - family: Sonneveldt
+        given: Emily
+      - family: Selim
+        given: Amani
+      - family: Feyisetan
+        given: Bamikale
+      - family: Maggwa Ndugga
+        given: Baker
+      - family: Munthali
+        given: A. Wezi
+      - family: Malkin
+        given: Morrisa
+      - family: Jallow
+        given: Fatou
+    container-title: "Global Health: Science and Practice"
+    volume: "12"
+    issue: "2"
+    page: "e2300388"
+    issued:
+      year: 2024
+    DOI: "10.9745/GHSP-D-23-00388"
+---
+
+## Purpose
+
+Standard couple-years of protection (CYP) credits all the protection a commodity provides to the year it is distributed [@usaid-cyp]. For short-acting methods this is a reasonable approximation. For long-acting reversible contraceptives (LARCs), it front-loads several years of protection into a single year. A 10-year copper IUD, for example, contributes 4.6 CYP to its insertion year.
+
+Birth forecasting needs protection in the years it is actually in effect. We therefore allocate each year's distribution across its protection timeline using method-specific continuation weights. Total CYP over a cohort's lifetime is unchanged; only its timing differs.
+
+## Notation
+
+| Symbol | Definition |
+|---|---|
+| $m$ | Contraceptive method |
+| $s$ | Year of distribution |
+| $t$ | Calendar year being estimated |
+| $k = t - s$ | Years since distribution ($k = 0$ is the distribution year) |
+| $j = k + 1$ | Year of use, as labelled in the weight tables |
+| $D_{m,s}$ | Units of method $m$ issued to clients in year $s$ |
+| $c_m$ | Standard CYP conversion factor per unit |
+| $w_{m,k}$ | CYP per unit allocated to year $k$ after distribution |
+| $L_m$ | Protection duration in years |
+| $P_{m,t}$ | Continuation-weighted CYP for method $m$ in year $t$ |
+
+: Notation {#tbl-notation}
+
+$D_{m,s}$ should be units issued to clients (insertions for implants and IUDs), not deliveries to facilities. Facility stock that is never inserted provides no protection.
+
+## Standard CYP
+
+$$
+\text{CYP}^{\text{std}}_{m,t} = c_m \, D_{m,t}
+$$ {#eq-std}
+
+## Continuation-weighted CYP
+
+Protection in year $t$ is the sum of contributions from every distribution cohort still within its protection window:
+
+$$
+P_{m,t} = \sum_{k=0}^{L_m - 1} w_{m,k} \, D_{m,t-k}
+$$ {#eq-adj}
+
+$$
+P_t = \sum_m P_{m,t}
+$$ {#eq-total}
+
+The weights satisfy three conditions:
+
+$$
+\sum_{k=0}^{L_m - 1} w_{m,k} = c_m
+$$ {#eq-constraint}
+
+$$
+0 \le w_{m,k} \le 1
+$$ {#eq-bounds}
+
+$$
+w_{m,k+1} \le w_{m,k}
+$$ {#eq-monotone}
+
+@eq-constraint keeps the lifetime CYP of each cohort equal to standard reporting, so the two approaches can be reconciled. @eq-bounds holds because one unit cannot protect more than one couple for one year. @eq-monotone reflects that discontinuation only removes users over time; it applies to years of use, not to the calendar-year weights in @eq-calendar.
+
+In matrix form, for years $t_0, \dots, T$, $\mathbf{P}_m = \mathbf{W}_m \mathbf{D}_m$, where $\mathbf{W}_m$ is a lower-triangular band matrix with $w_{m,0}$ on the diagonal, $w_{m,1}$ on the first sub-diagonal, and so on up to $w_{m,L_m-1}$.
+
+### Relationship to geometric decay
+
+A single annual decay rate $\delta_m$ is a special case of @eq-adj:
+
+$$
+w_{m,k} = w_{m,0} (1 - \delta_m)^k, \qquad k = 0, \dots, L_m - 1
+$$ {#eq-geometric}
+
+with $w_{m,0}$ chosen so that @eq-constraint holds. The empirical schedules below are not geometric (the implant's year-on-year ratios are 0.80 and 0.875), so we use the weights directly.
+
+## Weight schedules
+
+Conversion factors follow the USAID-endorsed values [@usaid-cyp; @lebetkin2024].
+
+| Method | Unit | $c_m$ | $L_m$ |
+|---|---|---|---|
+| Combined oral contraceptive | Cycle | 1/15 | 1 |
+| Progestin-only pill | Pack | 1/12 | 1 |
+| Implant, 3-year | Insertion | 2.5 | 3 |
+| Copper IUD, 10-year | Insertion | 4.6 | 10 |
+
+: CYP conversion factors {#tbl-factors}
+
+The combined-pill factor assumes 28-pill cycles. The progestin-only factor of 12 packs per CYP assumes 35-pill packs [@usaid-cyp; @lebetkin2024]. Using 12 cycles per CYP for combined pills overstates their protection by 25%.
+
+| Year of use ($j$) | Implant, 3-year | Copper IUD, 10-year |
+|---|---|---|
+| 1 | 1.00 | 0.850 |
+| 2 | 0.80 | 0.750 |
+| 3 | 0.70 | 0.650 |
+| 4 | — | 0.571 |
+| 5 | — | 0.493 |
+| 6 | — | 0.414 |
+| 7 | — | 0.336 |
+| 8 | — | 0.257 |
+| 9 | — | 0.179 |
+| 10 | — | 0.100 |
+| **Total** | **2.50** | **4.600** |
+
+: Illustrative continuation weights, $w_{m,k}$ with $k = j - 1$ {#tbl-weights}
+
+::: {.callout-warning}
+## These weights are illustrative
+
+The schedules in @tbl-weights are working assumptions. Replace them with continuation rates from local data, such as DHS contraceptive calendar data, before using the model for inference.
+:::
+
+For the IUD, years 1 and 2 are set directly and the remaining balance $R = 4.6 - 0.85 - 0.75 = 3.0$ is spread over years 3–10 on a linear decline. For $n = 8$ years in an arithmetic sequence with first value $a$ and last value $b$, the sum is $n(a + b)/2$, so $a + b = 2R/n = 0.75$. We set $a = 0.65$, continuing the 0.10 step between years 1 and 2, which gives $b = 0.10$ and a step of $-0.55/7$.
+
+Pills have $L_m = 1$, so $P_{m,t} = c_m D_{m,t}$ and the two approaches coincide unless calendar alignment (@eq-calendar) is applied.
+
+## Worked example
+
+Suppose 100, 120, 90 and 110 implants are inserted in 2021–2024, with no insertions before 2021 or after 2024. Applying @eq-adj:
+
+$$
+\begin{aligned}
+P_{2021} &= 1.0 \, D_{2021} \\
+P_{2022} &= 1.0 \, D_{2022} + 0.8 \, D_{2021} \\
+P_{2023} &= 1.0 \, D_{2023} + 0.8 \, D_{2022} + 0.7 \, D_{2021} \\
+P_{2024} &= 1.0 \, D_{2024} + 0.8 \, D_{2023} + 0.7 \, D_{2022}
+\end{aligned}
+$$
+
+| Year | Insertions | Standard CYP | Continuation-weighted CYP |
+|---|---|---|---|
+| 2021 | 100 | 250 | 100 |
+| 2022 | 120 | 300 | 200 |
+| 2023 | 90 | 225 | 256 |
+| 2024 | 110 | 275 | 266 |
+| 2025 | — | — | 151 |
+| 2026 | — | — | 77 |
+| **Total** | **420** | **1,050** | **1,050** |
+
+: Implant worked example {#tbl-example}
+
+Both columns total 1,050 CYP. Standard reporting places all of it in 2021–2024; the weighted allocation carries 228 CYP into 2025–2026.
+
+## Start of the series
+
+@eq-adj needs distribution data for $L_m - 1$ years before the first estimation year. Without them, early years omit protection from earlier cohorts and are biased downward. For a 10-year IUD this needs nine prior years of insertion data. Where these are unavailable, either begin estimation $L_m - 1$ years after the data start, or back-cast earlier distribution and report the assumption.
+
+## Calendar-year alignment
+
+The weights refer to years since insertion, but insertions occur throughout the calendar year. If insertions are spread evenly over year $s$, each year of use straddles two calendar years. The calendar-year weights are:
+
+$$
+\tilde{w}_{m,k} =
+\begin{cases}
+\tfrac{1}{2} w_{m,0} & k = 0 \\
+\tfrac{1}{2} \left( w_{m,k-1} + w_{m,k} \right) & 1 \le k \le L_m - 1 \\
+\tfrac{1}{2} w_{m,L_m-1} & k = L_m
+\end{cases}
+$$ {#eq-calendar}
+
+This extends the window to $L_m + 1$ calendar years while preserving @eq-constraint. To use it, replace $w_{m,k}$ with $\tilde{w}_{m,k}$ in @eq-adj and sum to $k = L_m$. For the implant, $\tilde{w} = (0.50, 0.90, 0.75, 0.35)$. For pills, half of each year's protection moves to the following year.
+
+## Link to births
+
+A birth in calendar year $t+1$ was conceived roughly between April of year $t$ and March of year $t+1$. With conceptions spread evenly, births averted in $t+1$ are:
+
+$$
+\hat{A}_{t+1} = \beta \left[ \varphi \, P_t + (1 - \varphi) \, P_{t+1} \right], \qquad \varphi = 0.75
+$$ {#eq-births}
+
+where $\beta$ is births averted per CYP. $\beta$ depends on fecundity and on what the users would have done without the method, and must be sourced separately.
+
+## Sensitivity analysis
+
+Report results under at least:
+
+1. Standard CYP (@eq-std), as the reference.
+2. Even allocation, $w_{m,k} = c_m / L_m$.
+3. The continuation schedule in @tbl-weights.
+4. With and without calendar alignment (@eq-calendar).
+
+## References
+
+::: {#refs}
+:::

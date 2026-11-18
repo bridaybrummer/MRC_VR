@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-11-16">
+<meta name="description" content="How standard CYP and continuation-weighted CYP are calculated, shown with implants, IUCDs and national DHIS data.">
+
+<title>Spreading long-acting contraceptive protection across the years it works – MRC Vital Registration Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8abf46cc58cbf381e82762a1ae0d2821.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MRC Vital Registration Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/mortality_estimates/index.html">
+ <span class="dropdown-text">Monitoring &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/national_overview/index.html">
+ <span class="dropdown-text">National Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cause_codes/index.html">
+ <span class="dropdown-text">Cause Code Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/free_state_cause_quality/index.html">
+ <span class="dropdown-text">Free State Cause Quality</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/index.html">
+ <span class="dropdown-text">DHA Access</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methodology.html">
+ <span class="dropdown-text">↳ Methodology (Method 3)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/methods_comparison.html">
+ <span class="dropdown-text">↳ Methods comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/sensitivity.html">
+ <span class="dropdown-text">↳ Sensitivity: 500 m density</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/death_registration.html">
+ <span class="dropdown-text">↳ Death registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dha_access/birth_registration.html">
+ <span class="dropdown-text">↳ Birth registration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icc_analysis/index.html">
+ <span class="dropdown-text">ICC for eMCCD</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/j_code_modelling/index.html">
+ <span class="dropdown-text">J-Code Modelling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/signal_detection/index.html">
+ <span class="dropdown-text">Signal Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/heat_excess_mortality/index.html">
+ <span class="dropdown-text">Heat &amp; Excess Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_deaths/index.html">
+ <span class="dropdown-text">Poisoning Deaths</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/poisoning_ucod/index.html">
+ <span class="dropdown-text">Poisoning: Why UCOD Matters</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/cancer_deaths/index.html">
+ <span class="dropdown-text">Cancer Mortality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/yll_comparison/index.html">
+ <span class="dropdown-text">YLL Comparison (NMC)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/district_variable_veracity/index.html">
+ <span class="dropdown-text">District QA: Deaths &amp; Rates</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/nmc_macod_comparison/index.html">
+ <span class="dropdown-text">NMC &amp; MACOD Comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/icd_nmc_explorer/index.html">
+ <span class="dropdown-text">ICD-10 ↔︎ NMC / IDSR Explorer</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/ci_modelling/index.html">
+ <span class="dropdown-text">CI Modelling Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/CODe_correct_public/index.html">
+ <span class="dropdown-text">CODe Correct lite app — Concept Note</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/index.html">
+ <span class="dropdown-text">DHIS2 Hospital Indicators</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/condom_sensitivity.html">
+ <span class="dropdown-text">↳ Condom CYP sensitivity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/adjusted_cyp_sensitivity.html">
+ <span class="dropdown-text">↳ Rob’s request: adjusted CYP &amp; births</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../projects/dhis_hospital_mortality/cyp-walkthrough.html">
+ <span class="dropdown-text">↳ CYP walk-through (worked examples)</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../projects/data_explorer/index.html">
+ <span class="dropdown-text">🔍 Data Explorer (Shiny)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/bridaybrummer/MRC_VR"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Spreading long-acting contraceptive protection across the years it works</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#step-1.-standard-cyp" id="toc-step-1.-standard-cyp" class="nav-link" data-scroll-target="#step-1.-standard-cyp">Step 1. Standard CYP</a></li>
+  <li><a href="#step-2.-weights" id="toc-step-2.-weights" class="nav-link" data-scroll-target="#step-2.-weights">Step 2. Weights</a></li>
+  <li><a href="#step-3.-use-case-a-implants" id="toc-step-3.-use-case-a-implants" class="nav-link" data-scroll-target="#step-3.-use-case-a-implants">Step 3. Use case A: implants</a></li>
+  <li><a href="#step-4.-more-use-cases" id="toc-step-4.-more-use-cases" class="nav-link" data-scroll-target="#step-4.-more-use-cases">Step 4. More use cases</a></li>
+  <li><a href="#step-5.-the-real-data-implants-20152025" id="toc-step-5.-the-real-data-implants-20152025" class="nav-link" data-scroll-target="#step-5.-the-real-data-implants-20152025">Step 5. The real data: implants, 2015–2025</a></li>
+  <li><a href="#step-6.-standard-baseline-versus-the-request-implementation" id="toc-step-6.-standard-baseline-versus-the-request-implementation" class="nav-link" data-scroll-target="#step-6.-standard-baseline-versus-the-request-implementation">Step 6. Standard baseline versus the request implementation</a></li>
+  <li><a href="#step-7.-compare-both-cyp-series-with-births" id="toc-step-7.-compare-both-cyp-series-with-births" class="nav-link" data-scroll-target="#step-7.-compare-both-cyp-series-with-births">Step 7. Compare both CYP series with births</a></li>
+  <li><a href="#step-8.-limits-and-decisions-needed" id="toc-step-8.-limits-and-decisions-needed" class="nav-link" data-scroll-target="#step-8.-limits-and-decisions-needed">Step 8. Limits and decisions needed</a></li>
+  <li><a href="#where-the-numbers-come-from" id="toc-where-the-numbers-come-from" class="nav-link" data-scroll-target="#where-the-numbers-come-from">Where the numbers come from</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Spreading long-acting contraceptive protection across the years it works</h1>
+<p class="subtitle lead">A step-by-step walk-through with worked examples</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">DHIS2</div>
+    <div class="quarto-category">contraception</div>
+    <div class="quarto-category">CYP</div>
+    <div class="quarto-category">methods</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    How standard CYP and continuation-weighted CYP are calculated, shown with implants, IUCDs and national DHIS data.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 16, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p><strong>Question.</strong> Does allocating long-acting-method CYP to the years protected, rather than the insertion year, change annual programme CYP or its correlation with births?</p>
+<p><strong>Comparison.</strong> The baseline credits all CYP in the distribution year. Rob’s request changes the pill and implant factors and redistributes implant and IUCD protection over later years using decaying weights. Programme comparisons exclude condoms; condom CYP is shown separately.</p>
+<p><strong>Main findings.</strong> The request specifies redistribution and revised factors. The displayed implementation also uses an analyst-selected pre-2015 warm-up, so differences from baseline reflect all three. Correlations with next-year births are descriptive; ten annual observations cannot establish a causal relationship or validate the assumed decay weights.</p>
+<p><strong>Contents.</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Standard baseline and factors in Rob’s request</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Weights</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Use case A: implants</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Use cases B (IUCD) and C (short-acting methods, sterilisation)</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>National implant data</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Standard baseline versus Rob’s request, excluding condoms</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Compare both CYP series with births</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Limits and decisions</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Reading the grids
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Each row is a group of insertions (a cohort) and each column is a calendar year. A cell is the protection that cohort gives in that year. Add down a column for that year’s CYP. Add across a row for the cohort’s total.</p>
+</div>
+</div>
+</section>
+<section id="step-1.-standard-cyp" class="level2">
+<h2 class="anchored" data-anchor-id="step-1.-standard-cyp">Step 1. Standard CYP</h2>
+<p>Standard CYP is units multiplied by a fixed factor, credited to the year of distribution.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Standard baseline and factors specified in Rob's request.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Method</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">What is counted</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Units in 2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Standard factor</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Rob-request factor</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Standard CYP in 2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Rob-request CYP in 2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Years of protection</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oral pill</td>
+<td style="text-align: left;">Pill cycles</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;">1/15</td>
+<td style="text-align: right;">1/12</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">About 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sub-dermal implant</td>
+<td style="text-align: left;">Insertions</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">350</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Copper IUCD</td>
+<td style="text-align: left;">Insertions</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">4.6</td>
+<td style="text-align: right;">4.6</td>
+<td style="text-align: right;">460</td>
+<td style="text-align: right;">460</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The request specifies 12 pill cycles per CYP and 2.5 CYP per implant; the baseline uses 15 cycles and 3.5 CYP per implant. Confirm the pill product before applying 12 cycles: the methods note distinguishes combined-pill cycles from progestin-only packs.</p>
+<p>The adjusted scenario moves implant and IUCD protection to the years it is expected to occur. The following grids make those contributions checkable.</p>
+</section>
+<section id="step-2.-weights" class="level2">
+<h2 class="anchored" data-anchor-id="step-2.-weights">Step 2. Weights</h2>
+<p>Adjusted CYP uses a weight per year since insertion: year 0 is the year of insertion, year 1 the next year, and so on.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Rob-request allocation weights per insertion for long-acting methods.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Method</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 0</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 1</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 2</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 3</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 4</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 5</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 6</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 7</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 8</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year 9</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Total CYP per insertion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">4.60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sub-dermal implant</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">2.50</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Rules:</p>
+<ol type="1">
+<li>The weights add up to the method’s CYP factor, so a cohort’s lifetime CYP is unchanged.</li>
+<li>The weights fall over time, because some women stop using the method.</li>
+<li>Implants and IUCDs are the only methods spread. Injectables, pills and condoms last about a year or less and are credited in the distribution year. Sterilisation is permanent but is also credited in the procedure year (see Step 4).</li>
+</ol>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Weights are assumptions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Rob supplied the implant weights (1.00, 0.80, 0.70) and the first two IUCD weights (0.85, 0.75). The rest of the IUCD profile is an assumed steady fall that totals 4.6. Replace them with local continuation data when available.</p>
+</div>
+</div>
+</section>
+<section id="step-3.-use-case-a-implants" class="level2">
+<h2 class="anchored" data-anchor-id="step-3.-use-case-a-implants">Step 3. Use case A: implants</h2>
+<p>Suppose 100, 120, 90 and 110 implants are inserted in 2021 to 2024, and none before or after. Each insertion gives 1.00 CYP in its own year, 0.80 the next year and 0.70 the year after.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Use case A: implant CYP by calendar year, standard baseline versus Rob's requested allocation.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;"></th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2022</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2023</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2024</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2025</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2026</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2021 (100 units)</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">250</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2022 (120 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2023 (90 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2024 (110 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">275</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">ADJUSTED CYP in the year (add down the column)</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">100</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">200</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">256</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">266</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">151</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">77</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">1,050</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; background-color: rgba(255, 242, 204, 255) !important;">Standard baseline (3.5 CYP, credited in insertion year)</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">350</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">420</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">315</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">385</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,470</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; font-style: italic;">Difference: adjusted minus first standard row</td>
+<td style="text-align: right; font-style: italic;">-250</td>
+<td style="text-align: right; font-style: italic;">-220</td>
+<td style="text-align: right; font-style: italic;">-59</td>
+<td style="text-align: right; font-style: italic;">-119</td>
+<td style="text-align: right; font-style: italic;">151</td>
+<td style="text-align: right; font-style: italic;">77</td>
+<td style="text-align: right; font-style: italic;">-420</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>2023 column:</strong> 90 × 1.00 (2023 insertions) + 120 × 0.80 (2022 insertions, second year) + 100 × 0.70 (2021 insertions, third year) = 90 + 96 + 70 = <strong>256 CYP</strong>.</p>
+<p>The baseline puts 315 CYP in 2023 and nothing after 2024. Rob’s requested allocation puts 256 in 2023, 151 in 2025 and 77 in 2026. Across these cohorts, the baseline totals 1,470 CYP (3.5 per insertion); the request totals 1,050 (2.5 per insertion). The difference therefore includes both the factor change and redistribution.</p>
+</section>
+<section id="step-4.-more-use-cases" class="level2">
+<h2 class="anchored" data-anchor-id="step-4.-more-use-cases">Step 4. More use cases</h2>
+<section id="use-case-b-copper-iucd" class="level3">
+<h3 class="anchored" data-anchor-id="use-case-b-copper-iucd">Use case B: copper IUCD</h3>
+<p>Suppose 100 IUCDs are inserted in each of 2021, 2022 and 2023. The weights run for ten years, so protection builds up and continues well after the last insertion.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Use case B: IUCD CYP by calendar year, standard versus adjusted.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;"></th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2022</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2023</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2024</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2025</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2026</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2027</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2028</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2029</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2030</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2031</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2032</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2021 (100 units)</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">460</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2022 (100 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">460</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2023 (100 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">460</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">ADJUSTED CYP in the year (add down the column)</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">85</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">160</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">225</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">195</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">165</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">140</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">120</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">100</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">80</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">60</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">35</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">15</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">1,380</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; background-color: rgba(255, 242, 204, 255) !important;">Standard CYP (all credited in insertion year)</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">460</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">460</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">460</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">0</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,380</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; font-style: italic;">Difference: adjusted minus first standard row</td>
+<td style="text-align: right; font-style: italic;">-375</td>
+<td style="text-align: right; font-style: italic;">-300</td>
+<td style="text-align: right; font-style: italic;">-235</td>
+<td style="text-align: right; font-style: italic;">195</td>
+<td style="text-align: right; font-style: italic;">165</td>
+<td style="text-align: right; font-style: italic;">140</td>
+<td style="text-align: right; font-style: italic;">120</td>
+<td style="text-align: right; font-style: italic;">100</td>
+<td style="text-align: right; font-style: italic;">80</td>
+<td style="text-align: right; font-style: italic;">60</td>
+<td style="text-align: right; font-style: italic;">35</td>
+<td style="text-align: right; font-style: italic;">15</td>
+<td style="text-align: right; font-style: italic;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>In 2023, standard CYP is 460 (the 2023 insertions only). Adjusted CYP is 100 × 0.85 + 100 × 0.75 + 100 × 0.65 = <strong>225</strong>: the 2023 cohort is in its first year and the 2021 and 2022 cohorts are in their third and second. The remaining 910 of the 1,380 CYP falls in 2024–2032. ### Use case C: injectables, pills, condoms and sterilisation</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Use case C: short-duration methods are not redistributed; the pill factor differs by scenario.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Method</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Unit</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Units in 2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Standard baseline CYP (2021)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Rob-request CYP (2021)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Rob-request CYP (2022 onwards)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Medroxyprogesterone (DMPA)</td>
+<td style="text-align: left;">Injection</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Norethisterone (NET-EN)</td>
+<td style="text-align: left;">Injection</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Oral pill</td>
+<td style="text-align: left;">Cycle</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Male / female condom</td>
+<td style="text-align: left;">Condom</td>
+<td style="text-align: right;">12,000</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sterilisation (F or M)</td>
+<td style="text-align: left;">Procedure</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Sterilisation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sterilisation is permanent and is credited 10 CYP in the procedure year, not spread. This is inconsistent with spreading implants and IUCDs and affects comparisons with births. Decide whether to spread it or report it separately.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="step-5.-the-real-data-implants-20152025" class="level2">
+<h2 class="anchored" data-anchor-id="step-5.-the-real-data-implants-20152025">Step 5. The real data: implants, 2015–2025</h2>
+<p>The same layout with national DHIS counts of sub-dermal implants inserted. Rows are insertion years, columns are calendar years, and figures are thousands of CYP. The requested allocation uses the pipeline’s pre-2015 warm-up.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>National sub-dermal implants: baseline and requested factor versus decay-weighted CYP, thousands (2025 corrected).</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;"></th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2015</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2016</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2017</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2018</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2019</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2020</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2021</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2022</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2023</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2024</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">2025</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Total in table</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Falls after table</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2013 (107,893 units)</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">194</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2014 (107,893 units)</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">108</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2015 (107,893 units)</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2016 (46,745 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2017 (104,717 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2018 (203,783 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">509</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2019 (170,578 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">426</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2020 (158,003 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">395</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2021 (262,069 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">655</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2022 (400,023 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2023 (428,370 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">428</td>
+<td style="text-align: right;">343</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">1,071</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Inserted 2024 (535,706 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">536</td>
+<td style="text-align: right;">429</td>
+<td style="text-align: right;">964</td>
+<td style="text-align: right;">375</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Inserted 2025 (579,238 units)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">579</td>
+<td style="text-align: right;">579</td>
+<td style="text-align: right;">869</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">ADJUSTED CYP in the year (add down the column)</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">270</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">209</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">218</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">320</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">407</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">437</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">508</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">720</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">932</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">1,158</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">1,308</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;">6,486</td>
+<td style="text-align: right; font-weight: bold; background-color: rgba(226, 239, 218, 255) !important;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; background-color: rgba(255, 242, 204, 255) !important;">Rob-request factor, credited in insertion year (2.5)</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">270</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">117</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">262</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">509</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">426</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">395</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">655</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,000</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,071</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,339</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,448</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">7,493</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; background-color: rgba(255, 242, 204, 255) !important;">A. Standard baseline (3.5)</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">378</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">164</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">367</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">713</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">597</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">553</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">917</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,400</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,499</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">1,875</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">2,027</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;">10,490</td>
+<td style="text-align: right; background-color: rgba(255, 242, 204, 255) !important;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; font-style: italic;">Difference: adjusted minus first standard row</td>
+<td style="text-align: right; font-style: italic;">-0</td>
+<td style="text-align: right; font-style: italic;">92</td>
+<td style="text-align: right; font-style: italic;">-44</td>
+<td style="text-align: right; font-style: italic;">-189</td>
+<td style="text-align: right; font-style: italic;">-20</td>
+<td style="text-align: right; font-style: italic;">42</td>
+<td style="text-align: right; font-style: italic;">-147</td>
+<td style="text-align: right; font-style: italic;">-280</td>
+<td style="text-align: right; font-style: italic;">-139</td>
+<td style="text-align: right; font-style: italic;">-181</td>
+<td style="text-align: right; font-style: italic;">-140</td>
+<td style="text-align: right; font-style: italic;">-1,006</td>
+<td style="text-align: right; font-style: italic;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>For each calendar year, multiply that year’s insertions by 1.00, the prior year’s by 0.80, and the insertions two years earlier by 0.70; add the contributions. Pre-2015 rows use the 2015 count as the assumed warm-up. The adjusted annual totals are checked against the pipeline; the baseline column credits 3.5 CYP per insertion in its insertion year.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Corrected reporting error
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Botleng Ext 6 CHC reports 111,716 implants for March 2025, against a typical 10 per month. That entry is 16% of the reported 2025 national total. <code>wrangling.R</code> replaces it with the facility’s typical monthly value, so every page uses the corrected data. The correction is recorded in <code>data_corrections_log</code>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Effect of the correction on 2025 implant insertions.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Item</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Reported national implants, 2025</td>
+<td style="text-align: right;">690,944</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Corrected national implants, 2025</td>
+<td style="text-align: right;">579,238</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Removed</td>
+<td style="text-align: right;">111,706</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Pre-2015 insertion counts are not observed. The requested series initializes those cohorts by carrying the 2015 count backward; this assumption affects the early adjusted totals (see Step 8).</p>
+</section>
+<section id="step-6.-standard-baseline-versus-the-request-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="step-6.-standard-baseline-versus-the-request-implementation">Step 6. Standard baseline versus the request implementation</h2>
+<p>Both series use the same corrected national DHIS data and exclude condoms. Rob’s request specifies revised factors and decay-weighted allocation. Since DHIS starts in 2015, the displayed implementation additionally uses a steady-state pre-2015 initialization; that is an analysis assumption, not part of the verbatim request. The annual difference combines factor changes, redistribution and initialization.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Annual programme CYP excluding condoms, thousands (2025 corrected).</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">A. Standard baseline</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B. Request implementation</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Difference (B - A)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Difference from baseline (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2015</td>
+<td style="text-align: right;">3,019</td>
+<td style="text-align: right;">2,970</td>
+<td style="text-align: right;">-49</td>
+<td style="text-align: right;">-1.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2016</td>
+<td style="text-align: right;">2,910</td>
+<td style="text-align: right;">3,002</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2017</td>
+<td style="text-align: right;">3,281</td>
+<td style="text-align: right;">3,136</td>
+<td style="text-align: right;">-145</td>
+<td style="text-align: right;">-4.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2018</td>
+<td style="text-align: right;">3,625</td>
+<td style="text-align: right;">3,189</td>
+<td style="text-align: right;">-436</td>
+<td style="text-align: right;">-12.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019</td>
+<td style="text-align: right;">3,452</td>
+<td style="text-align: right;">3,217</td>
+<td style="text-align: right;">-234</td>
+<td style="text-align: right;">-6.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2020</td>
+<td style="text-align: right;">3,278</td>
+<td style="text-align: right;">3,153</td>
+<td style="text-align: right;">-125</td>
+<td style="text-align: right;">-3.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2021</td>
+<td style="text-align: right;">3,648</td>
+<td style="text-align: right;">3,250</td>
+<td style="text-align: right;">-398</td>
+<td style="text-align: right;">-10.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">4,339</td>
+<td style="text-align: right;">3,669</td>
+<td style="text-align: right;">-670</td>
+<td style="text-align: right;">-15.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">4,506</td>
+<td style="text-align: right;">3,947</td>
+<td style="text-align: right;">-559</td>
+<td style="text-align: right;">-12.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">4,947</td>
+<td style="text-align: right;">4,212</td>
+<td style="text-align: right;">-735</td>
+<td style="text-align: right;">-14.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2025</td>
+<td style="text-align: right;">4,993</td>
+<td style="text-align: right;">4,250</td>
+<td style="text-align: right;">-743</td>
+<td style="text-align: right;">-14.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Rob’s request specifies 12 pill cycles per CYP, 2.5 CYP per implant, and decay-weighted allocation for implants and IUCDs. The pre-2015 initialization assumes 2015 counts in earlier years; it is not observed historical data.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Why condoms are excluded from the headline comparison (2025 implant correction applied).</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Year</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Non-condom standard CYP (thousands)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Condom CYP at 100% use (thousands)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Condoms as % of all CYP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2015</td>
+<td style="text-align: right;">3,019</td>
+<td style="text-align: right;">7,278</td>
+<td style="text-align: right;">70.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2016</td>
+<td style="text-align: right;">2,910</td>
+<td style="text-align: right;">7,549</td>
+<td style="text-align: right;">72.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2017</td>
+<td style="text-align: right;">3,281</td>
+<td style="text-align: right;">6,286</td>
+<td style="text-align: right;">65.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2018</td>
+<td style="text-align: right;">3,625</td>
+<td style="text-align: right;">6,364</td>
+<td style="text-align: right;">63.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019</td>
+<td style="text-align: right;">3,452</td>
+<td style="text-align: right;">5,472</td>
+<td style="text-align: right;">61.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2020</td>
+<td style="text-align: right;">3,278</td>
+<td style="text-align: right;">4,809</td>
+<td style="text-align: right;">59.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2021</td>
+<td style="text-align: right;">3,648</td>
+<td style="text-align: right;">4,953</td>
+<td style="text-align: right;">57.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">4,339</td>
+<td style="text-align: right;">3,503</td>
+<td style="text-align: right;">44.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">4,506</td>
+<td style="text-align: right;">4,699</td>
+<td style="text-align: right;">51.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">4,947</td>
+<td style="text-align: right;">5,970</td>
+<td style="text-align: right;">54.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2025</td>
+<td style="text-align: right;">4,993</td>
+<td style="text-align: right;">4,543</td>
+<td style="text-align: right;">47.6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Condoms account for 45–72% of all CYP if every distributed condom is counted as used. They are not redistributed, and reporting shifts from facility to district level in 2018. They are excluded from the baseline/request comparison and shown separately here.</p>
+</section>
+<section id="step-7.-compare-both-cyp-series-with-births" class="level2">
+<h2 class="anchored" data-anchor-id="step-7.-compare-both-cyp-series-with-births">Step 7. Compare both CYP series with births</h2>
+<p>This descriptive comparison uses only the <strong>standard baseline</strong> and the <strong>request implementation</strong>. The latter combines Rob’s revised factors and decay-weighted allocation with the analysis’s assumed pre-2015 carryover; the correlation difference cannot identify the contribution of any one component. Births are facility births in N+1, shown as counts and crude rates per 1,000 women aged 15–49. Condoms are excluded from the programme total.</p>
+<section id="tables" class="level3">
+<h3 class="anchored" data-anchor-id="tables">Tables</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Correlation with next-year facility births, counts. More negative is a stronger inverse association.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Group</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">A. Standard baseline</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B. Request implementation</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B minus A</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Leave-one-year-out: request stronger than baseline (of 10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">-0.67</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.57</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.62</td>
+<td style="text-align: right;">-0.70</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Correlation with next-year facility-birth rates per 1,000 women aged 15–49.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Group</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">A. Standard baseline</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B. Request implementation</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B minus A</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Leave-one-year-out: request stronger than baseline (of 10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-0.85</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">-0.61</td>
+<td style="text-align: right;">-0.31</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.77</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">-0.90</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Correlation of year-on-year CYP and next-year birth changes; this reduces shared long-term trend.</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Basis</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Group</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">A. Standard baseline</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B. Request implementation</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B minus A</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.57</td>
+<td style="text-align: right;">-0.72</td>
+<td style="text-align: right;">-0.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">-0.69</td>
+<td style="text-align: right;">-0.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.56</td>
+<td style="text-align: right;">-0.74</td>
+<td style="text-align: right;">-0.18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">-0.71</td>
+<td style="text-align: right;">-0.17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.35</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">-0.68</td>
+<td style="text-align: right;">-0.21</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.52</td>
+<td style="text-align: right;">-0.72</td>
+<td style="text-align: right;">-0.20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-bordered table-condensed caption-top table-sm table-striped small">
+<caption>Secondary alignment: correlation with previous-year facility births (N-1).</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Basis</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Group</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">A. Standard baseline</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B. Request implementation</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">B minus A</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; background-color: rgba(217, 217, 217, 255) !important;">Leave-one-year-out: request stronger than baseline (of 10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">+0.09</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counts</td>
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">Implant</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">-0.62</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">IUCD</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">-0.40</td>
+<td style="text-align: right;">+0.04</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">Implant + IUCD (long-acting)</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">-0.59</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rates</td>
+<td style="text-align: left;">All methods</td>
+<td style="text-align: right;">-0.59</td>
+<td style="text-align: right;">-0.69</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Values closer to −1 indicate a stronger inverse association. “B minus A” is the change in correlation under the request implementation; the final column counts how many leave-one-year-out checks retain a stronger absolute correlation than baseline.</p>
+</section>
+<section id="figures" class="level3">
+<h3 class="anchored" data-anchor-id="figures">Figures</h3>
+<p>Figures show the programme total (all methods, excluding condoms) and the long-acting methods (implant + IUCD). A point for 2020 shows 2020 CYP and births in 2021.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-counts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cyp-walkthrough_files/figure-html/fig-counts-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Counts: CYP (thousands) and recorded facility births in the following year (thousands).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-rates" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cyp-walkthrough_files/figure-html/fig-rates-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Crude rates: CYP and recorded facility births in the following year, per 1,000 women aged 15–49.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-scatter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cyp-walkthrough_files/figure-html/fig-scatter-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: All methods, excluding condoms: CYP in year N against recorded births in year N+1. Points are labelled by CYP year. The title of each panel gives the correlation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-scatter-rates" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cyp-walkthrough_files/figure-html/fig-scatter-rates-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Same as above, as crude rates per 1,000 women aged 15–49.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-forest" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cyp-walkthrough_files/figure-html/fig-forest-1.png" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Correlation with next-year births, by intervention group and CYP version, with 95% confidence intervals (indicative only; ten yearly points). More negative is a stronger link.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
+<p>For next-year facility births (N+1), yearly values, counts (rates per 1,000 women aged 15–49 in brackets):</p>
+<ul>
+<li><strong>Implants:</strong> baseline -0.63 (-0.81); request implementation -0.67 (-0.85).</li>
+<li><strong>IUCDs:</strong> baseline -0.09 (-0.30); request implementation -0.38 (-0.61).</li>
+<li><strong>All methods, excluding condoms:</strong> baseline -0.62 (-0.82); request implementation -0.70 (-0.90).</li>
+<li><strong>Sensitivity to individual years:</strong> in 10 of ten leave-one-year-out checks, the request implementation’s all-methods count series had a stronger absolute correlation than baseline. This does not address confounding or the pre-2015 assumption.</li>
+</ul>
+<p>Previous-year births (N−1) are retained as a secondary alignment check in the table. Neither alignment establishes a contraceptive effect: annual trends, facility-only birth counts, reporting changes, and the warm-up assumption can all influence these correlations.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Limitations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Ten yearly points, and both series trend. Births rose to a peak around 2019–2020 and then fell while CYP kept rising, so the correlations are driven by the years after 2020. Spreading moves CYP later in time, and with a single turning point in births this test cannot separate a protection effect from a time shift that happens to fit.</li>
+<li>Confidence intervals are indicative only, because annual series are not independent.</li>
+<li>Recorded births are facility births, not national births.</li>
+<li>The leave-one-year-out check tests sensitivity to a single year, not confounding.</li>
+</ul>
+</div>
+</div>
+<p><strong>Conclusion.</strong> The requested CYP series is compared with the standard baseline, excluding condoms. The comparison includes revised factors, decay-weighted allocation, and an assumed pre-2015 warm-up; it does not isolate the effect of decay. Local continuation data are needed to validate the weights.</p>
+</section>
+</section>
+<section id="step-8.-limits-and-decisions-needed" class="level2">
+<h2 class="anchored" data-anchor-id="step-8.-limits-and-decisions-needed">Step 8. Limits and decisions needed</h2>
+<table class="caption-top table">
+<caption>Limits, why they matter, and proposed actions.</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Issue</th>
+<th>Why it matters</th>
+<th>Proposed action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pre-2015 cohorts</td>
+<td>DHIS starts in 2015; the request carries the 2015 count backward to initialize active cohorts</td>
+<td>Treat early adjusted totals as assumption-dependent; compare with observed-only output as a supplementary sensitivity check</td>
+</tr>
+<tr class="even">
+<td>Weights</td>
+<td>Only partly supplied; tail of IUCD profile is assumed</td>
+<td>Replace with local continuation data (for example DHS calendar data)</td>
+</tr>
+<tr class="odd">
+<td>Sterilisation</td>
+<td>Permanent, but credited in one year</td>
+<td>Decide: spread, or report separately</td>
+</tr>
+<tr class="even">
+<td>Pill factor</td>
+<td>Request specifies 12 cycles per CYP; baseline uses 15</td>
+<td>Confirm whether the DHIS pill indicator represents combined-pill cycles or progestin-only packs before applying 12</td>
+</tr>
+<tr class="odd">
+<td>Implant factor</td>
+<td>Programme uses 3.5, the proposal uses 2.5</td>
+<td>Confirm the factor to use as the reference</td>
+</tr>
+<tr class="even">
+<td>Condoms</td>
+<td>Dominant in total CYP and counted at 100% use</td>
+<td>Excluded from the headline comparison (switch <code>CYP_COMPARISON_INCLUDE_CONDOMS</code> in <code>wrangling.R</code>); report use scenarios separately</td>
+</tr>
+<tr class="odd">
+<td>Data entry errors</td>
+<td>One facility-month was 10,000 times its normal value; it is now corrected in <code>wrangling.R</code> and logged</td>
+<td>Keep the residual-extreme check, and review any flagged facility-months</td>
+</tr>
+<tr class="even">
+<td>Births</td>
+<td>Facility births only; ten points</td>
+<td>Treat as descriptive; repeat with national births when available</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="where-the-numbers-come-from" class="level2">
+<h2 class="anchored" data-anchor-id="where-the-numbers-come-from">Where the numbers come from</h2>
+<p>All counts come from <code>projects/dhis_hospital_mortality/wrangling.R</code> (national sums of facility-level DHIS counts, 2015–2025). Every table on this page reads objects saved by that script, including the programme comparison, the condom share, the correlations and the data-correction log. The implant calculation in Step 5 is repeated by hand on this page, and the page stops with an error if it differs from the pipeline.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 MRC Vital Registration Analysis</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

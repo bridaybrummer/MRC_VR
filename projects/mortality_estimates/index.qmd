@@ -84,14 +84,19 @@ pct_full_axis <- function(p) {
 # Auditability: capture render timestamp once
 render_stamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
 
+# VR deaths: LGH extract (1997-2022) + 2023-2024 deaths from the Isibalo bridge
+# (see me_vr_data.r for what the appended years do and do not contain).
+source("../../me_vr_data.r")
+vr_all <- load_me_vr("../..")
+
 # -------------------------------------------------------------------------
 # Standardized 10-YEAR reporting window (M+E review, Aug 2026):
 # "Dashboard to 10 years across the board" - restrict all trend figures to
 # the most recent 10 death-year cohorts unless a figure needs longer history
 # for methodological reasons (explicitly noted where that applies).
 # -------------------------------------------------------------------------
-window_last_year  <- 2022L
-window_first_year <- window_last_year - 9L   # 2013-2022 inclusive = 10 years
+window_last_year  <- max(vr_all$DeathYear, na.rm = TRUE)   # latest death year in the extended extract (2024)
+window_first_year <- window_last_year - 9L   # 10 death-year cohorts, inclusive
 window_years       <- window_first_year:window_last_year
 
 # Source the wrangling script if outputs are missing or stale
@@ -264,7 +269,7 @@ This subsection is reserved for a **timeliness vs. completeness** figure/summary
 Each death record carries a **date of death** and a **date of registration**. The gap between them — the *registration lag* — drives a fundamental tradeoff: publishing statistics soon after the death year is **timely** but misses deaths transferred/registered late, while waiting longer captures those late transfers and is more **complete**. Using registration timing as a proxy, the curve below shows, for each death-year cohort, the cumulative share of its registered deaths captured by *N* years after death.
 
 ::: {.callout-important appearance="simple"}
-The **2022 death cohort is not yet complete**: late transfers/registrations for 2022 deaths are still arriving, so its curve (like 2021's) is right-truncated and will keep rising slightly with future extracts.
+The **2022 death cohort is not yet complete**: late transfers/registrations for 2022 deaths are still arriving, so its curve (like 2021's) is right-truncated and will keep rising slightly with future extracts. **Cohorts 2023–2024 are not shown**: the 2023–2024 deaths come from the public Isibalo release, which carries no registration dates, so registration lag cannot be calculated for them.
 :::
 
 ```{r}
@@ -290,15 +295,17 @@ flag_neg_lag     <- reg_raw[raw_lag < 0L, .N]           # registered before deat
 flag_floored     <- reg_raw[raw_lag < 0L, .N]           # records floored to lag 0
 flag_late5       <- reg_raw[raw_lag > 5L, .N]           # very late (>5 yr) registrations
 
-# Last-10-years window (2013-2022); 2013 remains excluded as a partial cohort,
-# leaving 9 full death-year cohorts (2014-2022) - see limitations callout below.
-reg_dt   <- reg_raw[DeathYear %in% window_years[window_years != 2013]]
+# Registration dates exist only for the LGH extract (death years <= 2022); the
+# 2023-2024 bridge rows carry none, so this analysis cannot include them.
+# 2013 remains excluded as a partial cohort, leaving 9 full cohorts (2014-2022).
+lag_cohorts <- 2014:2022
+reg_dt   <- reg_raw[DeathYear %in% lag_cohorts]
 max_reg  <- 2024L   # latest registration year present in the extract
 max_lag  <- 5L
 
 cohort_n <- reg_dt[, .(N = .N), by = DeathYear]
 cum      <- reg_dt[, .(n = .N), by = .(DeathYear, lag = pmin(lag_yr, max_lag))]
-grid     <- CJ(DeathYear = 2014:2022, lag = 0:max_lag)
+grid     <- CJ(DeathYear = lag_cohorts, lag = 0:max_lag)
 cum      <- cum[grid, on = .(DeathYear, lag)][is.na(n), n := 0L]
 setorder(cum, DeathYear, lag)
 cum[cohort_n, N := i.N, on = "DeathYear"]
@@ -317,7 +324,7 @@ p_tradeoff <- ggplot(cum_plot,
   geom_vline(xintercept = 1, linetype = "dashed", colour = "grey50") +
   geom_line(linewidth = 0.7) +
   geom_point(size = 1.6) +
-  scale_colour_viridis_c(name = "Death\nyear", breaks = seq(2014, 2022, 2)) +
+  scale_colour_viridis_c(name = "Death\nyear", breaks = seq(min(lag_cohorts), max(lag_cohorts), 2)) +
   scale_x_continuous(breaks = 0:max_lag) +
   coord_cartesian(ylim = c(floor(min(cum_plot$cum_pct)), 100)) +
   labs(
@@ -360,14 +367,13 @@ Garbage codes are ICD-10 codes that provide insufficient information about the u
 #| label: dq-data-load
 #| include: false
 
-dt_raw <- read_feather("../../LGH_MasterFile_preCollapsed2022.feather") |>
-  as.data.table()
+dt_raw <- vr_all[NaturalUnnatural == 1L]   # natural deaths, as in the earlier extract
+rm(vr_all); invisible(gc(FALSE))
 
 dt_raw[, `:=`(
   sex           = as_factor(sex),
   DeathInst     = as_factor(DeathInst),
-  DeathProvince = as_factor(DeathProvince),
-  Ascertainment = as_factor(Ascertainment)
+  DeathProvince = as_factor(DeathProvince)
 )]
 
 # Facility-type classification of DeathInst (8 raw levels), used throughout
@@ -871,6 +877,9 @@ Monitoring unnatural deaths helps assess injury prevention efforts and overall s
 
 This section provides a comprehensive overview of excess mortality by cause of death from 2019-2022, showing which conditions contributed most to excess deaths during the COVID-19 pandemic period.
 
+::: {.callout-note appearance="simple"}
+This section is deliberately fixed to the **2019–2022 pandemic window** and is **not extended to 2023–2024**: the expected (baseline) deaths come from models fitted on 2015–2019 weekly counts by LGH cause, sex and age group, and the 2023–2024 records (public Isibalo release) have not been run through that baseline pipeline.
+:::
 ::: {.panel-tabset}
 
 #### Combined Natural & External Causes
@@ -992,7 +1001,7 @@ Deaths are classified using the WHO garbage code framework. A death is considere
 
 ### Data Sources
 
-- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather`
+- **VR Data**: Individual death records from `LGH_MasterFile_preCollapsedAll.feather` (death years 1997–2022), extended with 2023–2024 deaths from the public Isibalo release via `Deaths2022_MRCversionFINAL_2024.feather` (loader: `me_vr_data.r`). The appended years have province-level geography only, no registration dates, and a garbage-code flag derived from `UnderlyingCause` with the same crosswalk as the LGH extract.
 - **Tembisa**: Age-specific mortality outputs from version 4.8
 - **NMC**: Notifiable conditions from the surveillance database
 

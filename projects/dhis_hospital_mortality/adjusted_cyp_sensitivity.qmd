@@ -45,6 +45,17 @@ original method used in the [main indicators
 report](index.qmd#couple-years-of-protection-cyp), where each service is
 credited its full CYP factor in the year it was delivered.
 
+::: {.callout-note}
+## Scope and data used on this page
+Condoms are excluded from the old-versus-new comparison, because they are
+45–72% of all CYP when counted as fully used and their data change grain in
+2018 (see the [condom sensitivity page](condom_sensitivity.qmd)). One
+facility-month implant entry that was about 10,000 times its normal value
+(Botleng Ext 6 CHC, March 2025) is corrected in `wrangling.R` and recorded in
+`data_corrections_log`. A plain-language walk-through with worked examples is
+on the [CYP walk-through page](cyp-walkthrough.qmd).
+:::
+
 ```{r}
 #| label: tbl-objectives-adjustments-outputs
 #| tbl-cap: "What each part of this analysis tests, what it changes relative to the original CYP method, and where to find the result."
@@ -197,6 +208,190 @@ datatable(
   options = list(dom = "t", pageLength = 10)
 )
 ```
+
+## How lagged weights build up each year
+
+For a given calendar year, adjusted CYP for a method is the sum of services from
+the current and earlier years, each multiplied by its decayed weight. The table
+below shows this accumulation, adding lag 0 (this year's services) first, then
+lag 1 (last year's), and so on. The last cumulative value in each year is that
+method's adjusted CYP.
+
+```{r}
+#| label: tbl-adjusted-cyp-lag-wide
+#| tbl-cap: "Contribution to each calendar year from this year's services (N) and earlier cohorts (N-k), steady-state initialization. Total is the adjusted CYP for that method and year."
+
+lag_wide <- adjusted_cyp_lag_buildup[
+  scenario == "Proposed new: steady-state initialization" &
+    short_label %in% c("Sub-dermal implant", "IUCD")
+]
+lag_wide <- dcast(
+  lag_wide, short_label + calendar_year ~ lag,
+  value.var = "contribution_cyp", fill = 0
+)
+lag_cols <- setdiff(names(lag_wide), c("short_label", "calendar_year"))
+lag_wide[, total_cyp := rowSums(.SD), .SDcols = lag_cols]
+setnames(lag_wide, lag_cols, paste0("N-", lag_cols))
+
+datatable(
+  lag_wide,
+  colnames = c("Method", "Calendar year", paste0("N-", lag_cols), "Adjusted CYP"),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 11, dom = "Bfrtip", scrollX = TRUE,
+                 buttons = list("csv", "excel"))
+) |>
+  formatRound(c(paste0("N-", lag_cols), "total_cyp"), digits = 0)
+```
+
+```{r}
+#| label: tbl-adjusted-cyp-lag-buildup
+#| tbl-cap: "Step-by-step build-up: services in the source year, the decayed weight, the contribution, and the running (cumulative) sum for each calendar year. Back-filled source years (pre-2015) are flagged."
+
+datatable(
+  adjusted_cyp_lag_buildup[, .(
+    scenario, short_label, calendar_year, lag, source_year, services,
+    weight, contribution_cyp, cumulative_cyp, backfilled
+  )],
+  colnames = c(
+    "Scenario", "Method", "Calendar year", "Lag (k)", "Source year (N-k)",
+    "Services in source year", "Weight", "Contribution (CYP)",
+    "Cumulative CYP", "Back-filled"
+  ),
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE,
+                 buttons = list("csv", "excel"))
+) |>
+  formatRound(c("services", "contribution_cyp", "cumulative_cyp"), digits = 0) |>
+  formatRound("weight", digits = 3)
+```
+
+## Worked example: sub-dermal implants
+
+This example uses implants to show how the yearly figure is accumulated, using
+the observed-cohorts-only scenario so that every number comes directly from the
+recorded insertions $D_s$. Weights are taken from the matrix above:
+$w_0 = 1.00$, $w_1 = 0.80$, $w_2 = 0.70$. For each calendar year $t$,
+
+$$
+P_t = 1.00\,D_t + 0.80\,D_{t-1} + 0.70\,D_{t-2}.
+$$
+
+Each row of the table adds the three terms in turn. The "running total" columns
+show the sum after each lag is added, so the last one equals $P_t$.
+
+```{r}
+#| label: tbl-implant-worked-example
+#| tbl-cap: "National sub-dermal implant example: how this year's and earlier insertions add up to adjusted CYP in each year (observed cohorts only)."
+
+imp_w <- ADJUSTED_CYP_MATRIX[short_label == "Sub-dermal implant"][order(protection_year)]$adjusted_cyp
+imp <- adjusted_cyp_lag_buildup[
+  scenario == "Proposed new: observed cohorts only" &
+    short_label == "Sub-dermal implant" & lag == 0,
+  .(year = calendar_year, insertions = services)
+][order(year)]
+
+imp[, `:=`(
+  from_N  = imp_w[1] * insertions,
+  from_N1 = imp_w[2] * shift(insertions, 1, fill = 0),
+  from_N2 = imp_w[3] * shift(insertions, 2, fill = 0)
+)]
+imp[, `:=`(
+  run_N1 = from_N + from_N1,
+  adjusted_cyp = from_N + from_N1 + from_N2,
+  standard_old = 3.5 * insertions,
+  standard_new_factor = 2.5 * insertions
+)]
+imp[, `:=`(
+  cum_adjusted = cumsum(adjusted_cyp),
+  cum_standard_new_factor = cumsum(standard_new_factor)
+)]
+
+# The hand calculation must match the pipeline output.
+stopifnot(isTRUE(all.equal(
+  imp$adjusted_cyp,
+  agg_adjusted_cyp_method_annual[
+    scenario == "Proposed new: observed cohorts only" &
+      short_label == "Sub-dermal implant"][order(year)]$adjusted_cyp
+)))
+
+datatable(
+  imp[, .(year, insertions, from_N, from_N1, from_N2,
+          run_N1, adjusted_cyp, standard_new_factor,
+          cum_adjusted, cum_standard_new_factor, standard_old)],
+  colnames = c(
+    "Year", "Insertions (D)", "1.00 × D(N)", "+ 0.80 × D(N-1)",
+    "+ 0.70 × D(N-2)", "Running total after N-1", "Adjusted CYP",
+    "Standard CYP at 2.5", "Cumulative adjusted", "Cumulative standard at 2.5",
+    "Standard CYP at 3.5 (original)"
+  ),
+  rownames = FALSE,
+  options = list(dom = "t", pageLength = 11, scrollX = TRUE)
+) |>
+  formatRound(setdiff(names(imp), "year"), digits = 0)
+```
+
+Each insertion contributes 2.5 CYP over its lifetime, but the adjusted method
+spreads it over three years. Where insertions are rising, adjusted CYP is below standard credit at 2.5 because part of each
+cohort's protection falls in later years. Where insertions fall, it
+is above, because earlier, larger cohorts are still contributing. The first
+years also omit cohorts inserted before 2015 (see next section). The original
+standard CYP uses 3.5 per implant and is higher than adjusted CYP in every year
+shown. The cumulative columns show the gap: adjusted CYP lags the standard
+credit, and the difference at the end of 2025 is protection from 2024–2025
+insertions that falls after the series ends.
+
+## Comparison with the continuation-weighted methods note
+
+The [methods note](cyp-allocation-methods.qmd) sets out the general approach.
+This page matches it on the core equation and differs in the following ways.
+
+```{r}
+#| label: tbl-methods-note-comparison
+
+knitr::kable(
+  data.frame(
+    Aspect = c(
+      "Core equation $P_{m,t} = \\sum_k w_{m,k} D_{m,t-k}$",
+      "Weights sum to the standard CYP factor",
+      "Implant weights (1.00, 0.80, 0.70)",
+      "IUCD weights, years 1–3",
+      "IUCD weights, years 4–10",
+      "Combined pill factor",
+      "Standard CYP reference for implants",
+      "Calendar-year alignment (half-year shift)",
+      "Even allocation ($c_m / L_m$) sensitivity",
+      "Start of series",
+      "Births link ($\\varphi = 0.75$ blend)"
+    ),
+    `Methods note` = c(
+      "Yes", "Required", "Same", "0.85, 0.75, 0.65",
+      "Linear: 0.571, 0.493, 0.414, 0.336, 0.257, 0.179, 0.100",
+      "1/15; says 12 overstates by 25%", "2.5",
+      "Recommended; weights 0.50, 0.90, 0.75, 0.35 for implants",
+      "Listed", "Observed only or back-cast", "$\\hat{A}_{t+1} = \\beta[\\varphi P_t + (1-\\varphi) P_{t+1}]$"
+    ),
+    `This page` = c(
+      "Yes", "Yes (audit table)", "Same", "0.85, 0.75, 0.65",
+      "0.55, 0.45, 0.40, 0.35, 0.25, 0.20, 0.15 (also sums to 4.6)",
+      "1/12 in full proposal (Rob's request); 1/15 in timing-only",
+      "2.5 in full proposal; 3.5 in timing-only and original",
+      "Not implemented; year-0 weight sits wholly in year N",
+      "Not implemented",
+      "Both observed-only and back-cast (2015 count carried back)",
+      "Not implemented; correlation with births in N-1 and N+1"
+    ),
+    check.names = FALSE
+  ),
+  format = "pipe"
+)
+```
+
+The main differences to resolve are the pill factor, which the note argues
+against using 12 for, the IUCD tail weights, and the calendar-year alignment.
 
 ## Pre-2015 cohorts
 
@@ -671,10 +866,12 @@ timing only $r =
 full proposal $r =
 `r sprintf("%.3f", cyp_birth_rate_correlation[scenario == "Proposed new: steady-state initialization" & alignment == "Births in previous year (N-1)", correlation])`$.
 
-The rate-scale correlations are weaker than the raw-count correlations
-reported earlier in every series and alignment, consistent with a shared
-population growth trend inflating the raw-count relationship between CYP
-and recorded births.
+Dividing both series by the female population aged 15–49 removes shared
+population growth. Compare these rate-scale values with the raw-count values
+reported earlier: a change between the two scales reflects that shared trend
+rather than a different relationship. A direct test of whether spreading
+improves the correlation, by intervention and for counts and rates, is on the
+[CYP walk-through page](cyp-walkthrough.qmd#step-7.-does-spreading-the-protection-improve-the-link-with-births).
 
 ## Original request
 

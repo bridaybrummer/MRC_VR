@@ -413,6 +413,88 @@ if (length(unmapped) > 0) {
   cat(paste0("  • ", unmapped, "\n"))
 }
 
+# ─── 5b. DATA CORRECTIONS ─────────────────────────────────────────────────────
+# Documented, reviewed corrections for facility-months that are clearly
+# reporting errors. Applied ONCE here so every downstream table, plot and report
+# uses the same corrected data. Each correction replaces the monthly value with
+# the facility's median for the other months of that year, and removes the same
+# excess from the facility's annual value. The audit trail is saved as
+# `data_corrections_log`; nothing is changed silently.
+DATA_CORRECTIONS <- data.table(
+  province    = "Mpumalanga",
+  district    = "Nkangala",
+  facility    = "Botleng Ext 6 CHC",
+  short_label = "Sub-dermal implant",
+  period_date = as.Date("2025-03-01"),
+  reason      = paste("Single facility-month about 10,000 times the facility's",
+                      "typical month (other months 0-25); treated as a",
+                      "data-entry error")
+)
+
+correction_log <- vector("list", nrow(DATA_CORRECTIONS))
+for (i in seq_len(nrow(DATA_CORRECTIONS))) {
+  cr <- DATA_CORRECTIONS[i]
+  cr_year <- year(cr$period_date)
+
+  is_fac <- function(d) d$province == cr$province & d$district == cr$district &
+    d$facility == cr$facility & d$short_label == cr$short_label
+  m_idx <- which(is_fac(dhis_monthly_raw) & dhis_monthly_raw$year == cr_year)
+  a_idx <- which(is_fac(dhis_annual_raw)  & dhis_annual_raw$year == cr_year)
+
+  stopifnot(
+    "Correction must match exactly one annual row" = length(a_idx) == 1L,
+    "Correction month not found" = any(dhis_monthly_raw$period_date[m_idx] == cr$period_date)
+  )
+
+  m_vals      <- dhis_monthly_raw[m_idx]
+  reported    <- m_vals[period_date == cr$period_date, value]
+  replacement <- median(m_vals[period_date != cr$period_date, value])
+  excess      <- reported - replacement
+
+  # The annual value must equal the sum of its months for this correction to be valid.
+  stopifnot("Annual value does not equal the sum of its months" =
+              abs(dhis_annual_raw$value[a_idx] - sum(m_vals$value)) < 0.5)
+
+  nat_before <- dhis_annual_raw[short_label == cr$short_label & year == cr_year,
+                                sum(value, na.rm = TRUE)]
+  dhis_monthly_raw[m_idx[m_vals$period_date == cr$period_date], value := replacement]
+  dhis_annual_raw[a_idx, value := value - excess]
+  nat_after <- dhis_annual_raw[short_label == cr$short_label & year == cr_year,
+                               sum(value, na.rm = TRUE)]
+
+  correction_log[[i]] <- cbind(cr, data.table(
+    reported_value = reported,
+    replacement_value = replacement,
+    excess_removed = excess,
+    national_annual_before = nat_before,
+    national_annual_after = nat_after
+  ))
+}
+data_corrections_log <- rbindlist(correction_log)
+cat("\nData corrections applied:", nrow(data_corrections_log), "\n")
+print(data_corrections_log[, .(facility, short_label, period_date, reported_value,
+                               replacement_value, national_annual_before,
+                               national_annual_after)])
+
+# Residual check: a facility-month far above that facility's own typical month
+# should be reviewed before totals are trusted. Only rows with
+# in_annual_window = TRUE can affect the annual CYP series; later months (2026)
+# and non-CYP indicators (TOP) are listed for information.
+resid_chk <- dhis_monthly_raw[domain == "contra",
+  .(period_date, year, value, med = median(value, na.rm = TRUE)),
+  by = .(province, district, facility, short_label)
+][value > 1000 & value > 100 * pmax(med, 1)][
+  , `:=`(in_annual_window = year <= ANNUAL_MAX_YEAR &
+           !short_label %like% "^TOP")][
+  , year := NULL]
+if (nrow(resid_chk) > 0) {
+  cat("Residual extreme facility-months (review; only in_annual_window = TRUE affects annual CYP):\n")
+  print(resid_chk)
+}
+if (any(resid_chk$in_annual_window)) {
+  warning("Residual extreme facility-months remain inside the annual window.")
+}
+
 
 # ─── 6. SPLIT INTO THREE THEMED DATASETS ─────────────────────────────────────
 # Each dataset keeps: province | district | subdistrict | facility |
@@ -660,6 +742,14 @@ setorder(agg_condom_sensitivity_annual, scenario, year)
 # profile starts at 0.85/0.75 and declines to a total of 4.6 CYP. Methods not
 # specified in the request retain a single-year allocation. Oral pills use the
 # requested 12 cycles per CYP here (the primary standard CYP remains 15).
+#
+# Condoms are excluded from this comparison by default. When every distributed
+# condom is counted as used they are 45-72% of all CYP, so a total CYP series is
+# mostly a condom series, and the condom data change grain in 2018 (see 4b).
+# Set to TRUE to restore them (they are never spread over time). Condom CYP is
+# always reported separately in `cyp_condom_share_annual`.
+CYP_COMPARISON_INCLUDE_CONDOMS <- FALSE
+CONDOM_LABELS <- c("Male condom", "Female condom")
 ADJUSTED_CYP_MATRIX <- rbindlist(list(
   data.table(short_label = "Medroxyprogesterone", protection_year = 0L, adjusted_cyp = 1/4),
   data.table(short_label = "Norethisterone", protection_year = 0L, adjusted_cyp = 1/6),
@@ -703,7 +793,7 @@ adjusted_cyp_raw_annual <- rbindlist(list(
     domain == "contra" & short_label %in% ADJUSTED_CYP_MATRIX$short_label,
     .(raw_value = sum(value, na.rm = TRUE)), by = .(short_label, year)
   ],
-  agg_condom_national_annual[, .(
+  if (CYP_COMPARISON_INCLUDE_CONDOMS) agg_condom_national_annual[, .(
     raw_value = sum(value, na.rm = TRUE)
   ), by = .(short_label, year)]
 ))[, .(raw_value = sum(raw_value, na.rm = TRUE)), by = .(short_label, year)]
@@ -726,6 +816,7 @@ allocate_adjusted_cyp <- function(raw_annual, allocation_matrix, scenario_label)
                      by = "short_label", allow.cartesian = TRUE)
   allocated[, protection_year_calendar := year + protection_year]
   allocated[, contribution_cyp := raw_value * adjusted_cyp]
+  allocated[, backfilled := year < adjusted_cyp_first_year]
   allocated <- allocated[
     protection_year_calendar >= adjusted_cyp_first_year &
       protection_year_calendar <= adjusted_cyp_last_year
@@ -752,6 +843,23 @@ adjusted_cyp_allocations <- rbindlist(list(
   )
 ))
 
+# Lag build-up: for each credited calendar year, every earlier cohort's
+# services x decayed weight, accumulated from lag 0 upward.
+adjusted_cyp_lag_buildup <- adjusted_cyp_allocations[, .(
+  scenario,
+  short_label,
+  calendar_year = protection_year_calendar,
+  lag = protection_year,
+  source_year = year,
+  services = raw_value,
+  weight = adjusted_cyp,
+  contribution_cyp
+)]
+setorder(adjusted_cyp_lag_buildup, scenario, short_label, calendar_year, lag)
+adjusted_cyp_lag_buildup[, cumulative_cyp := cumsum(contribution_cyp),
+  by = .(scenario, short_label, calendar_year)]
+adjusted_cyp_lag_buildup[, backfilled := source_year < adjusted_cyp_first_year]
+
 agg_adjusted_cyp_method_annual <- adjusted_cyp_allocations[, .(
   adjusted_cyp = sum(contribution_cyp, na.rm = TRUE)
 ), by = .(scenario, short_label, year = protection_year_calendar)][
@@ -762,12 +870,23 @@ agg_adjusted_cyp_annual <- agg_adjusted_cyp_method_annual[, .(
   adjusted_cyp = sum(adjusted_cyp, na.rm = TRUE)
 ), by = .(scenario, year)][order(scenario, year)]
 
+# The final cumulative value per year must equal the annual method total.
+stopifnot(isTRUE(all.equal(
+  adjusted_cyp_lag_buildup[, .(total = sum(contribution_cyp, na.rm = TRUE)),
+    by = .(scenario, short_label, year = calendar_year)][
+    order(scenario, short_label, year)]$total,
+  agg_adjusted_cyp_method_annual[order(scenario, short_label, year)]$adjusted_cyp
+)))
+
 agg_recorded_births_annual <- agg_national_annual[
   domain == "births" & short_label %in% c("Live birth", "Born alive (BBA)"),
   .(recorded_births = sum(value, na.rm = TRUE)), by = year
 ][order(year)]
 
-standard_cyp_for_comparison <- copy(agg_cyp_national_annual_total)
+standard_cyp_for_comparison <- agg_cyp_national_annual[
+  CYP_COMPARISON_INCLUDE_CONDOMS | !short_label %in% CONDOM_LABELS,
+  .(cyp = sum(cyp, na.rm = TRUE)), by = year
+][order(year)]
 setnames(standard_cyp_for_comparison, "cyp", "cyp_value")
 standard_cyp_for_comparison[, `:=`(
   scenario = "Standard CYP (credited in distribution year)",
@@ -794,22 +913,84 @@ cyp_births_aligned_annual <- merge(
 )
 setorder(cyp_births_aligned_annual, cyp_definition, scenario, year)
 
+cor_with_ci <- function(x, y) {
+  ct <- cor.test(x, y)
+  list(correlation = unname(ct$estimate),
+       ci_low = ct$conf.int[1], ci_high = ct$conf.int[2])
+}
+
 cyp_birth_correlation <- rbindlist(list(
-  cyp_births_aligned_annual[!is.na(previous_year_births), .(
-    alignment = "Births in previous year (N-1)",
-    n_year_pairs = .N,
-    first_cyp_year = min(year),
-    last_cyp_year = max(year),
-    correlation = cor(cyp_value, previous_year_births)
+  cyp_births_aligned_annual[!is.na(previous_year_births), c(
+    list(alignment = "Births in previous year (N-1)",
+         n_year_pairs = .N,
+         first_cyp_year = min(year),
+         last_cyp_year = max(year)),
+    cor_with_ci(cyp_value, previous_year_births)
   ), by = .(cyp_definition, scenario)],
-  cyp_births_aligned_annual[!is.na(following_year_births), .(
-    alignment = "Births in following year (N+1)",
-    n_year_pairs = .N,
-    first_cyp_year = min(year),
-    last_cyp_year = max(year),
-    correlation = cor(cyp_value, following_year_births)
+  cyp_births_aligned_annual[!is.na(following_year_births), c(
+    list(alignment = "Births in following year (N+1)",
+         n_year_pairs = .N,
+         first_cyp_year = min(year),
+         last_cyp_year = max(year)),
+    cor_with_ci(cyp_value, following_year_births)
   ), by = .(cyp_definition, scenario)]
 ))[order(alignment, cyp_definition, scenario)]
+
+# Year-on-year change version: removes the shared long-term trend, so it asks
+# whether years with a larger rise in CYP are followed (or preceded) by a larger
+# fall in births. Years are contiguous, so diff() compares consecutive years.
+cyp_birth_change_correlation <- rbindlist(list(
+  cyp_births_aligned_annual[!is.na(previous_year_births), c(
+    list(alignment = "Births in previous year (N-1)", n_change_pairs = .N - 1L),
+    cor_with_ci(diff(cyp_value), diff(previous_year_births))
+  ), by = .(cyp_definition, scenario)],
+  cyp_births_aligned_annual[!is.na(following_year_births), c(
+    list(alignment = "Births in following year (N+1)", n_change_pairs = .N - 1L),
+    cor_with_ci(diff(cyp_value), diff(following_year_births))
+  ), by = .(cyp_definition, scenario)]
+))[order(alignment, cyp_definition, scenario)]
+
+# Programme-level comparison used in the CYP walk-through: standard CYP versus
+# the timing-only and full-proposal allocations, with and without back-filled
+# pre-2015 cohorts. `assumed_share` is the share of timing-only CYP that comes
+# from assumed (back-filled) rather than observed cohorts.
+adjusted_cyp_timing_observed <- allocate_adjusted_cyp(
+  adjusted_cyp_raw_annual,
+  REDISTRIBUTION_ONLY_CYP_MATRIX,
+  "Timing only: observed cohorts only"
+)
+yearly_cyp <- function(a) {
+  a[, .(cyp = sum(contribution_cyp, na.rm = TRUE),
+        assumed = sum(contribution_cyp[backfilled], na.rm = TRUE)),
+    by = .(year = protection_year_calendar)]
+}
+prog_timing_bf   <- yearly_cyp(adjusted_cyp_allocations[
+  scenario == "Timing only: standard factors redistributed"])
+prog_full_bf     <- yearly_cyp(adjusted_cyp_allocations[
+  scenario == "Proposed new: steady-state initialization"])
+prog_timing_obs  <- yearly_cyp(adjusted_cyp_timing_observed)
+
+programme_cyp_comparison <- Reduce(function(a, b) merge(a, b, by = "year"), list(
+  standard_cyp_for_comparison[, .(year, standard_cyp = cyp_value)],
+  prog_timing_obs[, .(year, timing_observed_cyp = cyp)],
+  prog_timing_bf[, .(year, timing_backfilled_cyp = cyp,
+                     timing_assumed_share = assumed / cyp)],
+  prog_full_bf[, .(year, full_proposal_cyp = cyp)]
+))[order(year)]
+programme_cyp_comparison[, `:=`(
+  timing_vs_standard_pct = 100 * (timing_backfilled_cyp - standard_cyp) / standard_cyp,
+  full_vs_standard_pct   = 100 * (full_proposal_cyp - standard_cyp) / standard_cyp
+)]
+
+# Condom share of all CYP (condoms counted as 100% used), kept separate from the
+# headline comparison. Uses the corrected facility data.
+cyp_condom_share_annual <- merge(
+  agg_cyp_national_annual[!short_label %in% CONDOM_LABELS,
+    .(noncondom_cyp = sum(cyp, na.rm = TRUE)), by = year],
+  agg_cyp_national_annual[short_label %in% CONDOM_LABELS,
+    .(condom_cyp = sum(cyp, na.rm = TRUE)), by = year],
+  by = "year"
+)[, condom_share_pct := 100 * condom_cyp / (condom_cyp + noncondom_cyp)][order(year)]
 
 # ─── 7g2. POPULATION DENOMINATOR & RATES (per 1,000 WRA) ─────────────────────
 # Denominator: women 15-49 (WRA), StatsSA Mid-Year Population Estimates via
@@ -828,10 +1009,22 @@ agg_wra_population_annual <- as.data.table(NMCleaner::pop)[
 cyp_births_rate_aligned_annual <- merge(
   cyp_births_aligned_annual, agg_wra_population_annual, by = "year", all.x = TRUE
 )
+# Each birth rate uses the population of its own year (births in N+1 over the
+# year N+1 population), not the CYP year's population.
+cyp_births_rate_aligned_annual <- merge(
+  cyp_births_rate_aligned_annual,
+  agg_wra_population_annual[, .(year = year + 1L, wra_previous_year = wra_population)],
+  by = "year", all.x = TRUE
+)
+cyp_births_rate_aligned_annual <- merge(
+  cyp_births_rate_aligned_annual,
+  agg_wra_population_annual[, .(year = year - 1L, wra_following_year = wra_population)],
+  by = "year", all.x = TRUE
+)
 cyp_births_rate_aligned_annual[, `:=`(
   cyp_rate_per_1000_wra = cyp_value / wra_population * 1000,
-  previous_year_birth_rate_per_1000_wra = previous_year_births / wra_population * 1000,
-  following_year_birth_rate_per_1000_wra = following_year_births / wra_population * 1000
+  previous_year_birth_rate_per_1000_wra = previous_year_births / wra_previous_year * 1000,
+  following_year_birth_rate_per_1000_wra = following_year_births / wra_following_year * 1000
 )]
 setorder(cyp_births_rate_aligned_annual, cyp_definition, scenario, year)
 
@@ -851,6 +1044,129 @@ cyp_birth_rate_correlation <- rbindlist(list(
     correlation = cor(cyp_rate_per_1000_wra, following_year_birth_rate_per_1000_wra)
   ), by = .(cyp_definition, scenario)]
 ))[order(alignment, cyp_definition, scenario)]
+
+
+# ─── 7g3. DOES SPREADING PROTECTION IMPROVE THE LINK WITH BIRTHS? ─────────────
+# The core test. For each intervention group, compare standard CYP (A) with the
+# timing-only (C) and full-proposal (D) allocations against recorded births in
+# the following (N+1) and previous (N-1) year, as counts and as rates per 1,000
+# women 15-49, in yearly values and in year-on-year changes. Condoms follow
+# CYP_COMPARISON_INCLUDE_CONDOMS.
+#   - Only implants and IUCDs change under the allocation, so the sharpest test
+#     is on those groups. Pill, injectable and sterilisation CYP are only
+#     rescaled (or unchanged), which cannot change a correlation of levels.
+#   - Birth rates divide births by the population of the birth year.
+#   - `jackknife_stronger` = proportion of leave-one-year-out fits in which the
+#     adjusted series has the stronger |r| than standard, a simple check of
+#     whether one year drives the answer.
+DECAY_MEASURES <- c(
+  "A. Standard"             = "Standard CYP (credited in distribution year)",
+  "E. Even spread (no decay)" = "Even spread: no decay",
+  "C. Timing only"          = "Timing only: standard factors redistributed",
+  "D. Full proposal"        = "Proposed new: steady-state initialization"
+)
+LARC_LABELS <- c("Sub-dermal implant", "IUCD")
+keep_label <- function(x) CYP_COMPARISON_INCLUDE_CONDOMS | !x %in% CONDOM_LABELS
+
+# Placebo for the decay shape: the same standard factors and the same protection
+# years as the timing-only scenario, but with EQUAL weights in every year. If
+# smoothing alone raised the correlation, this would do as well as the decay.
+EVEN_SPREAD_CYP_MATRIX <- copy(REDISTRIBUTION_ONLY_CYP_MATRIX)
+EVEN_SPREAD_CYP_MATRIX[, adjusted_cyp := sum(adjusted_cyp) / .N, by = short_label]
+adjusted_cyp_even_spread <- allocate_adjusted_cyp(
+  rbindlist(list(adjusted_cyp_raw_annual, adjusted_cyp_backcast), fill = TRUE),
+  EVEN_SPREAD_CYP_MATRIX,
+  DECAY_MEASURES[["E. Even spread (no decay)"]]
+)
+
+decay_method_series <- rbindlist(c(
+  list(agg_cyp_national_annual[keep_label(short_label),
+    .(measure = "A. Standard", short_label, year, cyp_value = cyp)]),
+  list(adjusted_cyp_even_spread[keep_label(short_label),
+    .(cyp_value = sum(contribution_cyp, na.rm = TRUE)),
+    by = .(short_label, year = protection_year_calendar)][
+    , measure := "E. Even spread (no decay)"]),
+  lapply(c("C. Timing only", "D. Full proposal"), function(m) {
+    agg_adjusted_cyp_method_annual[scenario == DECAY_MEASURES[[m]] & keep_label(short_label),
+      .(measure = m, short_label, year, cyp_value = adjusted_cyp)]
+  })
+), use.names = TRUE)
+
+decay_groups <- list(
+  "Implant" = "Sub-dermal implant",
+  "IUCD" = "IUCD",
+  "Implant + IUCD (long-acting)" = LARC_LABELS,
+  "All methods" = unique(decay_method_series$short_label)
+)
+cyp_decay_series <- rbindlist(lapply(names(decay_groups), function(g) {
+  decay_method_series[short_label %in% decay_groups[[g]],
+    .(group = g, cyp_value = sum(cyp_value, na.rm = TRUE)), by = .(measure, year)]
+}))
+cyp_decay_series[, group := factor(group, levels = names(decay_groups))]
+
+wra_y <- agg_wra_population_annual
+births_y <- agg_recorded_births_annual
+cyp_decay_series <- merge(cyp_decay_series, wra_y, by = "year", all.x = TRUE)
+cyp_decay_series[, cyp_per_1000_wra := cyp_value / wra_population * 1000]
+cyp_decay_series <- merge(cyp_decay_series,
+  births_y[, .(year = year - 1L, births_next = recorded_births)], by = "year", all.x = TRUE)
+cyp_decay_series <- merge(cyp_decay_series,
+  births_y[, .(year = year + 1L, births_prev = recorded_births)], by = "year", all.x = TRUE)
+cyp_decay_series <- merge(cyp_decay_series,
+  wra_y[, .(year = year - 1L, wra_next = wra_population)], by = "year", all.x = TRUE)
+cyp_decay_series <- merge(cyp_decay_series,
+  wra_y[, .(year = year + 1L, wra_prev = wra_population)], by = "year", all.x = TRUE)
+cyp_decay_series[, `:=`(
+  births_next_per_1000_wra = births_next / wra_next * 1000,
+  births_prev_per_1000_wra = births_prev / wra_prev * 1000
+)]
+setorder(cyp_decay_series, group, measure, year)
+
+decay_y_cols <- list(
+  "Births in following year (N+1)" = c(Counts = "births_next",
+                                       Rates = "births_next_per_1000_wra"),
+  "Births in previous year (N-1)"  = c(Counts = "births_prev",
+                                       Rates = "births_prev_per_1000_wra")
+)
+decay_rows <- list()
+for (g in names(decay_groups)) {
+  for (al in names(decay_y_cols)) {
+    for (bs in c("Counts", "Rates")) {
+      xcol <- if (bs == "Counts") "cyp_value" else "cyp_per_1000_wra"
+      ycol <- decay_y_cols[[al]][[bs]]
+      base <- cyp_decay_series[group == g & measure == "A. Standard"][order(year)]
+      ok <- !is.na(base[[ycol]])
+      y <- base[[ycol]][ok]
+      xs <- lapply(names(DECAY_MEASURES), function(m)
+        cyp_decay_series[group == g & measure == m][order(year)][[xcol]][ok])
+      names(xs) <- names(DECAY_MEASURES)
+      for (m in names(DECAY_MEASURES)) {
+        for (vw in c("Yearly values", "Year-on-year change")) {
+          f <- if (vw == "Yearly values") identity else diff
+          ci <- cor_with_ci(f(xs[[m]]), f(y))
+          r_std <- cor(f(xs[["A. Standard"]]), f(y))
+          jk <- NA_real_
+          if (vw == "Yearly values" && m != "A. Standard") {
+            jk <- mean(vapply(seq_along(y), function(i) {
+              abs(cor(xs[[m]][-i], y[-i])) > abs(cor(xs[["A. Standard"]][-i], y[-i]))
+            }, logical(1)))
+          }
+          decay_rows[[length(decay_rows) + 1L]] <- data.table(
+            group = g, alignment = al, basis = bs, view = vw, measure = m,
+            n_pairs = length(f(y)),
+            correlation = ci$correlation, ci_low = ci$ci_low, ci_high = ci$ci_high,
+            r_standard = r_std,
+            diff_vs_standard = ci$correlation - r_std,
+            adjusted_stronger = abs(ci$correlation) > abs(r_std),
+            jackknife_stronger = jk
+          )
+        }
+      }
+    }
+  }
+}
+cyp_decay_correlation <- rbindlist(decay_rows)
+cyp_decay_correlation[, group := factor(group, levels = names(decay_groups))]
 
 
 # ─── 7h. MONTHLY OUTLIER FLAGGING (contraception domain) ─────────────────────
@@ -1059,6 +1375,15 @@ save(
   ADJUSTED_CYP_MATRIX,
   REDISTRIBUTION_ONLY_CYP_MATRIX,
   adjusted_cyp_matrix_audit,
+  adjusted_cyp_lag_buildup,
+  adjusted_cyp_timing_observed,
+  programme_cyp_comparison,
+  cyp_condom_share_annual,
+  cyp_birth_change_correlation,
+  cyp_decay_series,
+  cyp_decay_correlation,
+  data_corrections_log,
+  CYP_COMPARISON_INCLUDE_CONDOMS,
   agg_adjusted_cyp_method_annual,
   agg_adjusted_cyp_annual,
   agg_recorded_births_annual,

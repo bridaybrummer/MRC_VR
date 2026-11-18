@@ -79,15 +79,19 @@ tembisa_SA_deaths_long[,
 
 # pull in the SA estimate of B code deaths (HIV)
 library(arrow)
-dt <- read_feather("LGH_MasterFile_preCollapsedAll.feather") %>% as.data.table()
+# LGH extract (1997-2022) + 2023-2024 deaths from the Isibalo bridge file
+source("me_vr_data.r")
+dt <- load_me_vr(".")
+vr_year_range <- paste0(min(dt$epi_year, na.rm = TRUE), "-", max(dt$epi_year, na.rm = TRUE))
 
 dt_total_deaths <- dt[ , .(deaths = .N), by = .(epi_year)]
 #glimpse(dt)
 
 dt$epi_year%>%unique
 
+# LGH_Cause "B33" is the underlying cause B33 (verified against the LGH extract)
 dt[, 
-    hiv_pos := fifelse( LGH_Cause %in% c("B33"), TRUE, FALSE )
+    hiv_pos := fifelse( UnderlyingCause %in% c("B33"), TRUE, FALSE )
     ][, 
     year := epi_year][
         hiv_pos==TRUE, 
@@ -567,7 +571,7 @@ p_poisoning <- dt_poisoning[year %in% 1997:2025] %>%
   )
 
 # Unnatural deaths aggregate plot
-p_unnatural <- dt_unnatural_vr[year %in% 1997:2022] %>%
+p_unnatural <- dt_unnatural_vr[year %in% 1997:max(dt$epi_year)] %>%
   ggplot(aes(x = as.numeric(as.character(year)), y = unnatural_deaths,
              text = paste0("Year: ", year, "<br>",
                           "Unnatural Deaths: ", scales::comma(unnatural_deaths)))) +
@@ -675,7 +679,7 @@ p_overview_province <- dt_province_overview %>%
             hjust = -0.2, size = 3, color = "grey30") +
   coord_flip() +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
-  labs(x = NULL, y = "Total Deaths (1997-2022)",
+  labs(x = NULL, y = paste0("Total Deaths (", vr_year_range, ")"),
        title = "Deaths by Province",
        subtitle = "Total registered deaths across all years") +
   theme_minimal(base_size = 11) +
@@ -697,7 +701,7 @@ p_overview_instance <- dt_instance_overview %>%
             hjust = -0.2, size = 3, color = "grey30") +
   coord_flip() +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
-  labs(x = NULL, y = "Total Deaths (1997-2022)",
+  labs(x = NULL, y = paste0("Total Deaths (", vr_year_range, ")"),
        title = "Deaths by Institution Type",
        subtitle = "Total registered deaths across all years") +
   theme_minimal(base_size = 11) +
@@ -767,7 +771,7 @@ p_nonhospital_province <- dt_nonhospital_summary %>%
             hjust = -0.2, size = 3, color = "grey30") +
   coord_flip() +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
-  labs(x = NULL, y = "Non-Hospital Deaths (1997-2022)",
+  labs(x = NULL, y = paste0("Non-Hospital Deaths (", vr_year_range, ")"),
        title = "Non-Hospital Deaths by Province",
        subtitle = "Home, Nursing Home, Dead on Arrival, Other; excludes Unspecified/Unknown facility type") +
   theme_minimal(base_size = 11) +
