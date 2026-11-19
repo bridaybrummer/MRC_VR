@@ -467,8 +467,8 @@ lower real-world utilization (or excluding condoms entirely) affects total
 CYP.
 
 Long-acting methods are credited entirely in their insertion year under
-standard CYP. The [adjusted CYP and births sensitivity
-analysis](adjusted_cyp_sensitivity.qmd) compares the old standard measure with
+standard CYP. The [archived adjusted CYP and births sensitivity
+analysis](archive/adjusted_cyp_sensitivity.qmd) compares the old standard measure with
 (1) a timing-only redistribution that preserves the old factors and (2) the
 full proposed pill, implant and IUCD adjustments, then relates all three to
 recorded births in the previous and following years.

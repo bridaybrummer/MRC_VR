@@ -42,18 +42,18 @@ ply_config <- function(plot) {
 
 This page tests Rob's proposed change to the CYP calculation against the
 original method used in the [main indicators
-report](index.qmd#couple-years-of-protection-cyp), where each service is
+report](../index.qmd#couple-years-of-protection-cyp), where each service is
 credited its full CYP factor in the year it was delivered.
 
 ::: {.callout-note}
 ## Scope and data used on this page
 Condoms are excluded from the old-versus-new comparison, because they are
 45–72% of all CYP when counted as fully used and their data change grain in
-2018 (see the [condom sensitivity page](condom_sensitivity.qmd)). One
+2018 (see the [condom sensitivity page](../condom_sensitivity.qmd)). One
 facility-month implant entry that was about 10,000 times its normal value
 (Botleng Ext 6 CHC, March 2025) is corrected in `wrangling.R` and recorded in
 `data_corrections_log`. A plain-language walk-through with worked examples is
-on the [CYP walk-through page](cyp-walkthrough.qmd).
+on the [CYP walk-through page](../cyp-walkthrough.qmd).
 :::
 
 ```{r}
@@ -346,7 +346,7 @@ insertions that falls after the series ends.
 
 ## Comparison with the continuation-weighted methods note
 
-The [methods note](cyp-allocation-methods.qmd) sets out the general approach.
+The [methods note](../cyp-allocation-methods.qmd) sets out the general approach.
 This page matches it on the core equation and differs in the following ways.
 
 ```{r}
@@ -871,7 +871,7 @@ population growth. Compare these rate-scale values with the raw-count values
 reported earlier: a change between the two scales reflects that shared trend
 rather than a different relationship. A direct test of whether spreading
 improves the correlation, by intervention and for counts and rates, is on the
-[CYP walk-through page](cyp-walkthrough.qmd#step-7.-does-spreading-the-protection-improve-the-link-with-births).
+[CYP walk-through page](../cyp-walkthrough.qmd#step-7.-does-spreading-the-protection-improve-the-link-with-births).
 
 ## Original request
 

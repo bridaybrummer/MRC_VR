@@ -23,6 +23,7 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(scales)
   library(kableExtra)
+  library(openxlsx)
 })
 
 rda_path <- here::here("projects/dhis_hospital_mortality/dhis_results.rda")
@@ -381,6 +382,170 @@ excel_table(as.data.frame(disp),
 Rob's request specifies 12 pill cycles per CYP, 2.5 CYP per implant, and
 decay-weighted allocation for implants and IUCDs. The pre-2015 initialization
 assumes 2015 counts in earlier years; it is not observed historical data.
+
+### Intervention contributions by year
+
+Each row is one intervention in one year. CYP and CYP per 1,000 women aged
+15–49 are shown for the standard baseline, equal spreading, decay with standard
+factors, and the full request implementation. Condoms are excluded. Methods
+that are not spread remain unchanged apart from any revised factor in the full
+request.
+
+Equal spreading divides each standard lifetime factor evenly across its
+protection years. The spread, decay, and request columns use the 2015 count to
+initialize pre-2015 cohorts where needed; this is an explicit assumption, not
+observed historical data. Existing standard CYP values are not modified.
+
+```{r}
+#| label: intervention-cyp-table
+
+table_years <- 2015:2025
+condom_labels <- c("Female condom", "Male condom")
+standard_method <- as.data.table(copy(agg_cyp_national_annual))[
+  !short_label %chin% condom_labels & year %in% table_years,
+  .(intervention = short_label, year, standard_cyp = cyp)
+]
+
+method_factors <- as.data.table(copy(REDISTRIBUTION_ONLY_CYP_MATRIX))[
+  , .(standard_factor = sum(adjusted_cyp), max_lag = max(protection_year)),
+  by = short_label
+]
+method_names <- method_factors$short_label
+source_units <- merge(
+  standard_method,
+  method_factors[, .(intervention = short_label, standard_factor)],
+  by = "intervention"
+)[, .(intervention, source_year = year, units = standard_cyp / standard_factor)]
+
+backfill_keys <- method_factors[max_lag > 0,
+  .(source_year = seq.int(min(table_years) - max_lag, min(table_years) - 1L)),
+  by = .(intervention = short_label, max_lag)
+][, .(intervention, source_year)]
+backfill_units <- merge(
+  backfill_keys,
+  source_units[source_year == min(table_years), .(intervention, units)],
+  by = "intervention"
+)
+source_units <- rbindlist(list(source_units, backfill_units), use.names = TRUE)
+
+allocate_for_table <- function(weight_matrix, value_name) {
+  weight_matrix <- as.data.table(copy(weight_matrix))[
+    short_label %chin% method_names,
+    .(intervention = short_label, protection_year, weight = adjusted_cyp)
+  ]
+  merge(source_units, weight_matrix, by = "intervention", allow.cartesian = TRUE)[
+    , year := source_year + protection_year
+  ][year %in% table_years,
+    .(value = sum(units * weight, na.rm = TRUE)),
+    by = .(intervention, year)
+  ] |> setnames("value", value_name)
+}
+
+even_spread_matrix <- as.data.table(copy(REDISTRIBUTION_ONLY_CYP_MATRIX))[
+  , adjusted_cyp := sum(adjusted_cyp) / .N, by = short_label
+]
+even_spread_method <- allocate_for_table(even_spread_matrix, "even_spread_cyp")
+decay_method <- allocate_for_table(REDISTRIBUTION_ONLY_CYP_MATRIX, "decay_cyp")
+request_method <- allocate_for_table(ADJUSTED_CYP_MATRIX, "request_cyp")
+
+intervention_cyp <- Reduce(function(x, y) merge(
+  x, y, by = c("intervention", "year"), all = TRUE
+), list(standard_method, even_spread_method, decay_method, request_method))
+intervention_cyp <- merge(
+  intervention_cyp,
+  as.data.table(copy(agg_wra_population_annual))[year %in% table_years],
+  by = "year"
+)
+cyp_columns <- c("standard_cyp", "even_spread_cyp", "decay_cyp", "request_cyp")
+setnafill(intervention_cyp, cols = cyp_columns, fill = 0)
+intervention_cyp[, `:=`(
+  standard_rate = standard_cyp / wra_population * 1000,
+  even_spread_rate = even_spread_cyp / wra_population * 1000,
+  decay_rate = decay_cyp / wra_population * 1000,
+  request_rate = request_cyp / wra_population * 1000
+)]
+
+intervention_totals <- intervention_cyp[, lapply(.SD, sum, na.rm = TRUE),
+  by = year, .SDcols = c(cyp_columns, "standard_rate", "even_spread_rate", "decay_rate", "request_rate")]
+intervention_totals[, intervention := "Total (excluding condoms)"]
+intervention_cyp <- rbindlist(list(intervention_cyp, intervention_totals), use.names = TRUE, fill = TRUE)
+setorder(intervention_cyp, year, intervention)
+
+scenario_keys <- c(
+  "A. Standard", "E. Even spread (no decay)", "C. Timing only", "D. Full proposal"
+)
+scenario_columns <- c("standard_cyp", "even_spread_cyp", "decay_cyp", "request_cyp")
+for (i in seq_along(scenario_keys)) {
+  saved_total <- cyp_decay_series[
+    group == "All methods" & measure == scenario_keys[i],
+    .(year, cyp_value)
+  ][order(year)]$cyp_value
+  table_total <- intervention_totals[order(year), get(scenario_columns[i])]
+  stopifnot(isTRUE(all.equal(unname(table_total), unname(saved_total))))
+}
+
+cyp_download <- intervention_cyp[, .(
+  Year = year,
+  Intervention = intervention,
+  `Standard CYP` = standard_cyp,
+  `Standard rate per 1,000 women 15-49` = standard_rate,
+  `Even spread CYP` = even_spread_cyp,
+  `Even spread rate per 1,000 women 15-49` = even_spread_rate,
+  `Decay CYP, standard factors` = decay_cyp,
+  `Decay rate per 1,000 women 15-49` = decay_rate,
+  `Full request CYP` = request_cyp,
+  `Full request rate per 1,000 women 15-49` = request_rate
+)]
+
+scenario_notes <- data.frame(
+  Scenario = c("Standard", "Even spread", "Decay, standard factors", "Full request", "Rates and scope"),
+  Definition = c(
+    "Existing standard CYP; all CYP credited in the service year.",
+    "Standard lifetime factors allocated evenly across the protection years.",
+    "Standard factors retained; implant and IUCD CYP allocated with decay weights.",
+    "Decay allocation with the requested pill and implant factors.",
+    "CYP per 1,000 women aged 15-49; condoms excluded."
+  ),
+  Assumptions = c(
+    "No pre-2015 carryover.",
+    "2015 counts initialize pre-2015 cohorts where needed.",
+    "2015 counts initialize pre-2015 cohorts where needed.",
+    "2015 counts initialize pre-2015 cohorts where needed.",
+    "Source counts and existing standard CYP values are unchanged."
+  ),
+  check.names = FALSE
+)
+
+workbook_path <- here::here("projects/dhis_hospital_mortality/dhis_cyp_by_intervention_year.xlsx")
+workbook <- createWorkbook()
+addWorksheet(workbook, "CYP by intervention")
+writeDataTable(workbook, "CYP by intervention", cyp_download,
+               tableName = "InterventionCYP", tableStyle = "TableStyleMedium2")
+freezePane(workbook, "CYP by intervention", firstRow = TRUE, firstCol = TRUE)
+setColWidths(workbook, "CYP by intervention", cols = seq_len(ncol(cyp_download)), widths = "auto")
+addWorksheet(workbook, "Scenario notes")
+writeDataTable(workbook, "Scenario notes", scenario_notes,
+               tableName = "ScenarioNotes", tableStyle = "TableStyleMedium2")
+setColWidths(workbook, "Scenario notes", cols = 1:3, widths = c(26, 68, 68))
+saveWorkbook(workbook, workbook_path, overwrite = TRUE)
+
+display_table <- copy(cyp_download)
+numeric_columns <- names(display_table)[vapply(display_table, is.numeric, logical(1))]
+display_table[, (numeric_columns) := lapply(.SD, function(x) formatC(
+  x, format = "f", digits = 2, big.mark = ","
+)), .SDcols = numeric_columns]
+```
+
+[Download the intervention-by-year CYP workbook](dhis_cyp_by_intervention_year.xlsx). The workbook includes a filterable data sheet and scenario notes.
+
+```{r}
+#| label: intervention-cyp-display
+excel_table(
+  as.data.frame(display_table),
+  "Annual CYP and CYP rates by intervention and scenario; condoms excluded.",
+  align = c("r", "l", rep("r", 8)), font_size = 10
+) |> scroll_box(width = "100%", height = "600px")
+```
 
 ```{r}
 #| label: condom-share
